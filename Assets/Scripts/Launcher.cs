@@ -16,10 +16,11 @@ public class Launcher : MonoBehaviourPunCallbacks
     //PART 2
     [SerializeField] Transform roomListContent;
     [SerializeField] GameObject roomListItemPrefab;
+    //PART 2.5
+    [SerializeField] Transform playerListContent;
+    [SerializeField] GameObject PlayerListItemPrefab;
 
     //not yet used:
-    // [SerializeField] Transform playerListContent;
-    // [SerializeField] GameObject PlayerListItemPrefab;
     // [SerializeField] GameObject startGameButton;
 
     void Awake()
@@ -34,7 +35,8 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             Debug.Log("Connecting to Master");
             PhotonNetwork.ConnectUsingSettings();
-            PhotonNetwork.NickName = "Player #" + Random.Range(0, 1000).ToString("0000");
+            //MOVED, to OnJoinedLobby()
+            //PhotonNetwork.NickName = "Player #" + Random.Range(0, 1000).ToString("0000");
         }
         else
         {
@@ -53,6 +55,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         MenuManager.Instance.OpenMenu("title");
         Debug.Log("Joined Lobby");
+        //Problem: nickname changes everytime player joins a room
+        PhotonNetwork.NickName = "Player #" + Random.Range(0, 1000).ToString("0000");
     }
 
     public void CreateRoom()
@@ -71,17 +75,17 @@ public class Launcher : MonoBehaviourPunCallbacks
         Debug.Log(PhotonNetwork.CurrentRoom.Name);
         roomNameText.text = PhotonNetwork.CurrentRoom.Name + "'s Public Game";
 
-        //Player[] players = PhotonNetwork.PlayerList;
+        Player[] players = PhotonNetwork.PlayerList;
 
-        //        foreach (Transform child in playerListContent)
-        //        {
-        //            Destroy(child.gameObject);
-        //        }
+        foreach (Transform child in playerListContent)
+        {
+            Destroy(child.gameObject);
+        }
 
-        //        for (int i = 0; i < players.Count(); i++)
-        //        {
-        //            Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i]);
-        //        }
+        for (int i = 0; i < players.Count(); i++)
+        {
+            Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i]);
+        }
 
         //        startGameButton.SetActive(PhotonNetwork.IsMasterClient);
     }
@@ -135,10 +139,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     //		PhotonNetwork.LoadLevel(1);
     //	}
 
-
-
-    //	public override void OnPlayerEnteredRoom(Player newPlayer)
-    //	{
-    //		Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
-    //	}
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
+    }
 }
