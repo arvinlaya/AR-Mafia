@@ -13,6 +13,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] TMP_Text errorText;
     [SerializeField] TMP_Text roomNameText;
     [SerializeField] TMP_Text privateGameCode;
+    [SerializeField] TMP_Text privateGameHostName;
     //PART 2
     [SerializeField] Transform roomListContent;
     [SerializeField] GameObject roomListItemPrefab;
@@ -65,7 +66,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         MenuManager.Instance.OpenMenu("title");
         Debug.Log("Joined Lobby");
         //Problem: nickname changes everytime player joins a room
-        PhotonNetwork.NickName = "Player #" + Random.Range(0, 1000).ToString("0000");
+        PhotonNetwork.NickName = "P#"+Random.Range(0, 100).ToString("000");
     }
 
     public void CreateRoom()
@@ -76,7 +77,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         //    return;
         //}
         isPrivate = false;
-        PhotonNetwork.CreateRoom(PhotonNetwork.NickName + "-R" + Random.Range(0, 1000).ToString("0000"));
+        PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"));
         MenuManager.Instance.OpenMenu("loading");
     }
 
@@ -88,13 +89,14 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             MenuManager.Instance.OpenMenu("room");
             Debug.Log(PhotonNetwork.CurrentRoom.Name + "OnJoinedRoom() (Public)");
-            roomNameText.text = PhotonNetwork.CurrentRoom.Name + "'s Public Game";
+            roomNameText.text = PhotonNetwork.MasterClient.NickName + "'s Public Game";
         }
         //PRIVATE GAME
         else
         {
             MenuManager.Instance.OpenMenu("room private");
             Debug.Log("PRIVATE ROOM CODE: " + PhotonNetwork.CurrentRoom.Name + "\nOnJoinedRoom() (Private)");
+            privateGameHostName.text = PhotonNetwork.MasterClient.NickName;//Bianca, sa onjoinedroom dati...
             privateGameCode.text = PhotonNetwork.CurrentRoom.Name;
         }
 
@@ -205,7 +207,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         Debug.Log("Private Room Created");
         PhotonNetwork.CreateRoom(stringToCreatePrivateRoom.ToUpper(),
-            new RoomOptions { IsVisible = false, MaxPlayers = 5 }
+            new RoomOptions { IsVisible = false, MaxPlayers = 5, }
             )
             ;
         MenuManager.Instance.OpenMenu("loading");
