@@ -25,7 +25,11 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     private bool isPrivate = false;
     [SerializeField] TMP_InputField privateRoomNameInputField;
-    string myString = "";
+    string stringToCreatePrivateRoom = "";
+    [SerializeField] Transform playerListContentPrivate;
+
+    //PlayerList
+
 
     void Awake()
     {
@@ -111,6 +115,20 @@ public class Launcher : MonoBehaviourPunCallbacks
                 Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i]);
             }
         }
+        else
+        {
+
+            foreach (Transform child in playerListContentPrivate)
+            {
+                Destroy(child.gameObject);
+            }
+
+            for (int i = 0; i < players.Count(); i++)
+            {
+                //TODO: playerListCONTENT_Private
+                Instantiate(PlayerListItemPrefab, playerListContentPrivate).GetComponent<PlayerListItem>().SetUp(players[i]);
+            }
+        }
 
         //        startGameButton.SetActive(PhotonNetwork.IsMasterClient);
         Debug.Log("Number of players in the room: " + PhotonNetwork.CurrentRoom.PlayerCount.ToString());
@@ -168,30 +186,30 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        //TODO: playerListCONTENT_Private
-        Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
+        if (!isPrivate)
+            Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
+        else
+            Instantiate(PlayerListItemPrefab, playerListContentPrivate).GetComponent<PlayerListItem>().SetUp(newPlayer);
     }
 
     // PRIVATE ROOM Functions
 
     public void CreateRoomPrivate()
     {
-
         const string glyphs = "abcdefghijklmnopqrstuvwxyz"; //add the characters you want
         int charAmount = Random.Range(3, 3); //set those to the minimum and maximum length of your string
         for (int i = 0; i < charAmount; i++)
         {
-            myString += glyphs[Random.Range(0, glyphs.Length)];
+            stringToCreatePrivateRoom += glyphs[Random.Range(0, glyphs.Length)];
         }
 
         Debug.Log("Private Room Created");
-        PhotonNetwork.CreateRoom(myString.ToUpper(),
+        PhotonNetwork.CreateRoom(stringToCreatePrivateRoom.ToUpper(),
             new RoomOptions { IsVisible = false, MaxPlayers = 5 }
             )
             ;
         MenuManager.Instance.OpenMenu("loading");
         isPrivate = true;
-        Debug.Log("Needed: " + myString);
     }
 
     public void JoinRoomPrivate()
@@ -200,7 +218,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         isPrivate = true;
         //Not Showing
         Debug.Log("INPUT: " + privateRoomNameInputField.text);
-        Debug.Log("Needed: " + myString);
+        Debug.Log("Needed: " + stringToCreatePrivateRoom);
 
         PhotonNetwork.JoinRoom(privateRoomNameInputField.text.ToUpper());
         MenuManager.Instance.OpenMenu("loading");//but this one is firing?
