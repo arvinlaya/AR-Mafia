@@ -26,6 +26,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] TMP_InputField privateRoomNameInputField;
     string stringToCreatePrivateRoom = "";
     [SerializeField] Transform playerListContentPrivate;
+    private const int joinPrivateCodeLength = 3;
 
     //PlayerList
 
@@ -34,8 +35,11 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     //START GAME
     [SerializeField] TMP_Text waitingForPlayersText;
-    [SerializeField] GameObject waitingPlayerCard;
-    [SerializeField] GameObject startGameButton;
+    [SerializeField] GameObject waitingPlayerCardPublic;
+    [SerializeField] GameObject waitingPlayerCardPrivate;
+
+    [SerializeField] GameObject startGameButtonPublic;
+    [SerializeField] GameObject startGameButtonPrivate;
 
     void Awake()
     {
@@ -134,7 +138,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
 
 
-        //        startGameButton.SetActive(PhotonNetwork.IsMasterClient);
+        //startGameButton.SetActive(PhotonNetwork.IsMasterClient);
         Debug.Log("Number of players in the room: " + PhotonNetwork.CurrentRoom.PlayerCount.ToString());
     }
 
@@ -145,9 +149,18 @@ public class Launcher : MonoBehaviourPunCallbacks
         MenuManager.Instance.OpenMenu("error");
     }
 
+    private void IsMaxPlayer(bool isMax)
+    {
+        startGameButtonPublic.SetActive(isMax);
+        startGameButtonPrivate.SetActive(isMax);
+        waitingPlayerCardPublic.SetActive(!isMax);
+        waitingPlayerCardPrivate.SetActive(!isMax);
+    }
+
     public void LeaveRoom()
     {
-        Debug.Log("umalis..");
+        IsMaxPlayer(false);//not max player, someone left...
+        PhotonNetwork.CurrentRoom.IsOpen = true;//has slot
         PhotonNetwork.LeaveRoom();
         MenuManager.Instance.OpenMenu("loading");
     }
@@ -180,10 +193,11 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     }
 
-    //	public override void OnMasterClientSwitched(Player newMasterClient)
-    //	{
-    //		startGameButton.SetActive(PhotonNetwork.IsMasterClient);
-    //	}
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        if (PhotonNetwork.CurrentRoom.PlayerCount == _maxPlayer)
+            startGameButtonPublic.SetActive(PhotonNetwork.IsMasterClient);
+    }
 
     public void StartGame()
     {
@@ -197,19 +211,14 @@ public class Launcher : MonoBehaviourPunCallbacks
             Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
         else
             Instantiate(PlayerListItemPrefab, playerListContentPrivate).GetComponent<PlayerListItem>().SetUp(newPlayer);
-
         //Debug.Log("PLAYER COUNT: " + PhotonNetwork.CurrentRoom.PlayerCount + "/" + _maxPlayer);
         ////STARTING GAME
-        if (PhotonNetwork.CurrentRoom.PlayerCount == _maxPlayer)
+        bool isMax = PhotonNetwork.CurrentRoom.PlayerCount == _maxPlayer;
+        if (isMax)
         {
-            Debug.Log("MAX PLAYERS REACHED: " + _maxPlayer);
-
-            // TODO:
-            // NON-HOST:
-            // 1. change waiting for player to "GET READY"
-            startGameButton.SetActive(true);
-            waitingPlayerCard.SetActive(false);
-
+            IsMaxPlayer(isMax);
+            // pag max na, hide room 
+            PhotonNetwork.CurrentRoom.IsOpen = !isMax;
         }
     }
 
@@ -218,7 +227,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     public void CreateRoomPrivate()
     {
         const string glyphs = "abcdefghijklmnopqrstuvwxyz"; //add the characters you want
-        int charAmount = Random.Range(3, 3); //set those to the minimum and maximum length of your string
+        int charAmount = Random.Range(joinPrivateCodeLength, joinPrivateCodeLength); //set those to the minimum and maximum length of your string
         for (int i = 0; i < charAmount; i++)
         {
             stringToCreatePrivateRoom += glyphs[Random.Range(0, glyphs.Length)];
@@ -247,5 +256,9 @@ public class Launcher : MonoBehaviourPunCallbacks
     public void KickPlayer(Player foreignPlayer)
     {
         PhotonNetwork.CloseConnection(foreignPlayer);
+        //not "max/set player", you kicked somone
+        IsMaxPlayer(false);
+        PhotonNetwork.CurrentRoom.IsOpen = true;//has slot
     }
+
 }
