@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PlayerListItem : MonoBehaviourPunCallbacks
 {
@@ -11,7 +12,9 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
     [SerializeField] TMP_Text playerPosition;
     [SerializeField] GameObject hostLabel;
     [SerializeField] GameObject kickButton;
-    Player player;
+    Player player;//LOCAL PLAYER INFO
+
+    public RoomInfo info; //LOCAL ROOM INFO
 
     public void SetUp(Player _player)
     {
@@ -25,9 +28,9 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
             kickButton.SetActive(false);
         }
         //else hostLabel.SetActive(false);//GOOD for "Host", Problem: Client should not see "kick" button
-        else if(PhotonNetwork.LocalPlayer.NickName != PhotonNetwork.MasterClient.NickName)
+        else if (PhotonNetwork.LocalPlayer.NickName != PhotonNetwork.MasterClient.NickName)
         {
-           kickButton.SetActive(false);
+            kickButton.SetActive(false);
         }
     }
 
@@ -42,5 +45,10 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         Destroy(gameObject);
+    }
+
+    public void OnClickKickButton()
+    {
+        Launcher.Instance.KickPlayer(player);
     }
 }

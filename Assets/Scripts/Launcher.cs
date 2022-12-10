@@ -5,6 +5,7 @@ using Photon.Pun;
 using TMPro;
 using Photon.Realtime;
 using System.Linq;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
@@ -44,6 +45,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             Debug.Log("Connecting to Master");
             PhotonNetwork.ConnectUsingSettings();
+            PhotonNetwork.EnableCloseConnection = true;
             //MOVED, to OnJoinedLobby()
             //PhotonNetwork.NickName = "Player #" + Random.Range(0, 1000).ToString("0000");
         }
@@ -65,8 +67,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         MenuManager.Instance.OpenMenu("title");
         Debug.Log("Joined Lobby");
-        //Problem: nickname changes everytime player joins a room
-        PhotonNetwork.NickName = "P#"+Random.Range(0, 100).ToString("000");
+        PhotonNetwork.NickName = "P#" + Random.Range(0, 100).ToString("000");
     }
 
     public void CreateRoom()
@@ -100,7 +101,6 @@ public class Launcher : MonoBehaviourPunCallbacks
             privateGameCode.text = PhotonNetwork.CurrentRoom.Name;
         }
 
-
         // For Player List
         Player[] players = PhotonNetwork.PlayerList;
 
@@ -113,7 +113,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             for (int i = 0; i < players.Count(); i++)
             {
-                //TODO: playerListCONTENT_Private
+                //TODO: playerListCONTENT_Public
                 Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i]);
             }
         }
@@ -238,4 +238,12 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     }
 
+    public void KickPlayer(Player foreignPlayer)
+    {
+        PhotonNetwork.CloseConnection(foreignPlayer);
+        Debug.Log("### Kicking player.." + foreignPlayer.NickName);
+        Debug.Log("" + foreignPlayer.NickName);
+        Debug.Log("Number of players in the room: " + PhotonNetwork.CurrentRoom.PlayerCount.ToString());
+        //MenuManager.Instance.OpenMenu("loading");
+    }
 }
