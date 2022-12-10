@@ -1,15 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-
-
-public class SceneMg : MonoBehaviour
-{
-    [SerializeField] GameObject exitDialog;
-    [SerializeField] GameObject newGameDialog;
-    [SerializeField] GameObject joinGameDialog;
-
+//using System.Collections;
+//using System.Collections.Generic;
+//using UnityEngine;
+//using UnityEngine.SceneManagement;
+//
+//
+//public class SceneMg : MonoBehaviour
+//{
+//    [SerializeField] GameObject exitDialog;
+//    [SerializeField] GameObject newGameDialog;
+//    [SerializeField] GameObject joinGameDialog;
+//
 //    void Update()
 //    {
 //        if (Input.GetKeyDown(KeyCode.Escape))
@@ -46,4 +46,4 @@ public class SceneMg : MonoBehaviour
 //    public void GoToOnlineRooms(){
 //        SceneManager.LoadScene("OnlineRooms");
 //    }
-}
+//}
