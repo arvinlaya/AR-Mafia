@@ -11,6 +11,11 @@ public class MenuManager : MonoBehaviour
 
 	void Awake()
 	{
+		if (Instance)
+        {
+			Destroy(gameObject);
+			return;
+        }
 		Instance = this;
 	}
 
