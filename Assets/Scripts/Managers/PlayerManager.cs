@@ -23,6 +23,6 @@ public class PlayerManager : MonoBehaviour
 
     void CreateController()
     {
-        SpawnManager.Instance.SpawnPlayers();
+        SpawnManager.Instance.SpawnPlayersAndHouses();
     }
 }

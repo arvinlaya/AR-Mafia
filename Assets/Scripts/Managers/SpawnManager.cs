@@ -36,7 +36,7 @@ public class SpawnManager : MonoBehaviour
         index = 0;
     }
 
-    public void SpawnPlayers()
+    public void SpawnPlayersAndHouses()
     {
         if (PhotonNetwork.IsMasterClient)
         {
@@ -74,5 +74,6 @@ public class SpawnManager : MonoBehaviour
     {
         Vector3 pos = spawnPoints[index].position;
         PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), pos, Quaternion.identity);
+        PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerHouse"), pos, Quaternion.identity);
     }
 }
