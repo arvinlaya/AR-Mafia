@@ -46,6 +46,8 @@ public class SpawnManager : MonoBehaviour
                 index++;
             }
         }
+
+
     }
 
     Transform[] GetSpawnPoints(int playerCount)

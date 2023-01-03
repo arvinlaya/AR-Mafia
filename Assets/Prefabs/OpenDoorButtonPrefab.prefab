@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2208406528253900334
+--- !u!1 &1291296680050688420
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,49 +8,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1580207829129260180}
-  - component: {fileID: 2468497271965442865}
-  - component: {fileID: 406778042046060539}
-  - component: {fileID: 1325395127072918393}
-  - component: {fileID: 8454507409416538320}
-  - component: {fileID: -6540768666776092486}
+  - component: {fileID: 2642946528202617670}
+  - component: {fileID: 45944139897111906}
+  - component: {fileID: 7205472106401030606}
+  - component: {fileID: 4931766206912005573}
+  - component: {fileID: -869838036675827623}
   m_Layer: 0
-  m_Name: PlayerHouse
-  m_TagString: Untagged
+  m_Name: OpenDoorButtonPrefab
+  m_TagString: HouseButton
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1580207829129260180
+--- !u!4 &2642946528202617670
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2208406528253900334}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 132.64651, y: 132.64651, z: 132.64651}
+  m_GameObject: {fileID: 1291296680050688420}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.738098, y: 4.624256, z: 68.77977}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &2468497271965442865
+--- !u!33 &45944139897111906
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2208406528253900334}
-  m_Mesh: {fileID: -5495902117074765545, guid: 77b0a06b5ae9d6b47a1afc6fddb4524a, type: 3}
---- !u!23 &406778042046060539
+  m_GameObject: {fileID: 1291296680050688420}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &7205472106401030606
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2208406528253900334}
+  m_GameObject: {fileID: 1291296680050688420}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -64,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4004aea7c0a43eb4496b024103a1e2be, type: 2}
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -86,53 +85,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &1325395127072918393
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2208406528253900334}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
---- !u!65 &8454507409416538320
+--- !u!65 &4931766206912005573
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2208406528253900334}
+  m_GameObject: {fileID: 1291296680050688420}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.022528328, y: 0.022528324, z: 0.014451788}
-  m_Center: {x: 0, y: 5.1188507e-17, z: 0.00720414}
---- !u!114 &-6540768666776092486
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-869838036675827623
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2208406528253900334}
+  m_GameObject: {fileID: 1291296680050688420}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3c5e990fb87aca4f9be38ff4a6bfb30, type: 3}
+  m_Script: {fileID: 11500000, guid: b25bf37890ae5e34eb9a7f29ff18fe00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  openDoorButtonPrefab: {fileID: -869838036675827623, guid: b1107b09f79ad304baea61030b946fad, type: 3}
-  skillButtonPrefab: {fileID: 8822086078884889510, guid: dde192580e15f7c45aa9b7b353b401f2, type: 3}
-  buttonActive: 0
