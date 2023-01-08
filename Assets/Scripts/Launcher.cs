@@ -30,7 +30,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     //PlayerList
 
     //Max player
-    private const int _maxPlayer = 2;
+    private const int _maxPlayer = 3;
 
     //START GAME
     [SerializeField] TMP_Text waitingForPlayersText;
@@ -39,6 +39,9 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     [SerializeField] GameObject startGameButtonPublic;
     [SerializeField] GameObject startGameButtonPrivate;
+
+    [SerializeField] TMP_Text privateGameNumberOfPlayers;
+    [SerializeField] TMP_Text publicGameNumberOfPlayers;
 
     void Awake()
     {
@@ -95,6 +98,8 @@ public class Launcher : MonoBehaviourPunCallbacks
             MenuManager.Instance.OpenMenu("room");
             Debug.Log(PhotonNetwork.CurrentRoom.Name + "OnJoinedRoom() (Public)");
             roomNameText.text = PhotonNetwork.MasterClient.NickName + "'s Public Game";
+            //TODO: Needs to also udpate the screen of the Master Client
+            publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
         }
         //PRIVATE GAME
         else
@@ -103,6 +108,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             Debug.Log("PRIVATE ROOM CODE: " + PhotonNetwork.CurrentRoom.Name + "\nOnJoinedRoom() (Private)");
             privateGameHostName.text = PhotonNetwork.MasterClient.NickName;//Bianca, sa onjoinedroom dati...
             privateGameCode.text = PhotonNetwork.CurrentRoom.Name;
+            privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
         }
 
         // For Player List
@@ -146,6 +152,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         MenuManager.Instance.OpenMenu("error");
     }
 
+    //Show Start button only when reached max players
     private void IsMaxPlayer(bool isMax)
     {
         startGameButtonPublic.SetActive(isMax);
@@ -171,6 +178,11 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         MenuManager.Instance.OpenMenu("title");
+    }
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
+        publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
     }
 
     //ONLY called when list of rooms change, not specific rooms
@@ -205,9 +217,15 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         if (!isPrivate)
+        {
+            publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
             Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
+        }
         else
+        {
+            privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
             Instantiate(PlayerListItemPrefab, playerListContentPrivate).GetComponent<PlayerListItem>().SetUp(newPlayer);
+        }
         //Debug.Log("PLAYER COUNT: " + PhotonNetwork.CurrentRoom.PlayerCount + "/" + _maxPlayer);
         ////STARTING GAME
         bool isMax = PhotonNetwork.CurrentRoom.PlayerCount == _maxPlayer;
@@ -251,7 +269,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     }
 
-    //TODO: // Prompt
     public void KickPlayer(Player foreignPlayer)
     {
         PhotonNetwork.CloseConnection(foreignPlayer);

@@ -7,6 +7,7 @@ using UnityEngine;
 public class RoomListItem : MonoBehaviour
 {
 	[SerializeField] TMP_Text text;
+	[SerializeField] TMP_Text player_Count;
 
 	public RoomInfo info;
 
@@ -14,6 +15,7 @@ public class RoomListItem : MonoBehaviour
 	{
 		info = _info;
 		text.text = _info.Name;
+		player_Count.text = _info.PlayerCount + "/8";
 	}
 
 	public void OnClick()

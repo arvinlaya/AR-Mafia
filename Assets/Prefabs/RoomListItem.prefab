@@ -710,6 +710,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 4541081983082556747}
+  player_Count: {fileID: 4541081983472194160}
 --- !u!114 &4840073019884865446
 MonoBehaviour:
   m_ObjectHideFlags: 0

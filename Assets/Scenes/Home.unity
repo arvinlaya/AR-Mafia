@@ -10851,6 +10851,8 @@ MonoBehaviour:
   waitingPlayerCardPrivate: {fileID: 453004188}
   startGameButtonPublic: {fileID: 804285418}
   startGameButtonPrivate: {fileID: 82731699}
+  privateGameNumberOfPlayers: {fileID: 2094277028}
+  publicGameNumberOfPlayers: {fileID: 1698364438}
 --- !u!114 &1311809071
 MonoBehaviour:
   m_ObjectHideFlags: 0
