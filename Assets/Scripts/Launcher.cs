@@ -118,7 +118,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             for (int i = 0; i < players.Count(); i++)
             {
-                //TODO: playerListCONTENT_Public
                 Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i]);
             }
         }
@@ -132,7 +131,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             for (int i = 0; i < players.Count(); i++)
             {
-                //TODO: playerListCONTENT_Private
                 Instantiate(PlayerListItemPrefab, playerListContentPrivate).GetComponent<PlayerListItem>().SetUp(players[i]);
             }
         }
@@ -253,6 +251,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     }
 
+    //TODO: // Prompt
     public void KickPlayer(Player foreignPlayer)
     {
         PhotonNetwork.CloseConnection(foreignPlayer);
