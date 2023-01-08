@@ -45,6 +45,10 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     Hashtable hashRoomOwner = new Hashtable();
 
+    [SerializeField] TMP_InputField ignInputField;
+    [SerializeField] TMP_Text ignText;
+    [SerializeField] GameObject iconIgn;
+
     void Awake()
     {
         Instance = this;
@@ -76,30 +80,30 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         MenuManager.Instance.OpenMenu("title");
         Debug.Log("Joined Lobby");
-        //TODO: Jan08,23 -> Nick
         PhotonNetwork.NickName = "P#" + Random.Range(0, 100).ToString("000");
+    }
+
+    public void setIGN()
+    {
+        if (ignInputField.text != "")
+        {
+            PhotonNetwork.NickName = ignInputField.text;
+            Debug.Log(PhotonNetwork.NickName);
+            ignText.text = ignInputField.text;
+            ignText.gameObject.SetActive(true);
+            iconIgn.gameObject.SetActive(false);
+        }
     }
 
     public void CreateRoom()
     {
-        //TODO: pwede dito yung pag i-implement na yung username sa top-left
-        //Pwede sa Private Room CODE:
-        //if (string.IsNullOrEmpty(roomNameInputField.text))
-        //{
-        //    return;
-        //}
         isPrivate = false;
         PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"));
-
-
         MenuManager.Instance.OpenMenu("loading");
     }
 
     public override void OnJoinedRoom()
     {
-
-
-
         // if (PhotonNetwork.IsMasterClient)
         // {
         // hashRoomOwner.Add("RoomOwner", PhotonNetwork.NickName);
@@ -107,15 +111,12 @@ public class Launcher : MonoBehaviourPunCallbacks
         // Debug.Log("setting Room Owner HASH\n" + (int)PhotonNetwork.CurrentRoom.CustomProperties["RoomOwner"]);
         // }
 
-
-
         //PUBLIC GAME
         if (!isPrivate)
         {
             MenuManager.Instance.OpenMenu("room");
             Debug.Log(PhotonNetwork.CurrentRoom.Name + "OnJoinedRoom() (Public)");
             roomNameText.text = PhotonNetwork.MasterClient.NickName + "'s Public Game";
-            //TODO: Needs to also udpate the screen of the Master Client
             publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
         }
         //PRIVATE GAME
@@ -202,8 +203,6 @@ public class Launcher : MonoBehaviourPunCallbacks
         publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
     }
 
-    //public override void onroom
-
     //ONLY called when list of rooms change, not specific rooms
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
@@ -268,7 +267,6 @@ public class Launcher : MonoBehaviourPunCallbacks
             stringToCreatePrivateRoom += glyphs[Random.Range(0, glyphs.Length)];
         }
 
-        Debug.Log("Private Room Created");
         PhotonNetwork.CreateRoom(stringToCreatePrivateRoom.ToUpper(),
             new RoomOptions { IsVisible = false, MaxPlayers = _maxPlayer, }
             )
@@ -280,11 +278,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     public void JoinRoomPrivate()
     {
         isPrivate = true;
-        //Debug.Log("INPUT: " + privateRoomNameInputField.text);
-        //Debug.Log("Needed: " + stringToCreatePrivateRoom);
         PhotonNetwork.JoinRoom(privateRoomNameInputField.text.ToUpper());
-        MenuManager.Instance.OpenMenu("loading");//but this one is firing?
-        //Debug.Log(" JoinRoomPrivate()");
+        MenuManager.Instance.OpenMenu("loading");
 
     }
 
