@@ -43,6 +43,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] TMP_Text privateGameNumberOfPlayers;
     [SerializeField] TMP_Text publicGameNumberOfPlayers;
 
+    Hashtable hashRoomOwner = new Hashtable();
+
     void Awake()
     {
         Instance = this;
@@ -74,6 +76,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         MenuManager.Instance.OpenMenu("title");
         Debug.Log("Joined Lobby");
+        //TODO: Jan08,23 -> Nick
         PhotonNetwork.NickName = "P#" + Random.Range(0, 100).ToString("000");
     }
 
@@ -87,11 +90,25 @@ public class Launcher : MonoBehaviourPunCallbacks
         //}
         isPrivate = false;
         PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"));
+
+
         MenuManager.Instance.OpenMenu("loading");
     }
 
     public override void OnJoinedRoom()
     {
+
+
+
+        // if (PhotonNetwork.IsMasterClient)
+        // {
+        // hashRoomOwner.Add("RoomOwner", PhotonNetwork.NickName);
+        // PhotonNetwork.CurrentRoom.SetCustomProperties(hashRoomOwner);
+        // Debug.Log("setting Room Owner HASH\n" + (int)PhotonNetwork.CurrentRoom.CustomProperties["RoomOwner"]);
+        // }
+
+
+
         //PUBLIC GAME
         if (!isPrivate)
         {
@@ -184,6 +201,8 @@ public class Launcher : MonoBehaviourPunCallbacks
         privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
         publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
     }
+
+    //public override void onroom
 
     //ONLY called when list of rooms change, not specific rooms
     public override void OnRoomListUpdate(List<RoomInfo> roomList)

@@ -1,3 +1,4 @@
+using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,7 +15,9 @@ public class RoomListItem : MonoBehaviour
 	public void SetUp(RoomInfo _info)
 	{
 		info = _info;
-		text.text = _info.Name;
+		text.text = "Room " + _info.Name;
+		//Debug.Log("inside Room LIST ITEM: CUSTOM PROP::: "+ _info.CustomProperties["RoomOwner"]);
+		//text.text = _info.CustomProperties["RoomOwner"] + "'s Public Room";
 		player_Count.text = _info.PlayerCount + "/8";
 	}
 
