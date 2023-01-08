@@ -24,7 +24,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     private bool isPrivate = false;
     [SerializeField] TMP_InputField privateRoomNameInputField;
-    string stringToCreatePrivateRoom = "";
     [SerializeField] Transform playerListContentPrivate;
     private const int joinPrivateCodeLength = 3;
 
@@ -226,6 +225,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         const string glyphs = "abcdefghijklmnopqrstuvwxyz"; //add the characters you want
         int charAmount = Random.Range(joinPrivateCodeLength, joinPrivateCodeLength); //set those to the minimum and maximum length of your string
+        string stringToCreatePrivateRoom = "";
         for (int i = 0; i < charAmount; i++)
         {
             stringToCreatePrivateRoom += glyphs[Random.Range(0, glyphs.Length)];
