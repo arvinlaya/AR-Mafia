@@ -24,14 +24,13 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     private bool isPrivate = false;
     [SerializeField] TMP_InputField privateRoomNameInputField;
-    string stringToCreatePrivateRoom = "";
     [SerializeField] Transform playerListContentPrivate;
     private const int joinPrivateCodeLength = 3;
 
     //PlayerList
 
     //Max player
-    private const int _maxPlayer = 2;
+    private const int _maxPlayer = 3;
 
     //START GAME
     [SerializeField] TMP_Text waitingForPlayersText;
@@ -40,6 +39,15 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     [SerializeField] GameObject startGameButtonPublic;
     [SerializeField] GameObject startGameButtonPrivate;
+
+    [SerializeField] TMP_Text privateGameNumberOfPlayers;
+    [SerializeField] TMP_Text publicGameNumberOfPlayers;
+
+    Hashtable hashRoomOwner = new Hashtable();
+
+    [SerializeField] TMP_InputField ignInputField;
+    [SerializeField] TMP_Text ignText;
+    [SerializeField] GameObject iconIgn;
 
     void Awake()
     {
@@ -75,14 +83,20 @@ public class Launcher : MonoBehaviourPunCallbacks
         PhotonNetwork.NickName = "P#" + Random.Range(0, 100).ToString("000");
     }
 
+    public void setIGN()
+    {
+        if (ignInputField.text != "")
+        {
+            PhotonNetwork.NickName = ignInputField.text;
+            Debug.Log(PhotonNetwork.NickName);
+            ignText.text = ignInputField.text;
+            ignText.gameObject.SetActive(true);
+            iconIgn.gameObject.SetActive(false);
+        }
+    }
+
     public void CreateRoom()
     {
-        //TODO: pwede dito yung pag i-implement na yung username sa top-left
-        //Pwede sa Private Room CODE:
-        //if (string.IsNullOrEmpty(roomNameInputField.text))
-        //{
-        //    return;
-        //}
         isPrivate = false;
         PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"));
         MenuManager.Instance.OpenMenu("loading");
@@ -90,12 +104,20 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        // if (PhotonNetwork.IsMasterClient)
+        // {
+        // hashRoomOwner.Add("RoomOwner", PhotonNetwork.NickName);
+        // PhotonNetwork.CurrentRoom.SetCustomProperties(hashRoomOwner);
+        // Debug.Log("setting Room Owner HASH\n" + (int)PhotonNetwork.CurrentRoom.CustomProperties["RoomOwner"]);
+        // }
+
         //PUBLIC GAME
         if (!isPrivate)
         {
             MenuManager.Instance.OpenMenu("room");
             Debug.Log(PhotonNetwork.CurrentRoom.Name + "OnJoinedRoom() (Public)");
             roomNameText.text = PhotonNetwork.MasterClient.NickName + "'s Public Game";
+            publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
         }
         //PRIVATE GAME
         else
@@ -104,6 +126,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             Debug.Log("PRIVATE ROOM CODE: " + PhotonNetwork.CurrentRoom.Name + "\nOnJoinedRoom() (Private)");
             privateGameHostName.text = PhotonNetwork.MasterClient.NickName;//Bianca, sa onjoinedroom dati...
             privateGameCode.text = PhotonNetwork.CurrentRoom.Name;
+            privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
         }
 
         // For Player List
@@ -118,7 +141,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             for (int i = 0; i < players.Count(); i++)
             {
-                //TODO: playerListCONTENT_Public
                 Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i]);
             }
         }
@@ -132,7 +154,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             for (int i = 0; i < players.Count(); i++)
             {
-                //TODO: playerListCONTENT_Private
                 Instantiate(PlayerListItemPrefab, playerListContentPrivate).GetComponent<PlayerListItem>().SetUp(players[i]);
             }
         }
@@ -149,6 +170,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         MenuManager.Instance.OpenMenu("error");
     }
 
+    //Show Start button only when reached max players
     private void IsMaxPlayer(bool isMax)
     {
         startGameButtonPublic.SetActive(isMax);
@@ -174,6 +196,11 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         MenuManager.Instance.OpenMenu("title");
+    }
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
+        publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
     }
 
     //ONLY called when list of rooms change, not specific rooms
@@ -208,9 +235,15 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         if (!isPrivate)
+        {
+            publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
             Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
+        }
         else
+        {
+            privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
             Instantiate(PlayerListItemPrefab, playerListContentPrivate).GetComponent<PlayerListItem>().SetUp(newPlayer);
+        }
         //Debug.Log("PLAYER COUNT: " + PhotonNetwork.CurrentRoom.PlayerCount + "/" + _maxPlayer);
         ////STARTING GAME
         bool isMax = PhotonNetwork.CurrentRoom.PlayerCount == _maxPlayer;
@@ -228,12 +261,12 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         const string glyphs = "abcdefghijklmnopqrstuvwxyz"; //add the characters you want
         int charAmount = Random.Range(joinPrivateCodeLength, joinPrivateCodeLength); //set those to the minimum and maximum length of your string
+        string stringToCreatePrivateRoom = "";
         for (int i = 0; i < charAmount; i++)
         {
             stringToCreatePrivateRoom += glyphs[Random.Range(0, glyphs.Length)];
         }
 
-        Debug.Log("Private Room Created");
         PhotonNetwork.CreateRoom(stringToCreatePrivateRoom.ToUpper(),
             new RoomOptions { IsVisible = false, MaxPlayers = _maxPlayer, }
             )
@@ -245,11 +278,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     public void JoinRoomPrivate()
     {
         isPrivate = true;
-        //Debug.Log("INPUT: " + privateRoomNameInputField.text);
-        //Debug.Log("Needed: " + stringToCreatePrivateRoom);
         PhotonNetwork.JoinRoom(privateRoomNameInputField.text.ToUpper());
-        MenuManager.Instance.OpenMenu("loading");//but this one is firing?
-        //Debug.Log(" JoinRoomPrivate()");
+        MenuManager.Instance.OpenMenu("loading");
 
     }
 
