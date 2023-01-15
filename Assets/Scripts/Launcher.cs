@@ -45,9 +45,11 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     Hashtable hashRoomOwner = new Hashtable();
 
+    [SerializeField] GameObject ignModal;
     [SerializeField] TMP_InputField ignInputField;
     [SerializeField] TMP_Text ignText;
     [SerializeField] GameObject iconIgn;
+
 
     [SerializeField] GameObject wasKickedPromt;
 
@@ -82,7 +84,9 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         MenuManager.Instance.OpenMenu("title");
         Debug.Log("Joined Lobby");
-        PhotonNetwork.NickName = "P#" + Random.Range(0, 100).ToString("000");
+        Debug.Log("nickname: " + PhotonNetwork.NickName);
+        ignModal.gameObject.SetActive(PhotonNetwork.NickName=="");
+        //PhotonNetwork.NickName = "P#" + Random.Range(0, 100).ToString("000");
     }
 
     public void setIGN()
