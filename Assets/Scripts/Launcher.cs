@@ -49,6 +49,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] TMP_Text ignText;
     [SerializeField] GameObject iconIgn;
 
+    [SerializeField] GameObject wasKickedPromt;
+
     void Awake()
     {
         Instance = this;
@@ -195,6 +197,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
+        wasKickedPromt.gameObject.SetActive(true);
         MenuManager.Instance.OpenMenu("title");
     }
     public override void OnPlayerLeftRoom(Player otherPlayer)
