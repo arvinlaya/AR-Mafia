@@ -30,7 +30,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     //PlayerList
 
     //Max player
-    private const int _maxPlayer = 3;
+    private const int _maxPlayer = 2;
 
     //START GAME
     [SerializeField] TMP_Text waitingForPlayersText;
@@ -229,9 +229,19 @@ public class Launcher : MonoBehaviourPunCallbacks
             startGameButtonPublic.SetActive(PhotonNetwork.IsMasterClient);
     }
 
+    IEnumerator waiter()
+    {
+        MenuManager.Instance.OpenMenu("pregame");
+        //Wait for 5 seconds
+        yield return new WaitForSeconds(5);
+        PhotonNetwork.LoadLevel(1);//1 = build settings index
+    }
+
     public void StartGame()
     {
-        PhotonNetwork.LoadLevel(1);//1 = build settings index
+        //NOTE: Wala ng ikot, "loadingMenu" na dinaanan
+        //TODO: wait for 5 seconds, changing the displayed timer every 1 sec
+        StartCoroutine(waiter());
     }
 
     //sa MasterClient lang may trigger yung function na 'to
