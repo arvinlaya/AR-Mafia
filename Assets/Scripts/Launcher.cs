@@ -30,6 +30,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     //PlayerList
 
     //Max player
+    private const int _maxPlayer = 5;
+    private const int _maxPlayer = 2;
     private const int _maxPlayer = 3;
 
     //START GAME
@@ -100,6 +102,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         isPrivate = false;
         PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"));
         MenuManager.Instance.OpenMenu("loading");
+        IsMaxPlayer(true); // FOR TESTING PURPOSE ONLY TEST
     }
 
     public override void OnJoinedRoom()

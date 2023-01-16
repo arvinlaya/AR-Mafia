@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 2468497271965442865}
   - component: {fileID: 406778042046060539}
   - component: {fileID: 1325395127072918393}
+  - component: {fileID: 8454507409416538320}
+  - component: {fileID: -6540768666776092486}
   m_Layer: 0
   m_Name: PlayerHouse
   m_TagString: Untagged
@@ -106,3 +108,31 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!65 &8454507409416538320
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2208406528253900334}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.022528328, y: 0.022528324, z: 0.014451788}
+  m_Center: {x: 0, y: 5.1188507e-17, z: 0.00720414}
+--- !u!114 &-6540768666776092486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2208406528253900334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3c5e990fb87aca4f9be38ff4a6bfb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  openDoorButtonPrefab: {fileID: -869838036675827623, guid: b1107b09f79ad304baea61030b946fad, type: 3}
+  skillButtonPrefab: {fileID: 8822086078884889510, guid: dde192580e15f7c45aa9b7b353b401f2, type: 3}
+  buttonActive: 0

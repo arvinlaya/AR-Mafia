@@ -33,18 +33,15 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         spawnPoints = GetSpawnPoints(playerCount);
-        index = 0;
     }
 
     public void SpawnPlayersAndHouses()
     {
-        if (PhotonNetwork.IsMasterClient)
+        index = 0;
+        foreach (Player player in PhotonNetwork.PlayerList)
         {
-            foreach (Player player in PhotonNetwork.PlayerList)
-            {
-                PV.RPC("RPC_InstantiatePlayer", player, index);
-                index++;
-            }
+            PV.RPC("RPC_InstantiatePlayer", player, index);
+            index++;
         }
     }
 
