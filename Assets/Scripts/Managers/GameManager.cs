@@ -4,14 +4,26 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
 using Photon.Realtime;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+using System.Linq;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
     public static GameManager Instance;
+    public static int NIGHT_LENGHT = 40;
+    public static int DAY_DISCUSSION_LENGHT = 30;
     PhotonView PV;
     Role[] roles;
 
+    [SerializeField] public GameObject[] characterModels;
 
+    public enum EVENT_CODE : byte
+    {
+        REFRESH_TIMER,
+        DAY_START,
+        NIGHT_START,
+        PHASE_END
+    }
 
     void Awake()
     {
@@ -25,47 +37,68 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        PV = GetComponent<PhotonView>();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PV = GetComponent<PhotonView>();
+            characterModels = new GameObject[4];
+        }
     }
     // Start is called before the first frame update
     public override void OnEnable()
     {
         base.OnEnable();
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        if (PhotonNetwork.IsMasterClient)
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
     }
 
     public override void OnDisable()
     {
         base.OnDisable();
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        if (PhotonNetwork.IsMasterClient)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
-            generateRoles(playerCount, roles);
-
+            // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
+            // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
+            // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
+            // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
+            // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
+            // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
+            // int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
+            int playerCount = 5;
+            generateRoles(playerCount, out roles);
+            int index = 0;
             foreach (Player player in PhotonNetwork.PlayerList)
             {
-
+                Hashtable roleCustomProps = new Hashtable();
+                roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+                roleCustomProps.Add("IS_KILLED", false);
+                roleCustomProps.Add("IS_SAVED", false);
+                player.SetCustomProperties(roleCustomProps);
+                index++;
             }
         }
     }
 
-    void generateRoles(int playerCount, Role[] rolesArray)
+    void generateRoles(int playerCount, out Role[] rolesArray)
     {
         Debug.Log("Player count: " + playerCount);
         if (playerCount == 5)
         {
             rolesArray = new Role[] { new Villager(),
                                 new Villager(),
-                                new Villager(),
+                                new Police(),
                                 new Mafia(),
                                 new Doctor() };
             shuffleArray(rolesArray, rolesArray.Length);
-            displayArray(rolesArray);
             return;
         }
         else if (playerCount == 6)

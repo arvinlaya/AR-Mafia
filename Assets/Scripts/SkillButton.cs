@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Realtime;
+using Photon.Pun;
 
 public class SkillButton : MonoBehaviour
 {
     Vector3 offset = new Vector3(1.2f, 2, 0);
-    public Player owner { get; set; }
+    public Player target { get; set; }
 
 
 
@@ -26,7 +27,28 @@ public class SkillButton : MonoBehaviour
             {
                 if (hit.transform == gameObject.transform)
                 {
-                    Debug.Log("USE SKILL: " + owner);
+                    switch (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"])
+                    {
+                        case "VILLAGER":
+                            new Villager().skill(target);
+                            break;
+
+                        case "DOCTOR":
+                            new Doctor().skill(target);
+                            break;
+
+                        case "MAFIA":
+                            new Mafia().skill(target);
+                            break;
+
+                        case "POLICE":
+                            new Police().skill(target);
+                            break;
+
+                        default:
+                            Debug.Log("ROLE NOT FOUND...");
+                            break;
+                    }
                 }
             }
         }

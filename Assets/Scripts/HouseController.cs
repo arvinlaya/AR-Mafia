@@ -56,7 +56,7 @@ public class HouseController : MonoBehaviour
                         skillTemp = Instantiate(skillButtonPrefab, hitPV.transform.position, Quaternion.identity);
 
                         doorTemp.house = hitPV.GetComponent<HouseController>();
-                        skillTemp.owner = hitPV.Owner;
+                        skillTemp.target = hitPV.Owner;
                     }
                 }
             }

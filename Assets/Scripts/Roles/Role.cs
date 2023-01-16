@@ -1,5 +1,7 @@
 using Photon.Realtime;
 interface Role
 {
-    void skill(Player target);
+    public string ROLE_TYPE { get; set; }
+
+    public void skill(Player target);
 }

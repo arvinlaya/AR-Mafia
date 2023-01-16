@@ -31,7 +31,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     //PlayerList
 
     //Max player
-    private const int _maxPlayer = 2;
+    private const int _maxPlayer = 5;
 
     //START GAME
     [SerializeField] TMP_Text waitingForPlayersText;
