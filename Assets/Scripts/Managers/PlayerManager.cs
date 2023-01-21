@@ -23,7 +23,7 @@ public class PlayerManager : MonoBehaviour
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            InitializeTimer("NIGHT");
+            SetPhase_S(GameManager.GAME_PHASE.DAY_ACCUSE);
             SpawnManager.Instance.SpawnPlayersAndHouses();
         }
     }
@@ -46,6 +46,14 @@ public class PlayerManager : MonoBehaviour
         {
             RefreshTimer_R((object)photonEvent.CustomData);
         }
+        else if (eventCode == (byte)GameManager.EVENT_CODE.NIGHT_START ||
+                eventCode == (byte)GameManager.EVENT_CODE.DAY_DISCUSSION_START ||
+                eventCode == (byte)GameManager.EVENT_CODE.DAY_ACCUSE_START ||
+                eventCode == (byte)GameManager.EVENT_CODE.DAY_ACCUSE_DEFENSE_START ||
+                eventCode == (byte)GameManager.EVENT_CODE.DAY_VOTE_START)
+        {
+            SetPhase_R((object)photonEvent.CustomData);
+        }
     }
 
 
@@ -61,21 +69,79 @@ public class PlayerManager : MonoBehaviour
                                     new SendOptions { Reliability = true });
     }
 
+    private void SetPhase_S(object phase)
+    {
+        GameManager.EVENT_CODE event_code = 0;
+        object data = phase;
+
+        if ((byte)GameManager.GAME_PHASE.NIGHT == (byte)phase)
+        {
+            event_code = GameManager.EVENT_CODE.NIGHT_START;
+        }
+        else if ((byte)GameManager.GAME_PHASE.DAY_DISCUSSION == (byte)phase)
+        {
+            event_code = GameManager.EVENT_CODE.DAY_DISCUSSION_START;
+        }
+        else if ((byte)GameManager.GAME_PHASE.DAY_ACCUSE == (byte)phase)
+        {
+            event_code = GameManager.EVENT_CODE.DAY_ACCUSE_START;
+        }
+        else if ((byte)GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE == (byte)phase)
+        {
+            event_code = GameManager.EVENT_CODE.DAY_ACCUSE_DEFENSE_START;
+        }
+        else if ((byte)GameManager.GAME_PHASE.DAY_VOTE == (byte)phase)
+        {
+            event_code = GameManager.EVENT_CODE.DAY_VOTE_START;
+        }
+
+
+        PhotonNetwork.RaiseEvent((byte)event_code, data,
+                                    new RaiseEventOptions
+                                    {
+                                        Receivers = ReceiverGroup.All
+                                    },
+                                    new SendOptions { Reliability = true });
+    }
+
+    private void SetPhase_R(object phase)
+    {
+        GameManager.GAME_STATE = (GameManager.GAME_PHASE)phase;
+        InitializeTimer((byte)phase);
+    }
+
     private void RefreshTimer_R(object data)
     {
         currentTime = (int)data;
         RefreshTimerUI();
     }
 
-    private void InitializeTimer(string phase)
+    private void InitializeTimer(byte phase)
     {
-        if (phase == "NIGHT")
+        if (phase == (byte)GameManager.GAME_PHASE.NIGHT)
         {
             currentTime = GameManager.NIGHT_LENGHT;
+            Debug.Log("NIGHT STARTS");
         }
-        else if (phase == "DAY")
+        else if (phase == (byte)GameManager.GAME_PHASE.DAY_DISCUSSION)
         {
             currentTime = GameManager.DAY_DISCUSSION_LENGHT;
+            Debug.Log("DAY DISCUSSION STARTS");
+        }
+        else if (phase == (byte)GameManager.GAME_PHASE.DAY_ACCUSE)
+        {
+            currentTime = GameManager.DAY_ACCUSE_LENGHT;
+            Debug.Log("DAY ACCUSE STARTS");
+        }
+        else if (phase == (byte)GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE)
+        {
+            currentTime = GameManager.DAY_ACCUSE_DEFENSE_LENGHT;
+            Debug.Log("DAY ACCUSE DEFENSE STARTS");
+        }
+        else if (phase == (byte)GameManager.GAME_PHASE.DAY_VOTE)
+        {
+            currentTime = GameManager.DAY_VOTE_LENGHT;
+            Debug.Log("DAY VOTE STARTS");
         }
 
         timerCoroutine = StartCoroutine(Timer());
@@ -98,11 +164,38 @@ public class PlayerManager : MonoBehaviour
         {
             timerCoroutine = null;
             //RaiseEvent PHASE_END
+            if (PhotonNetwork.IsMasterClient)
+            {
+                if (GameManager.GAME_STATE == GameManager.GAME_PHASE.NIGHT)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.DAY_DISCUSSION);
+                }
+                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_DISCUSSION)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.DAY_ACCUSE);
+                }
+                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE);
+                }
+                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.DAY_VOTE);
+                }
+                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.NIGHT);
+                }
+            }
         }
         else
         {
-            RefreshTimer_S(currentTime);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                RefreshTimer_S(currentTime);
+            }
             timerCoroutine = StartCoroutine(Timer());
+
         }
     }
 }

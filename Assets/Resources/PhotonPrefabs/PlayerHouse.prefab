@@ -133,6 +133,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3c5e990fb87aca4f9be38ff4a6bfb30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  openDoorButtonPrefab: {fileID: -869838036675827623, guid: b1107b09f79ad304baea61030b946fad, type: 3}
-  skillButtonPrefab: {fileID: 8822086078884889510, guid: dde192580e15f7c45aa9b7b353b401f2, type: 3}
-  buttonActive: 0

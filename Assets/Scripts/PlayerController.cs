@@ -13,12 +13,58 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     Player player;
     PhotonView PV;
+    [SerializeField] LeftButton LeftButtonPrefab;
+    [SerializeField] RightButton RightButtonPrefab;
+    public bool buttonActive;
+
 
     void Awake()
     {
         isSet = false;
         player = PhotonNetwork.LocalPlayer;
         PV = GetComponent<PhotonView>();
+        buttonActive = false;
+    }
+
+    void Update()
+    {
+        if (PV.IsMine)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out hit))
+                {
+                    PhotonView hitPV = hit.transform.GetComponent<PhotonView>();
+                    if (hitPV)
+                    {
+                        foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+                        {
+                            Destroy(gameObject);
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
+                    if (!hitPV.IsMine)
+                    {
+                        LeftButton leftButtonTemp;
+                        RightButton rightButtonTemp;
+                        leftButtonTemp = Instantiate(LeftButtonPrefab, hitPV.transform.position, Quaternion.identity);
+                        rightButtonTemp = Instantiate(RightButtonPrefab, hitPV.transform.position, Quaternion.identity);
+
+                        leftButtonTemp.house = hitPV.GetComponent<HouseController>();
+                        leftButtonTemp.owner = hitPV.Owner;
+
+                        rightButtonTemp.house = hitPV.GetComponent<HouseController>();
+                        rightButtonTemp.owner = hitPV.Owner;
+
+                    }
+                }
+            }
+        }
     }
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)

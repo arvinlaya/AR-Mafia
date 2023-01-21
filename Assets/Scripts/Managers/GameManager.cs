@@ -12,6 +12,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     public static GameManager Instance;
     public static int NIGHT_LENGHT = 40;
     public static int DAY_DISCUSSION_LENGHT = 30;
+    public static int DAY_ACCUSE_LENGHT = 20;
+    public static int DAY_ACCUSE_DEFENSE_LENGHT = 20;
+    public static int DAY_VOTE_LENGHT = 20;
+
+    public static GAME_PHASE GAME_STATE;
     PhotonView PV;
     Role[] roles;
 
@@ -20,9 +25,21 @@ public class GameManager : MonoBehaviourPunCallbacks
     public enum EVENT_CODE : byte
     {
         REFRESH_TIMER,
-        DAY_START,
+        DAY_DISCUSSION_START,
+        DAY_ACCUSE_START,
+        DAY_ACCUSE_DEFENSE_START,
+        DAY_VOTE_START,
         NIGHT_START,
         PHASE_END
+    }
+
+    public enum GAME_PHASE : byte
+    {
+        DAY_DISCUSSION,
+        DAY_ACCUSE,
+        DAY_ACCUSE_DEFENSE,
+        DAY_VOTE,
+        NIGHT
     }
 
     void Awake()
@@ -82,6 +99,11 @@ public class GameManager : MonoBehaviourPunCallbacks
                 roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_KILLED", false);
                 roleCustomProps.Add("IS_SAVED", false);
+                roleCustomProps.Add("HAS_VOTED", false);
+                roleCustomProps.Add("VOTED", "");
+                roleCustomProps.Add("ACCUSE_VOTE_COUNT", 0);
+                roleCustomProps.Add("GUILTY_VOTE", 0);
+                roleCustomProps.Add("INNOCENT_VOTE", 0);
                 player.SetCustomProperties(roleCustomProps);
                 index++;
             }

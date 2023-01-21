@@ -110,3 +110,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ba0c9d253e64054c8b64ae2a7e8f945, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LeftButtonPrefab: {fileID: 114759095222960870, guid: 2f6d6329ff42ab043a583761139a7fc4, type: 3}
+  RightButtonPrefab: {fileID: 1038875862570177643, guid: 2bc31caa14ba8074db7cdec2db536de3, type: 3}
+  buttonActive: 0
