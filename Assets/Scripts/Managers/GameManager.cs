@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_KILLED", false);
                 roleCustomProps.Add("IS_SAVED", false);
-                roleCustomProps.Add("HAS_VOTED", false);
+                roleCustomProps.Add("VOTE_VALUE", 0);
                 roleCustomProps.Add("VOTED", "");
                 roleCustomProps.Add("ACCUSE_VOTE_COUNT", 0);
                 roleCustomProps.Add("GUILTY_VOTE", 0);

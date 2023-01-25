@@ -65,14 +65,14 @@ public class LeftButton : MonoBehaviour
 
     void AccuseVote()
     {
-        if ((bool)PhotonNetwork.LocalPlayer.CustomProperties["HAS_VOTED"] == false)
+        if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 0)
         {
             int voteCount = 1 + (int)owner.CustomProperties["ACCUSE_VOTE_COUNT"];
             owner.CustomProperties["ACCUSE_VOTE_COUNT"] = voteCount;
             PhotonNetwork.LocalPlayer.CustomProperties["VOTED"] = owner.NickName;
-            PhotonNetwork.LocalPlayer.CustomProperties["HAS_VOTED"] = true;
+            PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] = 1;
         }
-        else if ((bool)PhotonNetwork.LocalPlayer.CustomProperties["HAS_VOTED"])
+        else if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 1)
         {
             foreach (Player player in PhotonNetwork.PlayerList)
             {
@@ -92,28 +92,20 @@ public class LeftButton : MonoBehaviour
 
     void Vote()
     {
-        if ((bool)PhotonNetwork.LocalPlayer.CustomProperties["HAS_VOTED"] == false)
+        if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 0)
         {
-            int voteCount = 1 + (int)owner.CustomProperties["VOTE_COUNT"];
-            owner.CustomProperties["VOTE_COUNT"] = voteCount;
-            PhotonNetwork.LocalPlayer.CustomProperties["VOTED"] = owner.NickName;
-            PhotonNetwork.LocalPlayer.CustomProperties["HAS_VOTED"] = true;
+            int voteCount = 1 + (int)owner.CustomProperties["INNOCENT_VOTE"];
+            owner.CustomProperties["INNOCENT_VOTE"] = voteCount;
+            PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] = -1;
         }
-        else if ((bool)PhotonNetwork.LocalPlayer.CustomProperties["HAS_VOTED"])
+        else if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 1)
         {
-            foreach (Player player in PhotonNetwork.PlayerList)
-            {
-                if ((string)PhotonNetwork.LocalPlayer.CustomProperties["VOTED"] == player.NickName)
-                {
-                    PhotonNetwork.LocalPlayer.CustomProperties["VOTED"] = owner.NickName;
+            int voteCount = (int)owner.CustomProperties["GUILTY_VOTE"] - 1;
+            owner.CustomProperties["GUILTY_VOTE"] = voteCount;
 
-                    int voteCount = (int)player.CustomProperties["VOTE_COUNT"] - 1;
-                    player.CustomProperties["VOTE_COUNT"] = voteCount;
-
-                    voteCount = 1 + (int)owner.CustomProperties["VOTE_COUNT"];
-                    owner.CustomProperties["VOTE_COUNT"] = voteCount;
-                }
-            }
+            voteCount = 1 + (int)owner.CustomProperties["INNOCENT_VOTE"];
+            owner.CustomProperties["INNOCENT_VOTE"] = voteCount;
+            PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] = -1;
         }
     }
 }

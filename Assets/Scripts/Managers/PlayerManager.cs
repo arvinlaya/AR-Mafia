@@ -23,7 +23,7 @@ public class PlayerManager : MonoBehaviour
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            SetPhase_S(GameManager.GAME_PHASE.DAY_ACCUSE);
+            SetPhase_S(GameManager.GAME_PHASE.NIGHT);
             SpawnManager.Instance.SpawnPlayersAndHouses();
         }
     }

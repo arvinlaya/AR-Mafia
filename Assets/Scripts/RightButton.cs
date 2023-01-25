@@ -38,6 +38,7 @@ public class RightButton : MonoBehaviour
                 break;
 
             case GameManager.GAME_PHASE.DAY_VOTE:
+                OnEvent += Vote;
                 break;
         }
     }
@@ -82,6 +83,25 @@ public class RightButton : MonoBehaviour
             default:
                 Debug.Log("ROLE NOT FOUND...");
                 break;
+        }
+    }
+
+    void Vote()
+    {
+        if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 0)
+        {
+            int voteCount = 1 + (int)owner.CustomProperties["GUILTY_VOTE"];
+            owner.CustomProperties["GUILTY_VOTE"] = voteCount;
+            PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] = 1;
+        }
+        else if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == -1)
+        {
+            int voteCount = (int)owner.CustomProperties["INNOCENT_VOTE"] - 1;
+            owner.CustomProperties["INNOCENT_VOTE"] = voteCount;
+
+            voteCount = 1 + (int)owner.CustomProperties["GUILTY_VOTE"];
+            owner.CustomProperties["GUILTY_VOTE"] = voteCount;
+            PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] = -1;
         }
     }
 }
