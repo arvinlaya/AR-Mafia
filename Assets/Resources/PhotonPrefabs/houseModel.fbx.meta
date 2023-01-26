@@ -1,19 +1,15 @@
 fileFormatVersion: 2
-guid: 2506aa4ee4f67bf47a9c50ad112903d7
+guid: 62655e1e3cf34864695ce28cc13ce209
 ModelImporter:
   serializedVersion: 21300
-  internalIDToNameTable: []
-  externalObjects:
+  internalIDToNameTable:
   - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Material
-    second: {fileID: 2100000, guid: 4004aea7c0a43eb4496b024103a1e2be, type: 2}
+      74: 6882450976079092884
+    second: Armature|Open door
   - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Material.004
-    second: {fileID: 2100000, guid: 4004aea7c0a43eb4496b024103a1e2be, type: 2}
+      74: -5475103017462042771
+    second: House|Open door
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0

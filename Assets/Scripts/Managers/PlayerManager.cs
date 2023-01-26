@@ -113,6 +113,7 @@ public class PlayerManager : MonoBehaviour
     private void RefreshTimer_R(object data)
     {
         currentTime = (int)data;
+        ReferenceManager.time = currentTime;
         RefreshTimerUI();
     }
 

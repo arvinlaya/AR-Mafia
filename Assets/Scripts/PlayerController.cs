@@ -8,7 +8,6 @@ using System.Linq;
 
 public class PlayerController : MonoBehaviourPunCallbacks
 {
-    private MeshFilter characterModel;
     private bool isSet;
 
     Player player;
@@ -46,22 +45,24 @@ public class PlayerController : MonoBehaviourPunCallbacks
                     }
                     else
                     {
+
+
                         return;
                     }
-                    if (!hitPV.IsMine)
-                    {
-                        LeftButton leftButtonTemp;
-                        RightButton rightButtonTemp;
-                        leftButtonTemp = Instantiate(LeftButtonPrefab, hitPV.transform.position, Quaternion.identity);
-                        rightButtonTemp = Instantiate(RightButtonPrefab, hitPV.transform.position, Quaternion.identity);
+                    // if (!hitPV.IsMine)
+                    // {
+                    LeftButton leftButtonTemp;
+                    RightButton rightButtonTemp;
+                    leftButtonTemp = Instantiate(LeftButtonPrefab, hitPV.transform.position, Quaternion.identity);
+                    rightButtonTemp = Instantiate(RightButtonPrefab, hitPV.transform.position, Quaternion.identity);
 
-                        leftButtonTemp.house = hitPV.GetComponent<HouseController>();
-                        leftButtonTemp.owner = hitPV.Owner;
+                    leftButtonTemp.house = hitPV.GetComponent<HouseController>();
+                    leftButtonTemp.owner = hitPV.Owner;
 
-                        rightButtonTemp.house = hitPV.GetComponent<HouseController>();
-                        rightButtonTemp.owner = hitPV.Owner;
+                    rightButtonTemp.house = hitPV.GetComponent<HouseController>();
+                    rightButtonTemp.owner = hitPV.Owner;
 
-                    }
+                    // }
                 }
             }
         }

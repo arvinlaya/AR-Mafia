@@ -1,0 +1,307 @@
+fileFormatVersion: 2
+guid: 47097e689a21fee46a360d2b81bac428
+ModelImporter:
+  serializedVersion: 21300
+  internalIDToNameTable:
+  - first:
+      74: 5788249748251098270
+    second: Armature.001|0TPose
+  - first:
+      74: -404974994218175420
+    second: Armature.001|Dead
+  - first:
+      74: -5542604504215373651
+    second: Armature.001|Greet
+  - first:
+      74: 4699274299699868179
+    second: Armature.001|Idle
+  - first:
+      74: -7311715788681495627
+    second: Armature.001|Talk 1
+  - first:
+      74: -5672865052664373559
+    second: Armature.001|Talk 2
+  - first:
+      74: -448239265334008587
+    second: Armature.001|Walk
+  externalObjects: {}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 1
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: "\nClip 'Armature.001|Greet' has import animation warnings
+      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'Upper Spine' is inbetween humanoid transforms
+      and has rotation animation that will be discarded.\n\nClip 'Armature.001|Talk
+      1' has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'Upper
+      Spine' is inbetween humanoid transforms and has rotation animation that will
+      be discarded.\n\nClip 'Armature.001|Talk 2' has import animation warnings that
+      might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'Upper Spine' is inbetween humanoid transforms
+      and has rotation animation that will be discarded.\n"
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton:
+    - name: mafiaModel(Clone)
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Mafia
+      parentName: mafiaModel(Clone)
+      position: {x: 0.07165471, y: 0, z: 0.00000014628264}
+      rotation: {x: -0.00000013767877, y: 0.7071068, z: 0.70710677, w: 0.00000013767878}
+      scale: {x: 100, y: 100, z: 100}
+    - name: Armature.001
+      parentName: mafiaModel(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.00000009415696, y: 0.7071068, z: 0.7071067, w: 0.00000009415697}
+      scale: {x: 100, y: 100, z: 100}
+    - name: Pelvis
+      parentName: Armature.001
+      position: {x: -0, y: 0, z: 0.003968659}
+      rotation: {x: 0.00000013937643, y: -0.70710695, z: -0.7071066, w: 0.00000013937638}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Lower Spine
+      parentName: Pelvis
+      position: {x: -0, y: 0.0007578343, z: 0}
+      rotation: {x: 0, y: -0.000000059604645, z: -0, w: 1}
+      scale: {x: 1, y: 0.99999994, z: 1}
+    - name: Upper Spine
+      parentName: Lower Spine
+      position: {x: -0, y: 0.0020244294, z: 0}
+      rotation: {x: 0, y: -7.1054274e-15, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Head
+      parentName: Upper Spine
+      position: {x: -0, y: 0.001796037, z: 0}
+      rotation: {x: 0, y: 0.00000005960465, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Head_end
+      parentName: Head
+      position: {x: -0, y: 0.0028038125, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Shoulder.L
+      parentName: Upper Spine
+      position: {x: -0, y: 0.001796037, z: 0}
+      rotation: {x: 0.000000037251876, y: -0.000000054682896, z: 0.8127783, w: 0.5825732}
+      scale: {x: 1.0000002, y: 1, z: 1}
+    - name: Upper Arm.L
+      parentName: Shoulder.L
+      position: {x: -3.330669e-18, y: 0.0017271936, z: -2.2204459e-17}
+      rotation: {x: -0.01161063, y: 0.0030611325, z: -0.20078811, w: 0.9795611}
+      scale: {x: 0.99999994, y: 0.9999999, z: 0.99999994}
+    - name: Lower Arm.L
+      parentName: Upper Arm.L
+      position: {x: -2.4602204e-10, y: 0.0025965928, z: -1.3664447e-11}
+      rotation: {x: 0.041279852, y: -0.00052888296, z: 0.010201267, w: 0.99909544}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Hand.L
+      parentName: Lower Arm.L
+      position: {x: -1.04783016e-10, y: 0.0014685001, z: 1.2584085e-11}
+      rotation: {x: -0.03307884, y: 4.8302604e-15, z: 0.000000009332533, w: 0.99945277}
+      scale: {x: 1, y: 0.9999998, z: 0.99999994}
+    - name: Hand.L_end
+      parentName: Hand.L
+      position: {x: -0, y: 0.00032053114, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Shoulder.R
+      parentName: Upper Spine
+      position: {x: -0, y: 0.001796037, z: 0}
+      rotation: {x: -0.000000037251876, y: 0.0000000645264, z: -0.8127783, w: 0.5825732}
+      scale: {x: 1.0000002, y: 1, z: 1}
+    - name: Upper Arm.R
+      parentName: Shoulder.R
+      position: {x: 3.330669e-18, y: 0.0017271936, z: -1.7763568e-17}
+      rotation: {x: -0.011610491, y: -0.0030611358, z: 0.20078798, w: 0.97956115}
+      scale: {x: 0.99999994, y: 0.9999999, z: 0.99999994}
+    - name: Lower Arm.R
+      parentName: Upper Arm.R
+      position: {x: 2.4602204e-10, y: 0.0025965928, z: -1.36651575e-11}
+      rotation: {x: 0.041279647, y: 0.0005287724, z: -0.010201464, w: 0.9990954}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Hand.R
+      parentName: Lower Arm.R
+      position: {x: 1.04783016e-10, y: 0.0014685001, z: 1.25833744e-11}
+      rotation: {x: -0.03307884, y: -4.826598e-15, z: -0.000000009332535, w: 0.99945277}
+      scale: {x: 1, y: 0.9999998, z: 0.99999994}
+    - name: Hand.R_end
+      parentName: Hand.R
+      position: {x: -0, y: 0.00032053114, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Upper Leg.L
+      parentName: Pelvis
+      position: {x: -0.00073480397, y: 0.0000035497546, z: -0.00011482882}
+      rotation: {x: 0.000000021538991, y: 0.041488785, z: 0.999139, w: -8.943965e-10}
+      scale: {x: 1, y: 0.9999994, z: 1.000035}
+    - name: Lower Leg.L
+      parentName: Upper Leg.L
+      position: {x: -1.3020039e-10, y: 0.0022123416, z: 1.4448749e-11}
+      rotation: {x: -0.06842507, y: -0.00000020614779, z: 0.000000024470816, w: 0.9976563}
+      scale: {x: 1, y: 0.9999996, z: 1}
+    - name: Foot.L
+      parentName: Lower Leg.L
+      position: {x: -1.6917696e-11, y: 0.0012715927, z: 7.96998e-12}
+      rotation: {x: 0.6076559, y: 0.0000003333791, z: -0.000000024308429, w: 0.7942004}
+      scale: {x: 1, y: 1.0000147, z: 0.9999967}
+    - name: Foot.L_end
+      parentName: Foot.L
+      position: {x: -0, y: 0.0010137946, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Upper Leg.R
+      parentName: Pelvis
+      position: {x: 0.00073480397, y: 0.0000035497546, z: -0.00011482882}
+      rotation: {x: -0.000000037429363, y: 0.041488785, z: 0.999139, w: 0.000000001554237}
+      scale: {x: 1, y: 0.9999994, z: 1.000035}
+    - name: Lower Leg.R
+      parentName: Upper Leg.R
+      position: {x: 1.2616092e-10, y: 0.0022123416, z: 9.7196955e-12}
+      rotation: {x: -0.06842507, y: 0.00000020614777, z: -0.000000024470818, w: 0.9976563}
+      scale: {x: 1, y: 0.9999996, z: 1}
+    - name: Foot.R
+      parentName: Lower Leg.R
+      position: {x: 1.6394702e-11, y: 0.0012715927, z: 7.956799e-12}
+      rotation: {x: 0.6076559, y: -0.0000003468091, z: 0.000000032843705, w: 0.7942004}
+      scale: {x: 1, y: 1.0000147, z: 0.9999967}
+    - name: Foot.R_end
+      parentName: Foot.R
+      position: {x: -0, y: 0.0010137946, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Leg Pole IK.L
+      parentName: Armature.001
+      position: {x: -0.00073480397, y: -0.0017283817, z: 0.001767484}
+      rotation: {x: 0, y: 0, z: 1, w: -6.123234e-17}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Leg Pole IK.L_end
+      parentName: Leg Pole IK.L
+      position: {x: -0, y: 0.0011810242, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Leg Target IK.L
+      parentName: Armature.001
+      position: {x: -0.00073480397, y: 0, z: 0.0004977428}
+      rotation: {x: 6.123233e-17, y: 1, z: -6.123233e-17, w: -0.00000013315805}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Leg Target IK.L_end
+      parentName: Leg Target IK.L
+      position: {x: -0, y: 0.0014220497, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Leg Pole IK.R
+      parentName: Armature.001
+      position: {x: 0.00073480397, y: -0.0017283817, z: 0.001767484}
+      rotation: {x: 0, y: 0, z: 1, w: -6.123234e-17}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Leg Pole IK.R_end
+      parentName: Leg Pole IK.R
+      position: {x: -0, y: 0.0011810242, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Leg Target IK.R
+      parentName: Armature.001
+      position: {x: 0.00073480397, y: 0, z: 0.0004977428}
+      rotation: {x: 6.123235e-17, y: 1, z: -6.123235e-17, w: 0.00000013315805}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Leg Target IK.R_end
+      parentName: Leg Target IK.R
+      position: {x: -0, y: 0.0014220497, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

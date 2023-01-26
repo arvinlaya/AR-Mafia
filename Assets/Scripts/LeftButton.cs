@@ -12,6 +12,7 @@ public class LeftButton : MonoBehaviour
     public HouseController house { get; set; }
     public Player owner { get; set; }
     public event Action OnEvent;
+    public static event Action<PhotonView> OnDoorEvent;
     // Start is called before the first frame update
     void Start()
     {
@@ -60,7 +61,7 @@ public class LeftButton : MonoBehaviour
 
     void OpenDoor()
     {
-        Debug.Log("DOOR OPENED");
+        OnDoorEvent?.Invoke(house.PV);
     }
 
     void AccuseVote()
