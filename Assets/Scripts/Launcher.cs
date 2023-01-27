@@ -88,7 +88,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         MenuManager.Instance.OpenMenu("title");
         Debug.Log("Joined Lobby");
         Debug.Log("nickname: " + PhotonNetwork.NickName);
-        ignModal.gameObject.SetActive(PhotonNetwork.NickName=="");
+        ignModal.gameObject.SetActive(PhotonNetwork.NickName == "");
         //PhotonNetwork.NickName = "P#" + Random.Range(0, 100).ToString("000");
     }
 
@@ -256,10 +256,19 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     IEnumerator waiter()
     {
-        MenuManager.Instance.OpenMenu("pregame");
+        //TODO: If Else Kung ilan yung Players, kung ilan yung number of players in the room
+        //NOTE: Max is 8, minimum is 5... 5 or 6 or 7 or 8
+
+        //NOTE: For final product, ganito yung lalagay:
+        //MenuManager.Instance.OpenMenu("pre-game-"+PhotonNetwork.CurrentRoom.PlayerCount.ToString());
+
+        //... While testing, ganito muna...
+        MenuManager.Instance.OpenMenu("pre-game-5");
+
+
         //Wait for 5 seconds
         yield return new WaitForSeconds(5);
-        PhotonNetwork.LoadLevel(1);//1 = build settings index
+        PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
     }
 
     public void StartGame()
