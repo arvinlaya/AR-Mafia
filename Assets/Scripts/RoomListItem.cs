@@ -9,6 +9,7 @@ public class RoomListItem : MonoBehaviour
 {
 	[SerializeField] TMP_Text text;
 	[SerializeField] TMP_Text player_Count;
+	[SerializeField] GameObject promtFull;
 
 	public RoomInfo info;
 
@@ -23,6 +24,10 @@ public class RoomListItem : MonoBehaviour
 
 	public void OnClick()
 	{
+        if (!info.IsOpen)
+        {
+			promtFull.gameObject.SetActive(true);
+        }else
 		Launcher.Instance.JoinRoom(info);
 	}
 }

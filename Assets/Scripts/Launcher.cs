@@ -45,9 +45,16 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     Hashtable hashRoomOwner = new Hashtable();
 
+    [SerializeField] GameObject ignModal;
     [SerializeField] TMP_InputField ignInputField;
     [SerializeField] TMP_Text ignText;
     [SerializeField] GameObject iconIgn;
+
+    [SerializeField] GameObject nameTooLongPrompt;
+    [SerializeField] GameObject nameIsEmptyPrompt;
+
+
+    [SerializeField] GameObject wasKickedPromt;
 
     void Awake()
     {
@@ -80,18 +87,38 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         MenuManager.Instance.OpenMenu("title");
         Debug.Log("Joined Lobby");
-        PhotonNetwork.NickName = "P#" + Random.Range(0, 100).ToString("000");
+        Debug.Log("nickname: " + PhotonNetwork.NickName);
+        ignModal.gameObject.SetActive(PhotonNetwork.NickName=="");
+        //PhotonNetwork.NickName = "P#" + Random.Range(0, 100).ToString("000");
     }
 
     public void setIGN()
     {
-        if (ignInputField.text != "")
+        if (ignInputField.text != "" && ignInputField.text.Length <= 12)
         {
+            ignModal.gameObject.SetActive(false);
             PhotonNetwork.NickName = ignInputField.text;
             Debug.Log(PhotonNetwork.NickName);
             ignText.text = ignInputField.text;
             ignText.gameObject.SetActive(true);
             iconIgn.gameObject.SetActive(false);
+        }
+
+        else if (ignInputField.text.Length > 12)
+        {
+            Debug.Log("\nToo long");
+            nameTooLongPrompt.gameObject.SetActive(true);
+        }
+
+        else if (ignInputField.text == "")
+        {
+            nameIsEmptyPrompt.gameObject.SetActive(true);
+            Debug.Log("\nCannot be Empty String");
+        }
+
+        else
+        {
+            Debug.Log("Something went wrong.");
         }
     }
 
@@ -100,7 +127,6 @@ public class Launcher : MonoBehaviourPunCallbacks
         isPrivate = false;
         PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"));
         MenuManager.Instance.OpenMenu("loading");
-        IsMaxPlayer(true); // FOR TESTING PURPOSE ONLY TEST
     }
 
     public override void OnJoinedRoom()
@@ -117,7 +143,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             MenuManager.Instance.OpenMenu("room");
             Debug.Log(PhotonNetwork.CurrentRoom.Name + "OnJoinedRoom() (Public)");
-            roomNameText.text = PhotonNetwork.MasterClient.NickName + "'s Public Game";
+            roomNameText.text = "Room: " + PhotonNetwork.CurrentRoom.Name;
             publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
         }
         //PRIVATE GAME
@@ -196,6 +222,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
+        wasKickedPromt.gameObject.SetActive(true);
         MenuManager.Instance.OpenMenu("title");
     }
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -227,9 +254,19 @@ public class Launcher : MonoBehaviourPunCallbacks
             startGameButtonPublic.SetActive(PhotonNetwork.IsMasterClient);
     }
 
+    IEnumerator waiter()
+    {
+        MenuManager.Instance.OpenMenu("pregame");
+        //Wait for 5 seconds
+        yield return new WaitForSeconds(5);
+        PhotonNetwork.LoadLevel(1);//1 = build settings index
+    }
+
     public void StartGame()
     {
-        PhotonNetwork.LoadLevel(1);//1 = build settings index
+        //NOTE: Wala ng ikot, "loadingMenu" na dinaanan
+        //TODO: wait for 5 seconds, changing the displayed timer every 1 sec
+        StartCoroutine(waiter());
     }
 
     //sa MasterClient lang may trigger yung function na 'to
