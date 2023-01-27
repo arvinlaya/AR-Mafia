@@ -61,7 +61,11 @@ public class LeftButton : MonoBehaviour
 
     void OpenDoor()
     {
-        OnDoorEvent?.Invoke(house.PV);
+        if (GameManager.Instance.isDoorCooldown() == false)
+        {
+            OnDoorEvent?.Invoke(house.PV);
+            GameManager.Instance.setDoorCooldown();
+        }
     }
 
     void AccuseVote()

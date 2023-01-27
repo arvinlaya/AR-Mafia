@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
 using Photon.Realtime;
+using ExitGames.Client.Photon;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
-using System.Linq;
+using TMPro;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -16,11 +17,17 @@ public class GameManager : MonoBehaviourPunCallbacks
     public static int DAY_ACCUSE_DEFENSE_LENGHT = 20;
     public static int DAY_VOTE_LENGHT = 20;
 
+    public static int DOOR_COOLDOWN = 15;
     public static GAME_PHASE GAME_STATE;
     PhotonView PV;
     Role[] roles;
-
+    TMP_Text uiTimer;
     [SerializeField] public GameObject[] characterModels;
+
+    public bool onDoorCooldown { get; set; }
+    int openDoorTime;
+    private int currentTime;
+    private Coroutine timerCoroutine;
 
     public enum EVENT_CODE : byte
     {
@@ -50,20 +57,28 @@ public class GameManager : MonoBehaviourPunCallbacks
             return;
         }
         Instance = this;
+
     }
 
     void Start()
     {
+        onDoorCooldown = false;
+        Instance.uiTimer = ReferenceManager.Instance.UITimer;
+
         if (PhotonNetwork.IsMasterClient)
         {
             PV = GetComponent<PhotonView>();
             characterModels = new GameObject[4];
+            SetPhase_S(GameManager.GAME_PHASE.NIGHT);
+
         }
     }
     // Start is called before the first frame update
     public override void OnEnable()
     {
         base.OnEnable();
+        PhotonNetwork.NetworkingClient.EventReceived -= OnEvent;
+        PhotonNetwork.NetworkingClient.EventReceived += OnEvent;
         if (PhotonNetwork.IsMasterClient)
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
@@ -73,10 +88,28 @@ public class GameManager : MonoBehaviourPunCallbacks
     public override void OnDisable()
     {
         base.OnDisable();
+        PhotonNetwork.NetworkingClient.EventReceived -= OnEvent;
+
         if (PhotonNetwork.IsMasterClient)
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
+    }
+
+    public void setDoorCooldown()
+    {
+        openDoorTime = ReferenceManager.Instance.time;
+        onDoorCooldown = true;
+    }
+
+    public bool isDoorCooldown()
+    {
+        if ((openDoorTime - DOOR_COOLDOWN) >= ReferenceManager.Instance.time)
+        {
+            onDoorCooldown = false;
+        }
+        return onDoorCooldown;
+
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
@@ -179,11 +212,167 @@ public class GameManager : MonoBehaviourPunCallbacks
         arr[b] = temp;
     }
 
-    private void displayArray(Role[] arr)
+    private void SetPhase_S(object phase)
     {
-        for (int x = 0; x < arr.Length; x++)
+        GameManager.EVENT_CODE event_code = 0;
+        object data = phase;
+
+        if ((byte)GameManager.GAME_PHASE.NIGHT == (byte)phase)
         {
-            Debug.Log(arr[x].ToString());
+            event_code = GameManager.EVENT_CODE.NIGHT_START;
+        }
+        else if ((byte)GameManager.GAME_PHASE.DAY_DISCUSSION == (byte)phase)
+        {
+            event_code = GameManager.EVENT_CODE.DAY_DISCUSSION_START;
+        }
+        else if ((byte)GameManager.GAME_PHASE.DAY_ACCUSE == (byte)phase)
+        {
+            event_code = GameManager.EVENT_CODE.DAY_ACCUSE_START;
+        }
+        else if ((byte)GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE == (byte)phase)
+        {
+            event_code = GameManager.EVENT_CODE.DAY_ACCUSE_DEFENSE_START;
+        }
+        else if ((byte)GameManager.GAME_PHASE.DAY_VOTE == (byte)phase)
+        {
+            event_code = GameManager.EVENT_CODE.DAY_VOTE_START;
+        }
+
+
+        PhotonNetwork.RaiseEvent((byte)event_code, data,
+                                    new RaiseEventOptions
+                                    {
+                                        Receivers = ReceiverGroup.All
+                                    },
+                                    new SendOptions { Reliability = true });
+    }
+    private void SetPhase_R(object phase)
+    {
+        GameManager.GAME_STATE = (GameManager.GAME_PHASE)phase;
+        InitializeTimer((byte)phase);
+    }
+
+    private void InitializeTimer(byte phase)
+    {
+        if (phase == (byte)GameManager.GAME_PHASE.NIGHT)
+        {
+            currentTime = GameManager.NIGHT_LENGHT;
+            Debug.Log("NIGHT STARTS");
+        }
+        else if (phase == (byte)GameManager.GAME_PHASE.DAY_DISCUSSION)
+        {
+            currentTime = GameManager.DAY_DISCUSSION_LENGHT;
+            Debug.Log("DAY DISCUSSION STARTS");
+        }
+        else if (phase == (byte)GameManager.GAME_PHASE.DAY_ACCUSE)
+        {
+            currentTime = GameManager.DAY_ACCUSE_LENGHT;
+            Debug.Log("DAY ACCUSE STARTS");
+        }
+        else if (phase == (byte)GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE)
+        {
+            currentTime = GameManager.DAY_ACCUSE_DEFENSE_LENGHT;
+            Debug.Log("DAY ACCUSE DEFENSE STARTS");
+        }
+        else if (phase == (byte)GameManager.GAME_PHASE.DAY_VOTE)
+        {
+            currentTime = GameManager.DAY_VOTE_LENGHT;
+            Debug.Log("DAY VOTE STARTS");
+        }
+
+        timerCoroutine = StartCoroutine(Timer());
+    }
+
+    private IEnumerator Timer()
+    {
+        yield return new WaitForSeconds(1f);
+
+        currentTime -= 1;
+
+        if (currentTime <= 0)
+        {
+            timerCoroutine = null;
+            //RaiseEvent PHASE_END
+            if (PhotonNetwork.IsMasterClient)
+            {
+                if (GameManager.GAME_STATE == GameManager.GAME_PHASE.NIGHT)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.DAY_DISCUSSION);
+                }
+                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_DISCUSSION)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.DAY_ACCUSE);
+                }
+                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE);
+                }
+                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.DAY_VOTE);
+                }
+                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.NIGHT);
+                }
+            }
+        }
+        else
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                RefreshTimer_S(currentTime);
+            }
+            timerCoroutine = StartCoroutine(Timer());
+
         }
     }
+    private void RefreshTimerUI()
+    {
+        uiTimer.text = currentTime.ToString("00");
+    }
+    private void RefreshTimer_S(object data)
+    {
+        PhotonNetwork.RaiseEvent((byte)GameManager.EVENT_CODE.REFRESH_TIMER, data,
+                                    new RaiseEventOptions { Receivers = ReceiverGroup.All },
+                                    new SendOptions { Reliability = true });
+    }
+    private void RefreshTimer_R(object data)
+    {
+        currentTime = (int)data;
+        RefreshTimerUI();
+    }
+    private void OnEvent(EventData photonEvent)
+    {
+        byte eventCode = photonEvent.Code;
+        if (eventCode == (byte)GameManager.EVENT_CODE.REFRESH_TIMER)
+        {
+            ReferenceManager.Instance.time = (int)photonEvent.CustomData;
+            RefreshTimer_R((object)photonEvent.CustomData);
+        }
+        else if (eventCode == (byte)GameManager.EVENT_CODE.NIGHT_START ||
+                eventCode == (byte)GameManager.EVENT_CODE.DAY_DISCUSSION_START ||
+                eventCode == (byte)GameManager.EVENT_CODE.DAY_ACCUSE_START ||
+                eventCode == (byte)GameManager.EVENT_CODE.DAY_ACCUSE_DEFENSE_START ||
+                eventCode == (byte)GameManager.EVENT_CODE.DAY_VOTE_START)
+        {
+            GameManager.Instance.onDoorCooldown = false;
+
+            // Destroys house button when a phase ends
+            foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+            {
+                Destroy(gameObject);
+            }
+
+            SetPhase_R((object)photonEvent.CustomData);
+        }
+    }
+    private void EndPhase()
+    {
+        if (timerCoroutine != null)
+        {
+            StopCoroutine(timerCoroutine);
+        }
+    }
+
 }

@@ -15,14 +15,13 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [SerializeField] LeftButton LeftButtonPrefab;
     [SerializeField] RightButton RightButtonPrefab;
     public bool buttonActive;
-
-
     void Awake()
     {
         isSet = false;
         player = PhotonNetwork.LocalPlayer;
         PV = GetComponent<PhotonView>();
         buttonActive = false;
+
     }
 
     void Update()
@@ -80,7 +79,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_OnSetRole(string role, string targetName)
     {
-        object[] data = { (FindObjectsOfType<PlayerController>().SingleOrDefault(x => x.PV.Owner.NickName == targetName)).GetComponent<PhotonView>().ViewID };
+        object[] data = { (FindObjectsOfType<PlayerController>().FirstOrDefault(x => x.PV.Owner.NickName == targetName)).GetComponent<PhotonView>().ViewID };
 
         GameObject model = null;
         if (isSet == false)

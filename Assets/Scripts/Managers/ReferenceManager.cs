@@ -7,8 +7,9 @@ public class ReferenceManager : MonoBehaviour
 {
 
     [SerializeField] public TMP_Text UITimer;
-    public static int time;
+    public int time;
     public static ReferenceManager Instance;
+
     void Awake()
     {
         if (Instance)
