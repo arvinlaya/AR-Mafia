@@ -50,6 +50,9 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] TMP_Text ignText;
     [SerializeField] GameObject iconIgn;
 
+    [SerializeField] GameObject nameTooLongPrompt;
+    [SerializeField] GameObject nameIsEmptyPrompt;
+
 
     [SerializeField] GameObject wasKickedPromt;
 
@@ -91,13 +94,31 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void setIGN()
     {
-        if (ignInputField.text != "")
+        if (ignInputField.text != "" && ignInputField.text.Length <= 12)
         {
+            ignModal.gameObject.SetActive(false);
             PhotonNetwork.NickName = ignInputField.text;
             Debug.Log(PhotonNetwork.NickName);
             ignText.text = ignInputField.text;
             ignText.gameObject.SetActive(true);
             iconIgn.gameObject.SetActive(false);
+        }
+
+        else if (ignInputField.text.Length > 12)
+        {
+            Debug.Log("\nToo long");
+            nameTooLongPrompt.gameObject.SetActive(true);
+        }
+
+        else if (ignInputField.text == "")
+        {
+            nameIsEmptyPrompt.gameObject.SetActive(true);
+            Debug.Log("\nCannot be Empty String");
+        }
+
+        else
+        {
+            Debug.Log("Something went wrong.");
         }
     }
 
