@@ -290,6 +290,14 @@ namespace Photon.Pun
             //    Debug.LogWarning("It seems some instantiation is not completed, as instantiation data is used. You should make sure instantiations are paused when calling this method. Cleaning now, despite ");
             //}
 
+            //TO-DO: Don't destroy on disconnect
+            //YouTube: https://youtu.be/f4FEs1agWVw?t=450
+
+            //Change true to something like, if nag press ng "quit" button, gagawin n'yang true(destroy watchamacallit)
+            //if(true){
+                destroyInstantiatedGameObjects = false;
+            //}
+
             // Destroy GO's (if we should)
             if (destroyInstantiatedGameObjects)
             {

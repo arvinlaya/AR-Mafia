@@ -30,7 +30,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     //PlayerList
 
     //Max player
-    private const int _maxPlayer = 2;
+    private const int _maxPlayer = 5;
 
     //START GAME
     [SerializeField] TMP_Text waitingForPlayersText;
@@ -64,8 +64,9 @@ public class Launcher : MonoBehaviourPunCallbacks
     void Start()
     {
         if (!PhotonNetwork.IsConnected)
+        //if (!PhotonNetwork.ReconnectAndRejoin())
         {
-            Debug.Log("Connecting to Master");
+            Debug.Log("Connecting to Master, NEW");
             PhotonNetwork.ConnectUsingSettings();
             PhotonNetwork.EnableCloseConnection = true;
         }
@@ -74,6 +75,13 @@ public class Launcher : MonoBehaviourPunCallbacks
             Debug.Log("Already connected!");
         }
 
+    }
+
+    public void OnClickRecon()
+    {
+        PhotonNetwork.ReconnectAndRejoin();
+        Debug.Log("ReConnected" + PhotonNetwork.NickName);
+        
     }
 
     public override void OnConnectedToMaster()
@@ -125,7 +133,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     public void CreateRoom()
     {
         isPrivate = false;
-        PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"));
+        PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"), roomOptions: rOptions());
         MenuManager.Instance.OpenMenu("loading");
     }
 
@@ -143,7 +151,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             MenuManager.Instance.OpenMenu("room");
             Debug.Log(PhotonNetwork.CurrentRoom.Name + "OnJoinedRoom() (Public)");
-            roomNameText.text = "Room: " + PhotonNetwork.CurrentRoom.Name;
+            roomNameText.text = "Lobby: " + PhotonNetwork.CurrentRoom.Name;
             publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
         }
         //PRIVATE GAME
@@ -198,8 +206,10 @@ public class Launcher : MonoBehaviourPunCallbacks
     }
 
     //Show Start button only when reached max players
+    //private void IsMaxPlayer(bool isMax)
     private void IsMaxPlayer(bool isMax)
     {
+        isMax = true;
         startGameButtonPublic.SetActive(isMax);
         startGameButtonPrivate.SetActive(isMax);
         waitingPlayerCardPublic.SetActive(!isMax);
@@ -337,5 +347,17 @@ public class Launcher : MonoBehaviourPunCallbacks
         IsMaxPlayer(false);
         PhotonNetwork.CurrentRoom.IsOpen = true;//has slot
     }
+    private RoomOptions rOptions()
+    {
+        RoomOptions options = new RoomOptions();
 
+        //Disconnection Parameters
+        options.CleanupCacheOnLeave = false;
+        //options.PlayerTtl  = -1;
+        options.PlayerTtl = 60000;
+        options.EmptyRoomTtl  = 300000;
+
+        return options;
+
+    }
 }
