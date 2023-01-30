@@ -41,9 +41,17 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
     {
         if (privateReceiver == "" && currentChat != "")
         {
-            Debug.Log(currentChat);
+            if (currentChat.Contains("/mafia"))
+            {
+                chatClient.PublishMessage("MafiaCH", currentChat);
+            }
+            else
+            {
             //channel = ROOM from PUN2
             chatClient.PublishMessage(myChannelName, currentChat);
+            }
+
+
             chatField.text = "";
             //currentChat = "sample: " + DateTime.Now.ToString();
             currentChat = "";
@@ -74,6 +82,19 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         //use room name as channel name?
         myChannelName = PhotonNetwork.CurrentRoom.Name;
         chatClient.Subscribe(new string[] { myChannelName });
+        //TODO: Kapag okay na yung sa actual game
+        //if (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"] == "MAFIA")
+        //{
+        //    chatClient.Subscribe(new string[] { "MafiaCH" });
+        //}
+
+        //hardcode
+        if (PhotonNetwork.LocalPlayer.NickName == "Mafia1" ||PhotonNetwork.LocalPlayer.NickName == "Mafia2" )
+        {
+            chatClient.Subscribe(new string[] { "MafiaCH" });
+        }
+
+
         Debug.Log("Channel name is" + myChannelName);
     }
 
