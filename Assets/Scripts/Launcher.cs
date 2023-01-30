@@ -56,6 +56,11 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     [SerializeField] GameObject wasKickedPromt;
 
+    private bool leftNotKicked = true;
+
+    private bool gameStarted = false;
+
+
     void Awake()
     {
         Instance = this;
@@ -74,6 +79,14 @@ public class Launcher : MonoBehaviourPunCallbacks
             Debug.Log("Already connected!");
         }
 
+    }
+
+    void Update()
+    {
+       if(gameStarted)
+        {
+        MenuManager.Instance.OpenMenu("pre-game-5");
+        }
     }
 
     public override void OnConnectedToMaster()
@@ -145,6 +158,13 @@ public class Launcher : MonoBehaviourPunCallbacks
             Debug.Log(PhotonNetwork.CurrentRoom.Name + "OnJoinedRoom() (Public)");
             roomNameText.text = "Room: " + PhotonNetwork.CurrentRoom.Name;
             publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
+
+            if ( PhotonNetwork.LocalPlayer != PhotonNetwork.MasterClient)
+            {
+                Debug.Log("agay dito yung pagka join ko");
+                waitingForPlayersText.text = "GET READY";
+            }
+
         }
         //PRIVATE GAME
         else
@@ -208,6 +228,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void LeaveRoom()
     {
+        leftNotKicked = true;
         IsMaxPlayer(false);//not max player, someone left...
         PhotonNetwork.CurrentRoom.IsOpen = true;//has slot
         PhotonNetwork.LeaveRoom();
@@ -222,7 +243,14 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
+        //if GO TO HOME BUITTON IS CLICKED, DON'T SHOW KICK PROMPT
+        //if(!leftNotKicked)
+        //{
+        //    wasKickedPromt.gameObject.SetActive(true);
+        //}
+
         wasKickedPromt.gameObject.SetActive(true);
+
         MenuManager.Instance.OpenMenu("title");
     }
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -264,7 +292,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         //MenuManager.Instance.OpenMenu("pre-game-"+PhotonNetwork.CurrentRoom.PlayerCount.ToString());
 
         //... While testing, ganito muna... "laging sa 5 players..."
-        MenuManager.Instance.OpenMenu("pre-game-5");
+        //MenuManager.Instance.OpenMenu("pre-game-5");
 
 
         //Wait for 5 seconds
@@ -276,7 +304,13 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         //NOTE: Wala ng ikot, "loadingMenu" na dinaanan
         //TODO: wait for 5 seconds, changing the displayed timer every 1 sec
+        gameStarted = true;
         StartCoroutine(waiter());
+    }
+
+    void OnStartGame()
+    {
+
     }
 
     //sa MasterClient lang may trigger yung function na 'to
@@ -333,6 +367,10 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void KickPlayer(Player foreignPlayer)
     {
+        if(PhotonNetwork.LocalPlayer == foreignPlayer)
+        {
+            leftNotKicked = false;
+        }
         PhotonNetwork.CloseConnection(foreignPlayer);
         //not "max/set player", you kicked somone
         IsMaxPlayer(false);

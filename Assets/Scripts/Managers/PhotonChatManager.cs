@@ -39,13 +39,14 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
 
     public void SubmitPublicChatOnClick()
     {
-        if (privateReceiver == "")
+        if (privateReceiver == "" && currentChat != "")
         {
             Debug.Log(currentChat);
             //channel = ROOM from PUN2
             chatClient.PublishMessage(myChannelName, currentChat);
             chatField.text = "";
-            currentChat = "sample: " + DateTime.Now.ToString();
+            //currentChat = "sample: " + DateTime.Now.ToString();
+            currentChat = "";
         }
     }
 
