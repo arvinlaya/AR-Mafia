@@ -93,8 +93,17 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         //}
 
         //hardcode
-        if (PhotonNetwork.LocalPlayer.NickName == "Mafia1".ToUpper() ||PhotonNetwork.LocalPlayer.NickName == "Mafia2".ToUpper() )
+        //if (PhotonNetwork.LocalPlayer.NickName == "Mafia1".ToUpper() ||PhotonNetwork.LocalPlayer.NickName == "Mafia2".ToUpper() )
+        //{
+        //    chatClient.Subscribe(new string[] { "MafiaCH" });
+        //}
+
+        //hardcode, TRY:
+        if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("ROLE"))
         {
+            Debug.Log("Mayroong Role...");
+            Debug.Log("ROLE: " + PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString());
+            if(PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA")
             chatClient.Subscribe(new string[] { "MafiaCH" });
         }
 
