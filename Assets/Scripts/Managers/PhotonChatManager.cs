@@ -7,6 +7,7 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using System;
 using Photon.Realtime;
@@ -43,6 +44,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         {
             if (currentChat.Contains("/mafia"))
             {
+                //chatDisplay.color = Color.red;
                 chatClient.PublishMessage("MafiaCH", currentChat);
             }
             else
@@ -55,6 +57,8 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
             chatField.text = "";
             //currentChat = "sample: " + DateTime.Now.ToString();
             currentChat = "";
+
+            //chatDisplay.color = Color.black;
         }
     }
 
@@ -89,8 +93,17 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         //}
 
         //hardcode
-        if (PhotonNetwork.LocalPlayer.NickName == "Mafia1" ||PhotonNetwork.LocalPlayer.NickName == "Mafia2" )
+        //if (PhotonNetwork.LocalPlayer.NickName == "Mafia1".ToUpper() ||PhotonNetwork.LocalPlayer.NickName == "Mafia2".ToUpper() )
+        //{
+        //    chatClient.Subscribe(new string[] { "MafiaCH" });
+        //}
+
+        //hardcode, TRY:
+        if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("ROLE"))
         {
+            Debug.Log("Mayroong Role...");
+            Debug.Log("ROLE: " + PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString());
+            if(PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA")
             chatClient.Subscribe(new string[] { "MafiaCH" });
         }
 
