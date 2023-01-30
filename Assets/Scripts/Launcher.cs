@@ -97,9 +97,9 @@ public class Launcher : MonoBehaviourPunCallbacks
         if (ignInputField.text != "" && ignInputField.text.Length <= 12)
         {
             ignModal.gameObject.SetActive(false);
-            PhotonNetwork.NickName = ignInputField.text;
+            PhotonNetwork.NickName = ignInputField.text.ToUpper();
             Debug.Log(PhotonNetwork.NickName);
-            ignText.text = ignInputField.text;
+            ignText.text = ignInputField.text.ToUpper();
             ignText.gameObject.SetActive(true);
             iconIgn.gameObject.SetActive(false);
         }
