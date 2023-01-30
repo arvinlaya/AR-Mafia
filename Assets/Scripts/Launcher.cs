@@ -260,9 +260,10 @@ public class Launcher : MonoBehaviourPunCallbacks
         //NOTE: Max is 8, minimum is 5... 5 or 6 or 7 or 8
 
         //NOTE: For final product, ganito yung lalagay:
+        Debug.Log("Loading Pre-game Screen # : " + PhotonNetwork.CurrentRoom.PlayerCount.ToString());
         //MenuManager.Instance.OpenMenu("pre-game-"+PhotonNetwork.CurrentRoom.PlayerCount.ToString());
 
-        //... While testing, ganito muna...
+        //... While testing, ganito muna... "laging sa 5 players..."
         MenuManager.Instance.OpenMenu("pre-game-5");
 
 
