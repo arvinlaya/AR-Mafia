@@ -45,7 +45,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
             if (currentChat.Contains("/m"))
             {
                 //chatDisplay.color = Color.red;
-                chatClient.PublishMessage("MafiaCH", currentChat.Replace("/m", "\n(MAFIA)\n"));
+                chatClient.PublishMessage("MafiaCH", currentChat.Replace("/m", "(MAFIA)\n"));
             }
             else
             {
@@ -123,15 +123,29 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
 
         for (int i = 0; i < senders.Length; i++)
         {
-            msgs = string.Format("{0}: {1}", senders[i], messages[i]);
+
+            if (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA"
+                &&
+                messages[i].ToString().Contains("(MAFIA)")
+                )
+            {
+
+                msgs = string.Format("\n>>>{0}{2}:\n{1}\n>>>", senders[i], messages[i].ToString().Replace("(MAFIA)", ""), "(MAFIA)");
+            }
+            else
+            {
+
+                msgs = string.Format("{0}: {1}", senders[i], messages[i]);
+            }
+
 
             //APPENDIND new "message"
             //TODO: Pwede naman gawin siguro na 1 TMP_Text per 1 Message
-                //if pwede, madali na palitan yung Color ng FONT
+            //if pwede, madali na palitan yung Color ng FONT
             //reference: yung sa mga list na may destroy object
-                //NOTE: Gamitan ng conditions:
-                    //Mafia lang mag re-render yung mafia messages
-                        //Done using PhotonView RPC
+            //NOTE: Gamitan ng conditions:
+            //Mafia lang mag re-render yung mafia messages
+            //Done using PhotonView RPC
             chatDisplay.text += "\n " + msgs;
         }
     }
