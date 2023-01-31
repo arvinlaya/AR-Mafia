@@ -60,6 +60,18 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     private bool gameStarted = false;
 
+    //USING PhotonView to sync...
+    private PhotonView PV;
+
+    //RPC Functions
+
+    [PunRPC]
+    void RPC_ShowPreGameMenu()
+    {
+        MenuManager.Instance.OpenMenu("pre-game-5");
+        //TODO: Lagay din dito yung lahat ng nasa "OnClickStart()"
+    }
+
 
     void Awake()
     {
@@ -83,10 +95,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     void Update()
     {
-       if(gameStarted)
-        {
-        MenuManager.Instance.OpenMenu("pre-game-5");
-        }
     }
 
     public override void OnConnectedToMaster()
@@ -302,9 +310,15 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
+
+        PV = GetComponent<PhotonView>();
+        if (PV.IsMine)
+        {
+            PV.RPC("RPC_ShowPreGameMenu", RpcTarget.All);
+
+        }
+        MenuManager.Instance.OpenMenu("pre-game-5");
         //NOTE: Wala ng ikot, "loadingMenu" na dinaanan
-        //TODO: wait for 5 seconds, changing the displayed timer every 1 sec
-        gameStarted = true;
         StartCoroutine(waiter());
     }
 
