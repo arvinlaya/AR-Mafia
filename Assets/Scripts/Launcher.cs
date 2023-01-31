@@ -60,6 +60,15 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     private bool gameStarted = false;
 
+    private PhotonView PV;
+
+    [PunRPC]
+    void RPC_StartGame()
+    {
+        //NOTE: Wala ng ikot, "loadingMenu" na dinaanan
+        StartCoroutine(waiter());
+    }
+
     void Awake()
     {
         Instance = this;
@@ -287,7 +296,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         //MenuManager.Instance.OpenMenu("pre-game-"+PhotonNetwork.CurrentRoom.PlayerCount.ToString());
 
         //... While testing, ganito muna... "laging sa 5 players..."
-        //MenuManager.Instance.OpenMenu("pre-game-5");
+        MenuManager.Instance.OpenMenu("pre-game-5");
 
 
         //Wait for 5 seconds
@@ -297,9 +306,11 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
-
-        //NOTE: Wala ng ikot, "loadingMenu" na dinaanan
-        StartCoroutine(waiter());
+        PV = GetComponent<PhotonView>();
+        if (PV.IsMine)
+        {
+            PV.RPC("RPC_StartGame", RpcTarget.All);
+        }
     }
 
     void OnStartGame()
