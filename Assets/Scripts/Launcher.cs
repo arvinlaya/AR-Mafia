@@ -250,14 +250,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
-        //if GO TO HOME BUITTON IS CLICKED, DON'T SHOW KICK PROMPT
-        //if(!leftNotKicked)
-        //{
-        //    wasKickedPromt.gameObject.SetActive(true);
-        //}
-
-        wasKickedPromt.gameObject.SetActive(true);
-
         MenuManager.Instance.OpenMenu("title");
     }
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -373,12 +365,25 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     }
 
+    [PunRPC]
+    void RPC_meWasKicked()
+    {
+        wasKickedPromt.gameObject.SetActive(true);
+    }
+
     public void KickPlayer(Player foreignPlayer)
     {
+        PV = GetComponent<PhotonView>();
+        if (PV.IsMine)
+        {
+            PV.RPC("RPC_meWasKicked", foreignPlayer);
+        }
+
         if (PhotonNetwork.LocalPlayer == foreignPlayer)
         {
             leftNotKicked = false;
         }
+
         PhotonNetwork.CloseConnection(foreignPlayer);
         //not "max/set player", you kicked somone
         IsMaxPlayer(false);

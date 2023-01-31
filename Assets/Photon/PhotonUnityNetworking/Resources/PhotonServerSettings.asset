@@ -43,6 +43,7 @@ MonoBehaviour:
   - RPC_OnSetRole
   - RPC_ShowPreGameMenu
   - RPC_StartGame
+  - RPC_meWasKicked
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
