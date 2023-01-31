@@ -9,7 +9,6 @@ using System.Linq;
 public class PlayerController : MonoBehaviourPunCallbacks
 {
     private bool isSet;
-
     Player player;
     PhotonView PV;
     [SerializeField] LeftButton LeftButtonPrefab;
@@ -21,7 +20,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         player = PhotonNetwork.LocalPlayer;
         PV = GetComponent<PhotonView>();
         buttonActive = false;
-
     }
 
     void Update()
@@ -105,16 +103,15 @@ public class PlayerController : MonoBehaviourPunCallbacks
                 model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Mafia"), transform.position, Quaternion.identity, 0, data);
                 break;
 
-            case "POLICE":
-                model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Police"), transform.position, Quaternion.identity, 0, data);
+            case "DETECTIVE":
+                model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Detective"), transform.position, Quaternion.identity, 0, data);
                 break;
 
             default:
                 Debug.Log("MESH ERROR");
                 break;
         }
-
-
+        GameManager.Instance.activateDisplayRole(role);
 
     }
 }

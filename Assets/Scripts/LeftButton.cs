@@ -4,7 +4,7 @@ using UnityEngine;
 using Photon.Realtime;
 using Photon.Pun;
 using System;
-using HashTable = ExitGames.Client.Photon.Hashtable;
+using System.Linq;
 
 public class LeftButton : MonoBehaviour
 {

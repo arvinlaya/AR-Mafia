@@ -76,8 +76,8 @@ public class RightButton : MonoBehaviour
                 new Mafia().skill(owner);
                 break;
 
-            case "POLICE":
-                new Police().skill(owner);
+            case "DETECTIVE":
+                new Detective().skill(owner);
                 break;
 
             default:

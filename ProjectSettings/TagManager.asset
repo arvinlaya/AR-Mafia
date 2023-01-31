@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - HouseButton
+  - PlayerSpawn8
+  - PlayerSpawn6
+  - PlayerSpawn7
+  - PlayerSpawn5
   layers:
   - Default
   - TransparentFX
@@ -39,6 +43,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: UI
+    uniqueID: 1020602213
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

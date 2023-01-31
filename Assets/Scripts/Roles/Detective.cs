@@ -1,14 +1,14 @@
 using Photon.Realtime;
 using UnityEngine;
 
-class Police : Role
+class Detective : Role
 {
     public string ROLE_TYPE { get; set; }
 
 
-    public Police()
+    public Detective()
     {
-        ROLE_TYPE = "POLICE";
+        ROLE_TYPE = "DETECTIVE";
     }
     public void skill(Player target)
     {
