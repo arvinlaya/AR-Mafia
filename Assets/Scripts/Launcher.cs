@@ -30,7 +30,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     //PlayerList
 
     //Max player
-    private const int _maxPlayer = 2;
+    private const int _maxPlayer = 3;
 
     //START GAME
     [SerializeField] TMP_Text waitingForPlayersText;
@@ -56,6 +56,19 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     [SerializeField] GameObject wasKickedPromt;
 
+    private bool leftNotKicked = true;
+
+    private bool gameStarted = false;
+
+    private PhotonView PV;
+
+    [PunRPC]
+    void RPC_StartGame()
+    {
+        //NOTE: Wala ng ikot, "loadingMenu" na dinaanan
+        StartCoroutine(waiter());
+    }
+
     void Awake()
     {
         Instance = this;
@@ -74,6 +87,10 @@ public class Launcher : MonoBehaviourPunCallbacks
             Debug.Log("Already connected!");
         }
 
+    }
+
+    void Update()
+    {
     }
 
     public override void OnConnectedToMaster()
@@ -97,9 +114,9 @@ public class Launcher : MonoBehaviourPunCallbacks
         if (ignInputField.text != "" && ignInputField.text.Length <= 12)
         {
             ignModal.gameObject.SetActive(false);
-            PhotonNetwork.NickName = ignInputField.text;
+            PhotonNetwork.NickName = ignInputField.text.ToUpper();
             Debug.Log(PhotonNetwork.NickName);
-            ignText.text = ignInputField.text;
+            ignText.text = ignInputField.text.ToUpper();
             ignText.gameObject.SetActive(true);
             iconIgn.gameObject.SetActive(false);
         }
@@ -145,6 +162,13 @@ public class Launcher : MonoBehaviourPunCallbacks
             Debug.Log(PhotonNetwork.CurrentRoom.Name + "OnJoinedRoom() (Public)");
             roomNameText.text = "Room: " + PhotonNetwork.CurrentRoom.Name;
             publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
+
+            if (PhotonNetwork.LocalPlayer != PhotonNetwork.MasterClient)
+            {
+                Debug.Log("agay dito yung pagka join ko");
+                waitingForPlayersText.text = "GET READY";
+            }
+
         }
         //PRIVATE GAME
         else
@@ -200,14 +224,18 @@ public class Launcher : MonoBehaviourPunCallbacks
     //Show Start button only when reached max players
     private void IsMaxPlayer(bool isMax)
     {
-        startGameButtonPublic.SetActive(isMax);
-        startGameButtonPrivate.SetActive(isMax);
-        waitingPlayerCardPublic.SetActive(!isMax);
-        waitingPlayerCardPrivate.SetActive(!isMax);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            startGameButtonPublic.SetActive(isMax);
+            startGameButtonPrivate.SetActive(isMax);
+            waitingPlayerCardPublic.SetActive(!isMax);
+            waitingPlayerCardPrivate.SetActive(!isMax);
+        }
     }
 
     public void LeaveRoom()
     {
+        leftNotKicked = true;
         IsMaxPlayer(false);//not max player, someone left...
         PhotonNetwork.CurrentRoom.IsOpen = true;//has slot
         PhotonNetwork.LeaveRoom();
@@ -222,7 +250,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
-        wasKickedPromt.gameObject.SetActive(true);
         MenuManager.Instance.OpenMenu("title");
     }
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -260,9 +287,10 @@ public class Launcher : MonoBehaviourPunCallbacks
         //NOTE: Max is 8, minimum is 5... 5 or 6 or 7 or 8
 
         //NOTE: For final product, ganito yung lalagay:
+        Debug.Log("Loading Pre-game Screen # : " + PhotonNetwork.CurrentRoom.PlayerCount.ToString());
         //MenuManager.Instance.OpenMenu("pre-game-"+PhotonNetwork.CurrentRoom.PlayerCount.ToString());
 
-        //... While testing, ganito muna...
+        //... While testing, ganito muna... "laging sa 5 players..."
         MenuManager.Instance.OpenMenu("pre-game-5");
 
 
@@ -273,9 +301,16 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
-        //NOTE: Wala ng ikot, "loadingMenu" na dinaanan
-        //TODO: wait for 5 seconds, changing the displayed timer every 1 sec
-        StartCoroutine(waiter());
+        PV = GetComponent<PhotonView>();
+        if (PV.IsMine)
+        {
+            PV.RPC("RPC_StartGame", RpcTarget.All);
+        }
+    }
+
+    void OnStartGame()
+    {
+
     }
 
     //sa MasterClient lang may trigger yung function na 'to
@@ -330,8 +365,25 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     }
 
+    [PunRPC]
+    void RPC_meWasKicked()
+    {
+        wasKickedPromt.gameObject.SetActive(true);
+    }
+
     public void KickPlayer(Player foreignPlayer)
     {
+        PV = GetComponent<PhotonView>();
+        if (PV.IsMine)
+        {
+            PV.RPC("RPC_meWasKicked", foreignPlayer);
+        }
+
+        if (PhotonNetwork.LocalPlayer == foreignPlayer)
+        {
+            leftNotKicked = false;
+        }
+
         PhotonNetwork.CloseConnection(foreignPlayer);
         //not "max/set player", you kicked somone
         IsMaxPlayer(false);

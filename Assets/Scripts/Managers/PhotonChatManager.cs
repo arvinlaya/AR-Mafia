@@ -7,6 +7,7 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using System;
 using Photon.Realtime;
@@ -39,13 +40,25 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
 
     public void SubmitPublicChatOnClick()
     {
-        if (privateReceiver == "")
+        if (privateReceiver == "" && currentChat != "")
         {
-            Debug.Log(currentChat);
+            if (currentChat.Contains("/mafia"))
+            {
+                //chatDisplay.color = Color.red;
+                chatClient.PublishMessage("MafiaCH", currentChat);
+            }
+            else
+            {
             //channel = ROOM from PUN2
             chatClient.PublishMessage(myChannelName, currentChat);
+            }
+
+
             chatField.text = "";
-            currentChat = "sample: " + DateTime.Now.ToString();
+            //currentChat = "sample: " + DateTime.Now.ToString();
+            currentChat = "";
+
+            //chatDisplay.color = Color.black;
         }
     }
 
@@ -73,6 +86,28 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         //use room name as channel name?
         myChannelName = PhotonNetwork.CurrentRoom.Name;
         chatClient.Subscribe(new string[] { myChannelName });
+        //TODO: Kapag okay na yung sa actual game
+        //if (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"] == "MAFIA")
+        //{
+        //    chatClient.Subscribe(new string[] { "MafiaCH" });
+        //}
+
+        //hardcode
+        //if (PhotonNetwork.LocalPlayer.NickName == "Mafia1".ToUpper() ||PhotonNetwork.LocalPlayer.NickName == "Mafia2".ToUpper() )
+        //{
+        //    chatClient.Subscribe(new string[] { "MafiaCH" });
+        //}
+
+        //hardcode, TRY:
+        if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("ROLE"))
+        {
+            Debug.Log("Mayroong Role...");
+            Debug.Log("ROLE: " + PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString());
+            if(PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA")
+            chatClient.Subscribe(new string[] { "MafiaCH" });
+        }
+
+
         Debug.Log("Channel name is" + myChannelName);
     }
 
