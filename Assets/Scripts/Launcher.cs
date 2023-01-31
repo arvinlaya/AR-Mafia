@@ -60,7 +60,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     private bool gameStarted = false;
 
-
     void Awake()
     {
         Instance = this;
@@ -83,10 +82,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     void Update()
     {
-       if(gameStarted)
-        {
-        MenuManager.Instance.OpenMenu("pre-game-5");
-        }
     }
 
     public override void OnConnectedToMaster()
@@ -302,9 +297,8 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
+
         //NOTE: Wala ng ikot, "loadingMenu" na dinaanan
-        //TODO: wait for 5 seconds, changing the displayed timer every 1 sec
-        gameStarted = true;
         StartCoroutine(waiter());
     }
 
