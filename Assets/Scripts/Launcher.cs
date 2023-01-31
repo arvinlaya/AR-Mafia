@@ -163,7 +163,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             roomNameText.text = "Room: " + PhotonNetwork.CurrentRoom.Name;
             publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
 
-            if ( PhotonNetwork.LocalPlayer != PhotonNetwork.MasterClient)
+            if (PhotonNetwork.LocalPlayer != PhotonNetwork.MasterClient)
             {
                 Debug.Log("agay dito yung pagka join ko");
                 waitingForPlayersText.text = "GET READY";
@@ -224,10 +224,13 @@ public class Launcher : MonoBehaviourPunCallbacks
     //Show Start button only when reached max players
     private void IsMaxPlayer(bool isMax)
     {
-        startGameButtonPublic.SetActive(isMax);
-        startGameButtonPrivate.SetActive(isMax);
-        waitingPlayerCardPublic.SetActive(!isMax);
-        waitingPlayerCardPrivate.SetActive(!isMax);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            startGameButtonPublic.SetActive(isMax);
+            startGameButtonPrivate.SetActive(isMax);
+            waitingPlayerCardPublic.SetActive(!isMax);
+            waitingPlayerCardPrivate.SetActive(!isMax);
+        }
     }
 
     public void LeaveRoom()
@@ -372,7 +375,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void KickPlayer(Player foreignPlayer)
     {
-        if(PhotonNetwork.LocalPlayer == foreignPlayer)
+        if (PhotonNetwork.LocalPlayer == foreignPlayer)
         {
             leftNotKicked = false;
         }
