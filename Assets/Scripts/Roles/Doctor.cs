@@ -12,6 +12,7 @@ class Doctor : Role
     }
     public void skill(Player target)
     {
-        target.CustomProperties["IS_SAVED"] = true;
+        target.SetCustomProperties(new Hashtable() { { "IS_SAVED", true } });
+        Debug.Log(target.NickName + "IS SAVED");
     }
 }

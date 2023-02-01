@@ -229,7 +229,10 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
-        PhotonNetwork.LoadLevel(1);//1 = build settings index
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel(1);//1 = build settings index
+        }
     }
 
     //sa MasterClient lang may trigger yung function na 'to

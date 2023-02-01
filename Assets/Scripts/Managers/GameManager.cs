@@ -7,22 +7,25 @@ using Photon.Realtime;
 using ExitGames.Client.Photon;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using TMPro;
-
+using System.IO;
 public class GameManager : MonoBehaviourPunCallbacks
 {
     public static GameManager Instance;
-    public static int NIGHT_LENGHT = 40;
-    public static int DAY_DISCUSSION_LENGHT = 30;
-    public static int DAY_ACCUSE_LENGHT = 20;
-    public static int DAY_ACCUSE_DEFENSE_LENGHT = 20;
-    public static int DAY_VOTE_LENGHT = 20;
-    public static int DOOR_COOLDOWN = 15;
+    public static int NIGHT_LENGHT = 15; //40
+    public static int DAY_DISCUSSION_LENGHT = 10; //30
+    public static int DAY_ACCUSE_LENGHT = 10; //20
+    public static int DAY_ACCUSE_DEFENSE_LENGHT = 10; //20
+    public static int DAY_VOTE_LENGHT = 20; //20
+    public static int DOOR_COOLDOWN = 15; //15
+
+    public static int ROLE_PANEL_DURATION = 3;
+
+    public static int GAME_START = 3;
     public static GAME_PHASE GAME_STATE;
     PhotonView PV;
     Role[] roles;
     TMP_Text uiTimer;
-
-
+    Player accusedPlayer;
     public bool onDoorCooldown { get; set; }
     int openDoorTime;
     private int currentTime;
@@ -62,10 +65,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         onDoorCooldown = false;
         Instance.uiTimer = ReferenceManager.Instance.UITimer;
-
-        Invoke("removeDisplayRole", 10);
-        Invoke("startGame", 9);
+        Instance.PV = Instance.gameObject.GetComponent<PhotonView>();
+        Invoke("removeDisplayRole", ROLE_PANEL_DURATION);
+        Invoke("startGame", GAME_START);
     }
+
     // Start is called before the first frame update
     public override void OnEnable()
     {
@@ -122,8 +126,24 @@ public class GameManager : MonoBehaviourPunCallbacks
             foreach (Player player in PhotonNetwork.PlayerList)
             {
                 Hashtable roleCustomProps = new Hashtable();
-                roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
-                roleCustomProps.Add("IS_KILLED", false);
+
+                // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
+                // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
+                // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
+                // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
+                // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
+                // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
+                if (player.IsMasterClient)
+                {
+                    roleCustomProps.Add("ROLE", "MAFIA");
+                }
+                else
+                {
+                    roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+
+                }
+
+                roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
                 roleCustomProps.Add("VOTE_VALUE", 0);
                 roleCustomProps.Add("VOTED", "");
@@ -350,46 +370,49 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             GameManager.Instance.onDoorCooldown = false;
 
-            // Destroys house button when a phase ends
-            foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
-            {
-                Destroy(gameObject);
-            }
-
-
             if (eventCode == (byte)GameManager.EVENT_CODE.NIGHT_START)
             {
-                SetPhase_R((object)photonEvent.CustomData);
+                foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+                {
+                    Destroy(gameObject);
+                }
+                StartCoroutine(nightStartSequence(photonEvent));
+
             }
             else if (eventCode == (byte)GameManager.EVENT_CODE.DAY_DISCUSSION_START)
             {
-                SetPhase_R((object)photonEvent.CustomData);
-
-                foreach (Player player in PhotonNetwork.PlayerList)
+                foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
                 {
-                    if ((bool)player.CustomProperties["IS_KILLED"])
-                    {
-
-                    }
+                    Destroy(gameObject);
                 }
+                StartCoroutine(dayDiscussionStartSequence(photonEvent));
             }
             else if (eventCode == (byte)GameManager.EVENT_CODE.DAY_ACCUSE_START)
             {
+                foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+                {
+                    Destroy(gameObject);
+                }
                 SetPhase_R((object)photonEvent.CustomData);
 
             }
             else if (eventCode == (byte)GameManager.EVENT_CODE.DAY_ACCUSE_DEFENSE_START)
             {
-                SetPhase_R((object)photonEvent.CustomData);
-
+                foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+                {
+                    Destroy(gameObject);
+                }
+                StartCoroutine(dayAccuseDefenseStartSequence(photonEvent));
             }
             else if (eventCode == (byte)GameManager.EVENT_CODE.DAY_VOTE_START)
             {
+                foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+                {
+                    Destroy(gameObject);
+                }
                 SetPhase_R((object)photonEvent.CustomData);
 
             }
-
-
         }
     }
     private void EndPhase()
@@ -428,16 +451,131 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void startGame()
     {
+        Instance.PV = GetComponent<PhotonView>();
+
         if (PhotonNetwork.IsMasterClient)
         {
-            PV = GetComponent<PhotonView>();
             SetPhase_S(GameManager.GAME_PHASE.NIGHT);
         }
     }
 
-    private void promptMurdered(Player player)
+
+
+
+    private IEnumerator dayDiscussionStartSequence(EventData photonEvent)
     {
+        foreach (HouseController controller in GameObject.FindObjectsOfType<HouseController>())
+        {
+            controller.openDoor();
+        }
+
+        yield return new WaitForSeconds(2f);
+
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if ((bool)player.CustomProperties["IS_DEAD"])
+            {
+                if ((bool)player.CustomProperties["IS_SAVED"] == false)
+                {
+                    yield return StartCoroutine(PlayerManager.getPlayerController(player).dieSequence());
+                    yield return StartCoroutine(PromptManager.Instance.promptMurdered(player));
+                    yield return StartCoroutine(PromptManager.Instance.promptDayDiscussion(player));
+                }
+            }
+        }
+
+        foreach (HouseController controller in GameObject.FindObjectsOfType<HouseController>())
+        {
+            controller.closeDoor();
+        }
+        SetPhase_R((object)photonEvent.CustomData);
+    }
+
+    private IEnumerator dayAccuseDefenseStartSequence(EventData photonEvent)
+    {
+        foreach (HouseController controller in GameObject.FindObjectsOfType<HouseController>())
+        {
+            controller.openDoor();
+        }
+
+        yield return new WaitForSeconds(2f);
+        Player highestAccuseVote = null;
+
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if ((int)player.CustomProperties["ACCUSE_VOTE_COUNT"] > 0)
+            {
+                if (highestAccuseVote == null)
+                {
+                    highestAccuseVote = player;
+                }
+                else
+                {
+                    highestAccuseVote = higherAccuseVote(highestAccuseVote, player);
+                }
+            }
+
+        }
+
+        if (highestAccuseVote != null)
+        {
+
+            foreach (Player player in PhotonNetwork.PlayerList)
+            {
+                if (highestAccuseVote.NickName != player.NickName)
+                {
+                    if ((int)highestAccuseVote.CustomProperties["ACCUSE_VOTE_COUNT"] == (int)player.CustomProperties["ACCUSE_VOTE_COUNT"])
+                    {
+                        highestAccuseVote = null;
+                    }
+                }
+
+            }
+            if (highestAccuseVote != null)
+            {
+                yield return StartCoroutine(PlayerManager.getPlayerController(highestAccuseVote).accusedSequence());
+                yield return StartCoroutine(PromptManager.Instance.promptAccused(highestAccuseVote));
+            }
+        }
+        accusedPlayer = highestAccuseVote;
+        yield return new WaitForSeconds(2f);
+
+        SetPhase_R((object)photonEvent.CustomData);
 
     }
 
+    private IEnumerator nightStartSequence(EventData photonEvent)
+    {
+        if (accusedPlayer != null)
+        {
+            if ((int)accusedPlayer.CustomProperties["ACCUSE_VOTE_COUNT"] > 0)
+            {
+                yield return StartCoroutine(PlayerManager.getPlayerController(accusedPlayer).guiltySequence());
+                yield return new WaitForSeconds(2f);
+                yield return StartCoroutine(PromptManager.Instance.promptGuilty(accusedPlayer));
+
+            }
+        }
+
+
+        SetPhase_R((object)photonEvent.CustomData);
+    }
+
+    private Player higherAccuseVote(Player player1, Player player2)
+    {
+        int player1VoteCount = (int)player1.CustomProperties["ACCUSE_VOTE_COUNT"];
+        int player2VoteCount = (int)player2.CustomProperties["ACCUSE_VOTE_COUNT"];
+        if (player1VoteCount > player2VoteCount)
+        {
+            return player1;
+        }
+        else
+        {
+            return player2;
+        }
+    }
+    public void rotateToCamera(GameObject toRotate, GameObject camera)
+    {
+        toRotate.transform.LookAt(camera.transform);
+    }
 }

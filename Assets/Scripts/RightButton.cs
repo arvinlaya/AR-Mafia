@@ -4,10 +4,12 @@ using UnityEngine;
 using Photon.Realtime;
 using Photon.Pun;
 using System;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class RightButton : MonoBehaviour
 {
-    Vector3 offset = new Vector3(1.2f, 2, 0);
+    Vector3 offset = new Vector3(1f, 5, 0);
+    PlayerController ownerController;
 
     public HouseController house { get; set; }
 
@@ -17,6 +19,7 @@ public class RightButton : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        ownerController = PlayerManager.getPlayerController(owner);
         transform.localPosition += offset;
         OnEvent = null;
 
@@ -39,6 +42,8 @@ public class RightButton : MonoBehaviour
 
             case GameManager.GAME_PHASE.DAY_VOTE:
                 OnEvent += Vote;
+                transform.position = ownerController.transform.position;
+                transform.localPosition += offset;
                 break;
         }
     }
@@ -53,6 +58,7 @@ public class RightButton : MonoBehaviour
             {
                 if (hit.transform == gameObject.transform)
                 {
+                    StartCoroutine(nameof(clickFeedback));
                     OnEvent?.Invoke();
                 }
             }
@@ -91,17 +97,31 @@ public class RightButton : MonoBehaviour
         if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 0)
         {
             int voteCount = 1 + (int)owner.CustomProperties["GUILTY_VOTE"];
-            owner.CustomProperties["GUILTY_VOTE"] = voteCount;
-            PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] = 1;
+            owner.SetCustomProperties(new Hashtable() { { "GUILTY_VOTE", voteCount } });
+
+            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTE_VALUE", 1 } });
+
         }
         else if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == -1)
         {
             int voteCount = (int)owner.CustomProperties["INNOCENT_VOTE"] - 1;
-            owner.CustomProperties["INNOCENT_VOTE"] = voteCount;
+            owner.SetCustomProperties(new Hashtable() { { "INNOCENT_VOTE", voteCount } });
 
             voteCount = 1 + (int)owner.CustomProperties["GUILTY_VOTE"];
-            owner.CustomProperties["GUILTY_VOTE"] = voteCount;
-            PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] = -1;
+            owner.SetCustomProperties(new Hashtable() { { "GUILTY_VOTE", voteCount } });
+
+            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTE_VALUE", -1 } });
         }
+    }
+
+
+
+    IEnumerator clickFeedback()
+    {
+        gameObject.transform.localScale += new Vector3(-.15f, -.15f, -.15f);
+
+        yield return new WaitForSeconds(.1f);
+
+        gameObject.transform.localScale += new Vector3(.15f, .15f, .15f);
     }
 }

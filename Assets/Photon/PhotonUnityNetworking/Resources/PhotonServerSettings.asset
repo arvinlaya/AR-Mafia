@@ -41,6 +41,8 @@ MonoBehaviour:
   - RespawnSpaceship
   - RPC_InstantiatePlayer
   - RPC_OnSetRole
+  - RPC_instantantiatePlayerManager
+  - RPC_doorEvent
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

@@ -11,6 +11,8 @@ public class SpawnManager : MonoBehaviour
     int playerCount = 5;
     public static SpawnManager Instance;
     int index;
+
+    public bool isSet;
     PhotonView PV;
     [SerializeField] Transform[] PlayerSpawn5;
     [SerializeField] Transform[] PlayerSpawn6;
@@ -28,6 +30,7 @@ public class SpawnManager : MonoBehaviour
             return;
         }
         Instance = this;
+        Instance.isSet = false;
     }
     // Start is called before the first frame update
     void Start()
@@ -37,12 +40,18 @@ public class SpawnManager : MonoBehaviour
 
     public void SpawnPlayersAndHouses()
     {
-        index = 0;
-        foreach (Player player in PhotonNetwork.PlayerList)
+        if (Instance.isSet == false)
         {
-            PV.RPC("RPC_InstantiatePlayer", player, index);
-            index++;
+            index = 0;
+            foreach (Player player in PhotonNetwork.PlayerList)
+            {
+                PV.RPC("RPC_InstantiatePlayer", player, index);
+                index++;
+            }
+            Instance.isSet = true;
         }
+
+
     }
 
     Transform[] GetSpawnPoints(int playerCount)

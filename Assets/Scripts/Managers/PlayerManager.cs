@@ -22,4 +22,27 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    public static PlayerController getPlayerController(Player player)
+    {
+        foreach (PlayerController controller in GameObject.FindObjectsOfType<PlayerController>())
+        {
+            if (player == controller.PV.Owner)
+            {
+                return controller;
+            }
+        }
+        return null;
+    }
+    public static HouseController getPlayerHouseController(Player player)
+    {
+        foreach (HouseController controller in GameObject.FindObjectsOfType<HouseController>())
+        {
+            if (player == controller.PV.Owner)
+            {
+                return controller;
+            }
+        }
+        return null;
+    }
+
 }

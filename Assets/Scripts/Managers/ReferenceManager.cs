@@ -11,6 +11,8 @@ public class ReferenceManager : MonoBehaviour
     [SerializeField] public Transform middle;
     [SerializeField] public GameObject panelParent;
     [SerializeField] public GameObject[] rolePanels;
+    [SerializeField] public GameObject prompt;
+    [SerializeField] public GameObject camera;
     public int time;
     public static ReferenceManager Instance;
     void Awake()

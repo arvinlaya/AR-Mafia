@@ -5,21 +5,35 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.IO;
 using System.Linq;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PlayerController : MonoBehaviourPunCallbacks
 {
     private bool isSet;
     Player player;
-    PhotonView PV;
+    public PhotonView PV;
     [SerializeField] LeftButton LeftButtonPrefab;
     [SerializeField] RightButton RightButtonPrefab;
     public bool buttonActive;
+
+    private float step;
+    Transform playerTransform;
+    Transform targetTransform;
+    private readonly float SPEED = 1;
+    private bool movingToMiddle;
+    private Animator animator;
+
     void Awake()
     {
         isSet = false;
         player = PhotonNetwork.LocalPlayer;
         PV = GetComponent<PhotonView>();
         buttonActive = false;
+        step = SPEED * Time.deltaTime;
+        playerTransform = gameObject.transform;
+        targetTransform = ReferenceManager.Instance.middle.transform;
+        movingToMiddle = false;
+        animator = gameObject.GetComponent<Animator>();
     }
 
     void Update()
@@ -42,8 +56,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
                     }
                     else
                     {
-
-
                         return;
                     }
                     // if (!hitPV.IsMine)
@@ -65,12 +77,23 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    void FixedUpdate()
+    {
+        if (movingToMiddle)
+        {
+            moveToMiddle();
+        }
+    }
+
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
         base.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
         if (PhotonNetwork.IsMasterClient)
         {
-            PV.RPC("RPC_OnSetRole", targetPlayer, changedProps["ROLE"], targetPlayer.NickName);
+            if (changedProps["ROLE"] != null)
+            {
+                PV.RPC("RPC_OnSetRole", targetPlayer, changedProps["ROLE"], targetPlayer.NickName);
+            }
         }
     }
 
@@ -80,14 +103,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         object[] data = { (FindObjectsOfType<PlayerController>().FirstOrDefault(x => x.PV.Owner.NickName == targetName)).GetComponent<PhotonView>().ViewID };
 
         GameObject model = null;
-        if (isSet == false)
-        {
-            isSet = true;
-        }
-        else
-        {
-            return;
-        }
 
         switch (role)
         {
@@ -114,4 +129,55 @@ public class PlayerController : MonoBehaviourPunCallbacks
         GameManager.Instance.activateDisplayRole(role);
 
     }
+    public IEnumerator dieSequence()
+    {
+        yield return new WaitForSeconds(1f);
+
+        animator.SetBool("isIdle", false);
+        animator.SetBool("isWalking", true);
+
+        movingToMiddle = true;
+
+        yield return new WaitForSeconds(3f);
+
+        dieAnimation();
+
+        yield return new WaitForSeconds(4f);
+    }
+
+    public IEnumerator accusedSequence()
+    {
+        yield return new WaitForSeconds(1f);
+
+        animator.SetBool("isIdle", false);
+        animator.SetBool("isWalking", true);
+
+        movingToMiddle = true;
+    }
+
+    public IEnumerator guiltySequence()
+    {
+        dieAnimation();
+
+        yield return new WaitForSeconds(4f);
+    }
+
+    private void moveToMiddle()
+    {
+        playerTransform.position = Vector3.MoveTowards(playerTransform.position, targetTransform.position, step);
+
+        if (Vector3.Distance(playerTransform.position, targetTransform.position) < 0.001f)
+        {
+            movingToMiddle = false;
+            animator.SetBool("isIdle", true);
+            animator.SetBool("isWalking", false);
+        }
+    }
+
+    private void dieAnimation()
+    {
+        animator.SetBool("isIdle", false);
+        animator.SetBool("isDead", true);
+    }
+
 }

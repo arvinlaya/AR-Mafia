@@ -1,5 +1,6 @@
-using Photon.Realtime;
 using UnityEngine;
+using Photon.Realtime;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 class Mafia : Role
 {
@@ -12,6 +13,6 @@ class Mafia : Role
     }
     public void skill(Player target)
     {
-        target.CustomProperties["IS_DEAD"] = true;
+        target.SetCustomProperties(new Hashtable() { { "IS_DEAD", true } });
     }
 }
