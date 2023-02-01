@@ -81,10 +81,10 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
 
     public void OnConnected()
     {
-        foreach (Transform trans in chatDisplayContent)
-        {
-            Destroy(trans.gameObject);
-        }
+        //foreach (Transform trans in chatDisplayContent)
+        //{
+        //    Destroy(trans.gameObject);
+        //}
 
         isConnected = true;
 
