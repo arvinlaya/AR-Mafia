@@ -23,7 +23,9 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
 
     [SerializeField] string privateReceiver = "";
     [SerializeField] TMP_InputField chatField;
-    [SerializeField] TMP_Text chatDisplay;
+    //[SerializeField] TMP_Text chatDisplay;
+    [SerializeField] TMP_Text  chatDisplayItemPrefab2;
+    [SerializeField] Transform chatDisplayContent;
     Player player;
 
     private string myChannelName;
@@ -121,22 +123,31 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         //TODO, pwede dito mag "spawn" ng  mga additional "TexT"
         string msgs = "";
 
+        foreach (Transform trans in chatDisplayContent)
+        {
+            Destroy(trans.gameObject);
+        }
+
         for (int i = 0; i < senders.Length; i++)
         {
 
-            if (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA"
-                &&
-                messages[i].ToString().Contains("(MAFIA)")
-                )
-            {
+            //if (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA"
+            //    &&
+            //    messages[i].ToString().Contains("(MAFIA)")
+            //    )
+            //{
 
-                msgs = string.Format("\n>>>{0}{2}:\n{1}\n>>>", senders[i], messages[i].ToString().Replace("(MAFIA)", ""), "(MAFIA)");
-            }
-            else
-            {
+            //    msgs = string.Format("\n>>>{0}{2}:\n{1}\n>>>", senders[i], messages[i].ToString().Replace("(MAFIA)", ""), "(MAFIA)");
+            //}
+            //else
+            //{
 
-                msgs = string.Format("{0}: {1}", senders[i], messages[i]);
-            }
+            //    msgs = string.Format("{0}: {1}", senders[i], messages[i]);
+            //}
+
+            msgs = string.Format("{0}: {1}", senders[i], messages[i]);
+
+
 
 
             //APPENDIND new "message"
@@ -146,7 +157,8 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
             //NOTE: Gamitan ng conditions:
             //Mafia lang mag re-render yung mafia messages
             //Done using PhotonView RPC
-            chatDisplay.text += "\n " + msgs;
+
+            //chatDisplayItemPrefab2.text += "\n " + msgs;
         }
     }
 
