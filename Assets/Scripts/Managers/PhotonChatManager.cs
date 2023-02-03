@@ -55,10 +55,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
             }
 
             chatField.text = "";
-            //currentChat = "sample: " + DateTime.Now.ToString();
             currentChat = "";
-
-            //chatDisplay.color = Color.black;
         }
     }
 
@@ -169,12 +166,12 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         if (isConnected)
         {
             chatClient.Service();
-        }
 
-        //if (chatField.text != "" && Input.GetKey(KeyCode.Return))
-        //{
-        //    SubmitPublicChatOnClick();
-        //}
+            if (chatField.text != "" && Input.GetKey(KeyCode.Return))
+            {
+                SubmitPublicChatOnClick();
+            }
+        }
 
     }
 

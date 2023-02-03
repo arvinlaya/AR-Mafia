@@ -14,7 +14,9 @@ public class ChatDisplayItem : MonoBehaviour
         if (messages[0].ToString().Contains("(MAFIA)"))
         {
             text.color = Color.red;
-            text.text = string.Format("{0}{2}: {1}", senders[0], messages[0], "(Mafia)");
+            //sample:
+            //Player1(Mafia):Message Here
+            text.text = string.Format("{0}{1}", senders[0], messages[0].ToString().Replace("(MAFIA)","(Mafia):"));
         }
         else
         {
