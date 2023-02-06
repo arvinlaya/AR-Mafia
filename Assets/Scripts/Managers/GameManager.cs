@@ -7,14 +7,13 @@ using Photon.Realtime;
 using ExitGames.Client.Photon;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using TMPro;
-using System.IO;
 public class GameManager : MonoBehaviourPunCallbacks
 {
     public static GameManager Instance;
-    public static int NIGHT_LENGHT = 15; //40
-    public static int DAY_DISCUSSION_LENGHT = 10; //30
-    public static int DAY_ACCUSE_LENGHT = 10; //20
-    public static int DAY_ACCUSE_DEFENSE_LENGHT = 10; //20
+    public static int NIGHT_LENGHT = 40; //40
+    public static int DAY_DISCUSSION_LENGHT = 30; //30
+    public static int DAY_ACCUSE_LENGHT = 20; //20
+    public static int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20
     public static int DAY_VOTE_LENGHT = 20; //20
     public static int DOOR_COOLDOWN = 15; //15
 
