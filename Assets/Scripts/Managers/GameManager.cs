@@ -164,4 +164,5 @@ public class GameManager : MonoBehaviourPunCallbacks
             Debug.Log(arr[x].ToString());
         }
     }
+
 }

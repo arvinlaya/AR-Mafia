@@ -62,6 +62,9 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     private PhotonView PV;
 
+    //Reconnecting
+    private RoomOptions _roomOptions = new RoomOptions();
+
     [PunRPC]
     void RPC_StartGame()
     {
@@ -142,7 +145,18 @@ public class Launcher : MonoBehaviourPunCallbacks
     public void CreateRoom()
     {
         isPrivate = false;
-        PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"));
+
+        //RECONNECTING
+
+        //Try to not touch
+        _roomOptions.CleanupCacheOnLeave = false;
+
+        //_roomOptions.MaxPlayers = 8;
+
+        _roomOptions.PlayerTtl = 90000;//30 seconds
+        _roomOptions.EmptyRoomTtl = 60000;//30 seconds
+
+        PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"), _roomOptions);
         MenuManager.Instance.OpenMenu("loading");
     }
 
