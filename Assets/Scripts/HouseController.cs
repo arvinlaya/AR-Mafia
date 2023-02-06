@@ -10,57 +10,51 @@ using System.IO;
 public class HouseController : MonoBehaviour
 {
 
-    PhotonView PV;
-    [SerializeField] OpenDoorButton openDoorButtonPrefab;
-    [SerializeField] SkillButton skillButtonPrefab;
-    public bool buttonActive;
+    public PhotonView PV { get; set; }
+
+    Animator animator;
+    public PhotonAnimatorView animatorView;
     void Awake()
     {
         PV = GetComponent<PhotonView>();
-        buttonActive = false;
+        animatorView = GetComponent<PhotonAnimatorView>();
     }
     // Start is called before the first frame update
     void Start()
     {
+        animator = GetComponent<Animator>();
+        LeftButton.OnDoorEvent += DoorEvent;
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (PV.IsMine)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                RaycastHit hit;
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out hit))
-                {
-                    PhotonView hitPV = hit.transform.GetComponent<PhotonView>();
-                    if (hitPV)
-                    {
-                        foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
-                        {
-                            Destroy(gameObject);
-                        }
-                    }
-                    else
-                    {
-                        return;
-                    }
-                    if (!hitPV.IsMine)
-                    {
-                        OpenDoorButton doorTemp;
-                        SkillButton skillTemp;
-                        doorTemp = Instantiate(openDoorButtonPrefab, hitPV.transform.position, Quaternion.identity);
-                        skillTemp = Instantiate(skillButtonPrefab, hitPV.transform.position, Quaternion.identity);
+    }
 
-                        doorTemp.house = hitPV.GetComponent<HouseController>();
-                        skillTemp.target = hitPV.Owner;
-                    }
-                }
+    void DoorEvent(PhotonView pv)
+    {
+        if (pv == this.PV)
+        {
+            openDoor();
+        }
+        else
+        {
+            if (animator.GetBool("isOpen") == true)
+            {
+                closeDoor();
             }
         }
-
     }
+
+    public void openDoor()
+    {
+        animator.SetBool("isOpen", true);
+    }
+
+    public void closeDoor()
+    {
+        animator.SetBool("isOpen", false);
+    }
+
 }

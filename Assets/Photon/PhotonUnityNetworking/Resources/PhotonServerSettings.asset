@@ -41,6 +41,8 @@ MonoBehaviour:
   - RespawnSpaceship
   - RPC_InstantiatePlayer
   - RPC_OnSetRole
+  - RPC_instantantiatePlayerManager
+  - RPC_doorEvent
   - RPC_ShowPreGameMenu
   - RPC_StartGame
   - RPC_meWasKicked

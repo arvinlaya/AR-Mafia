@@ -4,25 +4,50 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
 using Photon.Realtime;
+using ExitGames.Client.Photon;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
-using System.Linq;
-
+using TMPro;
 public class GameManager : MonoBehaviourPunCallbacks
 {
     public static GameManager Instance;
-    public static int NIGHT_LENGHT = 40;
-    public static int DAY_DISCUSSION_LENGHT = 30;
+    public static int NIGHT_LENGHT = 40; //40
+    public static int DAY_DISCUSSION_LENGHT = 30; //30
+    public static int DAY_ACCUSE_LENGHT = 20; //20
+    public static int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20
+    public static int DAY_VOTE_LENGHT = 20; //20
+    public static int DOOR_COOLDOWN = 15; //15
+
+    public static int ROLE_PANEL_DURATION = 3;
+
+    public static int GAME_START = 3;
+    public static GAME_PHASE GAME_STATE;
     PhotonView PV;
     Role[] roles;
-
-    [SerializeField] public GameObject[] characterModels;
+    TMP_Text uiTimer;
+    Player accusedPlayer;
+    public bool onDoorCooldown { get; set; }
+    int openDoorTime;
+    private int currentTime;
+    private Coroutine timerCoroutine;
 
     public enum EVENT_CODE : byte
     {
         REFRESH_TIMER,
-        DAY_START,
+        DAY_DISCUSSION_START,
+        DAY_ACCUSE_START,
+        DAY_ACCUSE_DEFENSE_START,
+        DAY_VOTE_START,
         NIGHT_START,
         PHASE_END
+    }
+
+    public enum GAME_PHASE : byte
+    {
+        DAY_DISCUSSION,
+        DAY_ACCUSE,
+        DAY_ACCUSE_DEFENSE,
+        DAY_VOTE,
+        NIGHT
     }
 
     void Awake()
@@ -37,16 +62,19 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            PV = GetComponent<PhotonView>();
-            characterModels = new GameObject[4];
-        }
+        onDoorCooldown = false;
+        Instance.uiTimer = ReferenceManager.Instance.UITimer;
+        Instance.PV = Instance.gameObject.GetComponent<PhotonView>();
+        Invoke("removeDisplayRole", ROLE_PANEL_DURATION);
+        Invoke("startGame", GAME_START);
     }
+
     // Start is called before the first frame update
     public override void OnEnable()
     {
         base.OnEnable();
+        PhotonNetwork.NetworkingClient.EventReceived -= OnEvent;
+        PhotonNetwork.NetworkingClient.EventReceived += OnEvent;
         if (PhotonNetwork.IsMasterClient)
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
@@ -56,10 +84,28 @@ public class GameManager : MonoBehaviourPunCallbacks
     public override void OnDisable()
     {
         base.OnDisable();
+        PhotonNetwork.NetworkingClient.EventReceived -= OnEvent;
+
         if (PhotonNetwork.IsMasterClient)
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
+    }
+
+    public void setDoorCooldown()
+    {
+        openDoorTime = ReferenceManager.Instance.time;
+        onDoorCooldown = true;
+    }
+
+    public bool isDoorCooldown()
+    {
+        if ((openDoorTime - DOOR_COOLDOWN) >= ReferenceManager.Instance.time)
+        {
+            onDoorCooldown = false;
+        }
+        return onDoorCooldown;
+
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
@@ -79,13 +125,35 @@ public class GameManager : MonoBehaviourPunCallbacks
             foreach (Player player in PhotonNetwork.PlayerList)
             {
                 Hashtable roleCustomProps = new Hashtable();
-                roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
-                roleCustomProps.Add("IS_KILLED", false);
+
+                // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
+                // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
+                // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
+                // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
+                // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
+                // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
+                if (player.IsMasterClient)
+                {
+                    roleCustomProps.Add("ROLE", "MAFIA");
+                }
+                else
+                {
+                    roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+
+                }
+
+                roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
+                roleCustomProps.Add("VOTE_VALUE", 0);
+                roleCustomProps.Add("VOTED", "");
+                roleCustomProps.Add("ACCUSE_VOTE_COUNT", 0);
+                roleCustomProps.Add("GUILTY_VOTE", 0);
+                roleCustomProps.Add("INNOCENT_VOTE", 0);
                 player.SetCustomProperties(roleCustomProps);
                 index++;
             }
         }
+
     }
 
     void generateRoles(int playerCount, out Role[] rolesArray)
@@ -95,7 +163,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             rolesArray = new Role[] { new Villager(),
                                 new Villager(),
-                                new Police(),
+                                new Detective(),
                                 new Mafia(),
                                 new Doctor() };
             shuffleArray(rolesArray, rolesArray.Length);
@@ -106,7 +174,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             rolesArray = new Role[] { new Villager(),
                                 new Villager(),
                                 new Villager(),
-                                new Police(),
+                                new Detective(),
                                 new Mafia(),
                                 new Doctor() };
             shuffleArray(rolesArray, rolesArray.Length);
@@ -117,7 +185,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             rolesArray = new Role[] { new Villager(),
                                 new Villager(),
                                 new Villager(),
-                                new Police(),
+                                new Detective(),
                                 new Mafia(),
                                 new Mafia(),
                                 new Doctor() };
@@ -130,7 +198,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                                 new Villager(),
                                 new Villager(),
                                 new Villager(),
-                                new Police(),
+                                new Detective(),
                                 new Mafia(),
                                 new Mafia(),
                                 new Doctor() };
@@ -157,11 +225,356 @@ public class GameManager : MonoBehaviourPunCallbacks
         arr[b] = temp;
     }
 
-    private void displayArray(Role[] arr)
+    private void SetPhase_S(object phase)
     {
-        for (int x = 0; x < arr.Length; x++)
+        GameManager.EVENT_CODE event_code = 0;
+        object data = phase;
+
+        if ((byte)GameManager.GAME_PHASE.NIGHT == (byte)phase)
         {
-            Debug.Log(arr[x].ToString());
+            event_code = GameManager.EVENT_CODE.NIGHT_START;
         }
+        else if ((byte)GameManager.GAME_PHASE.DAY_DISCUSSION == (byte)phase)
+        {
+            event_code = GameManager.EVENT_CODE.DAY_DISCUSSION_START;
+        }
+        else if ((byte)GameManager.GAME_PHASE.DAY_ACCUSE == (byte)phase)
+        {
+            event_code = GameManager.EVENT_CODE.DAY_ACCUSE_START;
+        }
+        else if ((byte)GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE == (byte)phase)
+        {
+            event_code = GameManager.EVENT_CODE.DAY_ACCUSE_DEFENSE_START;
+        }
+        else if ((byte)GameManager.GAME_PHASE.DAY_VOTE == (byte)phase)
+        {
+            event_code = GameManager.EVENT_CODE.DAY_VOTE_START;
+        }
+
+
+        PhotonNetwork.RaiseEvent((byte)event_code, data,
+                                    new RaiseEventOptions
+                                    {
+                                        Receivers = ReceiverGroup.All
+                                    },
+                                    new SendOptions { Reliability = true });
+    }
+    private void SetPhase_R(object phase)
+    {
+        GameManager.GAME_STATE = (GameManager.GAME_PHASE)phase;
+        InitializeTimer((byte)phase);
+    }
+
+    private void InitializeTimer(byte phase)
+    {
+        if (phase == (byte)GameManager.GAME_PHASE.NIGHT)
+        {
+            currentTime = GameManager.NIGHT_LENGHT;
+            Debug.Log("NIGHT STARTS");
+        }
+        else if (phase == (byte)GameManager.GAME_PHASE.DAY_DISCUSSION)
+        {
+
+
+            currentTime = GameManager.DAY_DISCUSSION_LENGHT;
+            Debug.Log("DAY DISCUSSION STARTS");
+        }
+        else if (phase == (byte)GameManager.GAME_PHASE.DAY_ACCUSE)
+        {
+            currentTime = GameManager.DAY_ACCUSE_LENGHT;
+            Debug.Log("DAY ACCUSE STARTS");
+        }
+        else if (phase == (byte)GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE)
+        {
+            currentTime = GameManager.DAY_ACCUSE_DEFENSE_LENGHT;
+            Debug.Log("DAY ACCUSE DEFENSE STARTS");
+        }
+        else if (phase == (byte)GameManager.GAME_PHASE.DAY_VOTE)
+        {
+            currentTime = GameManager.DAY_VOTE_LENGHT;
+            Debug.Log("DAY VOTE STARTS");
+        }
+
+        timerCoroutine = StartCoroutine(Timer());
+    }
+
+    private IEnumerator Timer()
+    {
+        yield return new WaitForSeconds(1f);
+
+        currentTime -= 1;
+
+        if (currentTime <= 0)
+        {
+            timerCoroutine = null;
+            //RaiseEvent PHASE_END
+            if (PhotonNetwork.IsMasterClient)
+            {
+                if (GameManager.GAME_STATE == GameManager.GAME_PHASE.NIGHT)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.DAY_DISCUSSION);
+                }
+                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_DISCUSSION)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.DAY_ACCUSE);
+                }
+                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE);
+                }
+                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.DAY_VOTE);
+                }
+                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
+                {
+                    SetPhase_S(GameManager.GAME_PHASE.NIGHT);
+                }
+            }
+        }
+        else
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                RefreshTimer_S(currentTime);
+            }
+            timerCoroutine = StartCoroutine(Timer());
+
+        }
+    }
+    private void RefreshTimerUI()
+    {
+        uiTimer.text = currentTime.ToString("00");
+    }
+    private void RefreshTimer_S(object data)
+    {
+        PhotonNetwork.RaiseEvent((byte)GameManager.EVENT_CODE.REFRESH_TIMER, data,
+                                    new RaiseEventOptions { Receivers = ReceiverGroup.All },
+                                    new SendOptions { Reliability = true });
+    }
+    private void RefreshTimer_R(object data)
+    {
+        currentTime = (int)data;
+        RefreshTimerUI();
+    }
+    private void OnEvent(EventData photonEvent)
+    {
+        byte eventCode = photonEvent.Code;
+        if (eventCode == (byte)GameManager.EVENT_CODE.REFRESH_TIMER)
+        {
+            ReferenceManager.Instance.time = (int)photonEvent.CustomData;
+            RefreshTimer_R((object)photonEvent.CustomData);
+        }
+        else
+        {
+            GameManager.Instance.onDoorCooldown = false;
+
+            if (eventCode == (byte)GameManager.EVENT_CODE.NIGHT_START)
+            {
+                foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+                {
+                    Destroy(gameObject);
+                }
+                StartCoroutine(nightStartSequence(photonEvent));
+
+            }
+            else if (eventCode == (byte)GameManager.EVENT_CODE.DAY_DISCUSSION_START)
+            {
+                foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+                {
+                    Destroy(gameObject);
+                }
+                StartCoroutine(dayDiscussionStartSequence(photonEvent));
+            }
+            else if (eventCode == (byte)GameManager.EVENT_CODE.DAY_ACCUSE_START)
+            {
+                foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+                {
+                    Destroy(gameObject);
+                }
+                SetPhase_R((object)photonEvent.CustomData);
+
+            }
+            else if (eventCode == (byte)GameManager.EVENT_CODE.DAY_ACCUSE_DEFENSE_START)
+            {
+                foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+                {
+                    Destroy(gameObject);
+                }
+                StartCoroutine(dayAccuseDefenseStartSequence(photonEvent));
+            }
+            else if (eventCode == (byte)GameManager.EVENT_CODE.DAY_VOTE_START)
+            {
+                foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+                {
+                    Destroy(gameObject);
+                }
+                SetPhase_R((object)photonEvent.CustomData);
+
+            }
+        }
+    }
+    private void EndPhase()
+    {
+        if (timerCoroutine != null)
+        {
+            StopCoroutine(timerCoroutine);
+        }
+    }
+
+    public void activateDisplayRole(string role)
+    {
+        switch (role)
+        {
+            case "VILLAGER":
+                ReferenceManager.Instance.rolePanels[0].SetActive(true);
+                break;
+
+            case "DOCTOR":
+                ReferenceManager.Instance.rolePanels[1].SetActive(true);
+                break;
+
+            case "MAFIA":
+                ReferenceManager.Instance.rolePanels[2].SetActive(true);
+                break;
+
+            case "DETECTIVE":
+                ReferenceManager.Instance.rolePanels[3].SetActive(true);
+                break;
+        }
+    }
+    private void removeDisplayRole()
+    {
+        Destroy(ReferenceManager.Instance.panelParent);
+    }
+
+    private void startGame()
+    {
+        Instance.PV = GetComponent<PhotonView>();
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            SetPhase_S(GameManager.GAME_PHASE.NIGHT);
+        }
+    }
+
+
+
+
+    private IEnumerator dayDiscussionStartSequence(EventData photonEvent)
+    {
+        foreach (HouseController controller in GameObject.FindObjectsOfType<HouseController>())
+        {
+            controller.openDoor();
+        }
+
+        yield return new WaitForSeconds(2f);
+
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if ((bool)player.CustomProperties["IS_DEAD"])
+            {
+                if ((bool)player.CustomProperties["IS_SAVED"] == false)
+                {
+                    yield return StartCoroutine(PlayerManager.getPlayerController(player).dieSequence());
+                    yield return StartCoroutine(PromptManager.Instance.promptMurdered(player));
+                    yield return StartCoroutine(PromptManager.Instance.promptDayDiscussion(player));
+                }
+            }
+        }
+
+        foreach (HouseController controller in GameObject.FindObjectsOfType<HouseController>())
+        {
+            controller.closeDoor();
+        }
+        SetPhase_R((object)photonEvent.CustomData);
+    }
+
+    private IEnumerator dayAccuseDefenseStartSequence(EventData photonEvent)
+    {
+        foreach (HouseController controller in GameObject.FindObjectsOfType<HouseController>())
+        {
+            controller.openDoor();
+        }
+
+        yield return new WaitForSeconds(2f);
+        Player highestAccuseVote = null;
+
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if ((int)player.CustomProperties["ACCUSE_VOTE_COUNT"] > 0)
+            {
+                if (highestAccuseVote == null)
+                {
+                    highestAccuseVote = player;
+                }
+                else
+                {
+                    highestAccuseVote = higherAccuseVote(highestAccuseVote, player);
+                }
+            }
+
+        }
+
+        if (highestAccuseVote != null)
+        {
+
+            foreach (Player player in PhotonNetwork.PlayerList)
+            {
+                if (highestAccuseVote.NickName != player.NickName)
+                {
+                    if ((int)highestAccuseVote.CustomProperties["ACCUSE_VOTE_COUNT"] == (int)player.CustomProperties["ACCUSE_VOTE_COUNT"])
+                    {
+                        highestAccuseVote = null;
+                    }
+                }
+
+            }
+            if (highestAccuseVote != null)
+            {
+                yield return StartCoroutine(PlayerManager.getPlayerController(highestAccuseVote).accusedSequence());
+                yield return StartCoroutine(PromptManager.Instance.promptAccused(highestAccuseVote));
+            }
+        }
+        accusedPlayer = highestAccuseVote;
+        yield return new WaitForSeconds(2f);
+
+        SetPhase_R((object)photonEvent.CustomData);
+
+    }
+
+    private IEnumerator nightStartSequence(EventData photonEvent)
+    {
+        if (accusedPlayer != null)
+        {
+            if ((int)accusedPlayer.CustomProperties["ACCUSE_VOTE_COUNT"] > 0)
+            {
+                yield return StartCoroutine(PlayerManager.getPlayerController(accusedPlayer).guiltySequence());
+                yield return new WaitForSeconds(2f);
+                yield return StartCoroutine(PromptManager.Instance.promptGuilty(accusedPlayer));
+
+            }
+        }
+
+
+        SetPhase_R((object)photonEvent.CustomData);
+    }
+
+    private Player higherAccuseVote(Player player1, Player player2)
+    {
+        int player1VoteCount = (int)player1.CustomProperties["ACCUSE_VOTE_COUNT"];
+        int player2VoteCount = (int)player2.CustomProperties["ACCUSE_VOTE_COUNT"];
+        if (player1VoteCount > player2VoteCount)
+        {
+            return player1;
+        }
+        else
+        {
+            return player2;
+        }
+    }
+    public void rotateToCamera(GameObject toRotate, GameObject camera)
+    {
+        toRotate.transform.LookAt(camera.transform);
     }
 }

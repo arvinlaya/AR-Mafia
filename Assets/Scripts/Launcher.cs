@@ -30,6 +30,10 @@ public class Launcher : MonoBehaviourPunCallbacks
     //PlayerList
 
     //Max player
+    private const int _maxPlayer = 1;
+    private const int _maxPlayer = 5;
+    private const int _maxPlayer = 2;
+    private const int _maxPlayer = 3;
     private const int _maxPlayer = 3;
 
     //START GAME
@@ -301,6 +305,11 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel(1);//1 = build settings index
+        }
+        PhotonNetwork.LoadLevel(1);//1 = build settings index
         PV = GetComponent<PhotonView>();
         if (PV.IsMine)
         {

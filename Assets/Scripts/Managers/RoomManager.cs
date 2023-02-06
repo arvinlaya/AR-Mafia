@@ -4,10 +4,13 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.SceneManagement;
 using System.IO;
+using Photon.Realtime;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
     public static RoomManager Instance;
+    PhotonView PV;
+    public bool isSet;
     void Awake()
     {
         if (Instance)
@@ -19,31 +22,42 @@ public class RoomManager : MonoBehaviourPunCallbacks
         Instance = this;
     }
 
+    void Start()
+    {
+    }
+
     public override void OnEnable()
     {
-        base.OnEnable();
         SceneManager.sceneLoaded -= OnSceneLoaded;
         SceneManager.sceneLoaded += OnSceneLoaded;
-
     }
 
     public override void OnDisable()
     {
-        base.OnDisable();
         SceneManager.sceneLoaded -= OnSceneLoaded;
-
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
-        if (PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient && Instance.isSet == false)
         {
+
+            Instance.PV = GetComponent<PhotonView>();
             if (scene.buildIndex == 1)
             {
-                PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerManager"), Vector3.zero, Quaternion.identity);
+                Instance.isSet = true;
+                foreach (Player player in PhotonNetwork.PlayerList)
+                {
+                    Instance.PV.RPC(nameof(RPC_instantantiatePlayerManager), player);
+                }
             }
-
         }
 
+    }
+
+    [PunRPC]
+    void RPC_instantantiatePlayerManager()
+    {
+        PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerManager"), Vector3.zero, Quaternion.identity);
     }
 }
