@@ -15,35 +15,48 @@ public class RightButton : MonoBehaviour
 
     public Player owner { get; set; }
     public event Action OnEvent;
+    private Renderer renderer;
 
     // Start is called before the first frame update
     void Start()
     {
         ownerController = PlayerManager.getPlayerController(owner);
         transform.localPosition += offset;
-        OnEvent = null;
+        OnEvent += Skill;
+        GameManager.Instance.OnPhaseChange += ChangePhase;
+        renderer = GetComponent<Renderer>();
+        renderer.enabled = true;
+    }
 
+    void ChangePhase()
+    {
         switch (GameManager.GAME_STATE)
         {
             case GameManager.GAME_PHASE.NIGHT:
                 OnEvent += Skill;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[getSkillMaterialIndex()];
                 break;
 
             case GameManager.GAME_PHASE.DAY_DISCUSSION:
                 OnEvent = null;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
                 break;
 
             case GameManager.GAME_PHASE.DAY_ACCUSE:
+                OnEvent = null;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
                 break;
 
             case GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE:
                 OnEvent = null;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
                 break;
 
             case GameManager.GAME_PHASE.DAY_VOTE:
                 OnEvent += Vote;
                 transform.position = ownerController.transform.position;
                 transform.localPosition += offset;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[5];
                 break;
         }
     }
@@ -68,6 +81,7 @@ public class RightButton : MonoBehaviour
 
     void Skill()
     {
+        GameManager.Instance.setAbilityCooldown();
         switch (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"])
         {
             case "VILLAGER":
@@ -114,8 +128,31 @@ public class RightButton : MonoBehaviour
         }
     }
 
+    int getSkillMaterialIndex()
+    {
+        switch (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"])
+        {
+            case "VILLAGER":
+                new Villager().skill(owner);
+                return 7;
 
+            case "DOCTOR":
+                new Doctor().skill(owner);
+                return 2;
 
+            case "MAFIA":
+                new Mafia().skill(owner);
+                return 1;
+
+            case "DETECTIVE":
+                new Detective().skill(owner);
+                return 3;
+
+            default:
+                Debug.Log("ROLE NOT FOUND...");
+                return -1;
+        }
+    }
     IEnumerator clickFeedback()
     {
         gameObject.transform.localScale += new Vector3(-.15f, -.15f, -.15f);

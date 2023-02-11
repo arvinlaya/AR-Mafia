@@ -15,35 +15,48 @@ public class LeftButton : MonoBehaviour
     public Player owner { get; set; }
     public event Action OnEvent;
     public static event Action<PhotonView> OnDoorEvent;
+
+    private Renderer renderer;
     // Start is called before the first frame update
     void Start()
     {
         ownerController = PlayerManager.getPlayerController(owner);
         transform.localPosition += offset;
-        OnEvent = null;
+        OnEvent += OpenDoor;
+        GameManager.Instance.OnPhaseChange += ChangePhase;
+        renderer = GetComponent<Renderer>();
+        renderer.enabled = true;
+    }
 
+    void ChangePhase()
+    {
         switch (GameManager.GAME_STATE)
         {
             case GameManager.GAME_PHASE.NIGHT:
                 OnEvent += OpenDoor;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[0];
                 break;
 
             case GameManager.GAME_PHASE.DAY_DISCUSSION:
                 OnEvent = null;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
                 break;
 
             case GameManager.GAME_PHASE.DAY_ACCUSE:
                 OnEvent += AccuseVote;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[4];
                 break;
 
             case GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE:
                 OnEvent = null;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
                 break;
 
             case GameManager.GAME_PHASE.DAY_VOTE:
                 OnEvent += Vote;
                 transform.position = ownerController.transform.position;
                 transform.localPosition += offset;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[6];
                 break;
         }
     }
@@ -68,8 +81,10 @@ public class LeftButton : MonoBehaviour
 
     void OpenDoor()
     {
+        Debug.Log("Already cooldown");
         if (GameManager.Instance.isDoorCooldown() == false)
         {
+            Debug.Log("not cooldown");
             OnDoorEvent?.Invoke(house.PV);
             GameManager.Instance.setDoorCooldown();
         }

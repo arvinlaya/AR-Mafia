@@ -7,29 +7,9 @@ using Photon.Realtime;
 using ExitGames.Client.Photon;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using TMPro;
+using System;
 public class GameManager : MonoBehaviourPunCallbacks
 {
-    public static GameManager Instance;
-    public static int NIGHT_LENGHT = 40; //40
-    public static int DAY_DISCUSSION_LENGHT = 30; //30
-    public static int DAY_ACCUSE_LENGHT = 20; //20
-    public static int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20
-    public static int DAY_VOTE_LENGHT = 20; //20
-    public static int DOOR_COOLDOWN = 15; //15
-
-    public static int ROLE_PANEL_DURATION = 3;
-
-    public static int GAME_START = 3;
-    public static GAME_PHASE GAME_STATE;
-    PhotonView PV;
-    Role[] roles;
-    TMP_Text uiTimer;
-    Player accusedPlayer;
-    public bool onDoorCooldown { get; set; }
-    int openDoorTime;
-    private int currentTime;
-    private Coroutine timerCoroutine;
-
     public enum EVENT_CODE : byte
     {
         REFRESH_TIMER,
@@ -50,6 +30,32 @@ public class GameManager : MonoBehaviourPunCallbacks
         NIGHT
     }
 
+    public static GameManager Instance;
+    public static int NIGHT_LENGHT = 40; //40 //murder, open door
+    public static int DAY_DISCUSSION_LENGHT = 30; //30 // none
+    public static int DAY_ACCUSE_LENGHT = 20; //20 // accuse icon
+    public static int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20 // none
+    public static int DAY_VOTE_LENGHT = 20; //20 // guilty, not guilty
+    public static int DOOR_COOLDOWN = 15; //15
+    public static int ABILITY_COODLDOWN = NIGHT_LENGHT; //40
+
+    public static int ROLE_PANEL_DURATION = 3;
+
+    public static int GAME_START = 3;
+
+    public static GAME_PHASE GAME_STATE = GAME_PHASE.NIGHT;
+    PhotonView PV;
+    Role[] roles;
+    TMP_Text uiTimer;
+    Player accusedPlayer;
+    public bool onDoorCooldown { get; set; }
+    public bool onAbilityCooldown { get; set; }
+    public event Action OnPhaseChange;
+    int openDoorTime;
+    int abilityTime;
+    private int currentTime;
+    private Coroutine timerCoroutine;
+
     void Awake()
     {
         if (Instance)
@@ -63,6 +69,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     void Start()
     {
         onDoorCooldown = false;
+        onAbilityCooldown = false;
         Instance.uiTimer = ReferenceManager.Instance.UITimer;
         Instance.PV = Instance.gameObject.GetComponent<PhotonView>();
         Invoke("removeDisplayRole", ROLE_PANEL_DURATION);
@@ -77,6 +84,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         PhotonNetwork.NetworkingClient.EventReceived += OnEvent;
         if (PhotonNetwork.IsMasterClient)
         {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
     }
@@ -108,6 +116,21 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     }
 
+    public void setAbilityCooldown()
+    {
+        abilityTime = ReferenceManager.Instance.time;
+
+    }
+
+    public bool isAbilityCooldown()
+    {
+        if ((abilityTime - ABILITY_COODLDOWN) >= ReferenceManager.Instance.time)
+        {
+            onAbilityCooldown = false;
+        }
+        return onAbilityCooldown;
+    }
+
     void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
         if (PhotonNetwork.IsMasterClient)
@@ -132,16 +155,15 @@ public class GameManager : MonoBehaviourPunCallbacks
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
-                if (player.IsMasterClient)
-                {
-                    roleCustomProps.Add("ROLE", "MAFIA");
-                }
-                else
-                {
-                    roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
-
-                }
-
+                // if (player.IsMasterClient)
+                // {
+                //     roleCustomProps.Add("ROLE", "MAFIA");
+                // }
+                // else
+                // {
+                //     roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+                // }
+                roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
                 roleCustomProps.Add("VOTE_VALUE", 0);
@@ -262,6 +284,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void SetPhase_R(object phase)
     {
         GameManager.GAME_STATE = (GameManager.GAME_PHASE)phase;
+        OnPhaseChange?.Invoke();
         InitializeTimer((byte)phase);
     }
 
@@ -373,7 +396,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
                 {
-                    Destroy(gameObject);
+                    gameObject.SetActive(false);
                 }
                 StartCoroutine(nightStartSequence(photonEvent));
 
@@ -382,7 +405,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
                 {
-                    Destroy(gameObject);
+                    gameObject.SetActive(false);
                 }
                 StartCoroutine(dayDiscussionStartSequence(photonEvent));
             }
@@ -390,7 +413,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
                 {
-                    Destroy(gameObject);
+                    gameObject.SetActive(false);
                 }
                 SetPhase_R((object)photonEvent.CustomData);
 
@@ -399,7 +422,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
                 {
-                    Destroy(gameObject);
+                    gameObject.SetActive(false);
                 }
                 StartCoroutine(dayAccuseDefenseStartSequence(photonEvent));
             }
@@ -407,7 +430,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
                 {
-                    Destroy(gameObject);
+                    gameObject.SetActive(false);
                 }
                 SetPhase_R((object)photonEvent.CustomData);
 
@@ -478,15 +501,11 @@ public class GameManager : MonoBehaviourPunCallbacks
                 {
                     yield return StartCoroutine(PlayerManager.getPlayerController(player).dieSequence());
                     yield return StartCoroutine(PromptManager.Instance.promptMurdered(player));
-                    yield return StartCoroutine(PromptManager.Instance.promptDayDiscussion(player));
+                    yield return StartCoroutine(PromptManager.Instance.promptDayDiscussionPhase(player));
                 }
             }
         }
 
-        foreach (HouseController controller in GameObject.FindObjectsOfType<HouseController>())
-        {
-            controller.closeDoor();
-        }
         SetPhase_R((object)photonEvent.CustomData);
     }
 
@@ -534,6 +553,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 yield return StartCoroutine(PlayerManager.getPlayerController(highestAccuseVote).accusedSequence());
                 yield return StartCoroutine(PromptManager.Instance.promptAccused(highestAccuseVote));
+                yield return StartCoroutine(PromptManager.Instance.promptAccusedPhase(highestAccuseVote));
             }
         }
         accusedPlayer = highestAccuseVote;

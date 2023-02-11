@@ -12,8 +12,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private bool isSet;
     Player player;
     public PhotonView PV;
-    [SerializeField] LeftButton LeftButtonPrefab;
-    [SerializeField] RightButton RightButtonPrefab;
     public bool buttonActive;
 
     private float step;
@@ -51,27 +49,18 @@ public class PlayerController : MonoBehaviourPunCallbacks
                     {
                         foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
                         {
-                            Destroy(gameObject);
+                            gameObject.SetActive(false);
                         }
                     }
                     else
                     {
                         return;
                     }
-                    if (!hitPV.IsMine)
-                    {
-                        LeftButton leftButtonTemp;
-                        RightButton rightButtonTemp;
-                        leftButtonTemp = Instantiate(LeftButtonPrefab, hitPV.transform.position, Quaternion.identity);
-                        rightButtonTemp = Instantiate(RightButtonPrefab, hitPV.transform.position, Quaternion.identity);
-
-                        leftButtonTemp.house = hitPV.GetComponent<HouseController>();
-                        leftButtonTemp.owner = hitPV.Owner;
-
-                        rightButtonTemp.house = hitPV.GetComponent<HouseController>();
-                        rightButtonTemp.owner = hitPV.Owner;
-
-                    }
+                    // if (!hitPV.IsMine)
+                    // {
+                    HouseController controller = hitPV.GetComponent<HouseController>();
+                    controller.showButton();
+                    // }
                 }
             }
         }
@@ -81,7 +70,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         if (movingToMiddle)
         {
-            moveToMiddle();
+            StartCoroutine(nameof(moveToMiddle));
         }
     }
 
@@ -133,14 +122,11 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         yield return new WaitForSeconds(1f);
 
-        animator.SetBool("isIdle", false);
-        animator.SetBool("isWalking", true);
-
-        movingToMiddle = true;
+        StartCoroutine(nameof(moveToMiddle));
 
         yield return new WaitForSeconds(3f);
 
-        dieAnimation();
+        StartCoroutine(nameof(dieAnimation));
 
         yield return new WaitForSeconds(4f);
     }
@@ -149,21 +135,22 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         yield return new WaitForSeconds(1f);
 
-        animator.SetBool("isIdle", false);
-        animator.SetBool("isWalking", true);
-
-        movingToMiddle = true;
+        StartCoroutine(nameof(moveToMiddle));
     }
 
     public IEnumerator guiltySequence()
     {
-        dieAnimation();
+        StartCoroutine(nameof(dieAnimation));
 
         yield return new WaitForSeconds(4f);
     }
 
-    private void moveToMiddle()
+    private IEnumerator moveToMiddle()
     {
+        animator.SetBool("isIdle", false);
+        animator.SetBool("isWalking", true);
+
+        movingToMiddle = true;
         playerTransform.position = Vector3.MoveTowards(playerTransform.position, targetTransform.position, step);
 
         if (Vector3.Distance(playerTransform.position, targetTransform.position) < 0.001f)
@@ -171,13 +158,16 @@ public class PlayerController : MonoBehaviourPunCallbacks
             movingToMiddle = false;
             animator.SetBool("isIdle", true);
             animator.SetBool("isWalking", false);
+            yield return new WaitForEndOfFrame();
         }
+        yield return new WaitForEndOfFrame();
     }
 
-    private void dieAnimation()
+    private IEnumerator dieAnimation()
     {
         animator.SetBool("isIdle", false);
         animator.SetBool("isDead", true);
+        yield return new WaitForSeconds(2f);
     }
 
 }
