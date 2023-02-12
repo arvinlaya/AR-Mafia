@@ -114,6 +114,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PV: {fileID: 0}
   buttonActive: 0
+  playerTransform: {fileID: 0}
+  targetTransform: {fileID: 0}
+  animator: {fileID: 0}
 --- !u!114 &-7056035258913482780
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -2604,6 +2604,11 @@ MonoBehaviour:
   - {fileID: 2100000, guid: bd2c9c896e266ca478c93a0cef6b6f84, type: 2}
   - {fileID: 2100000, guid: 6b2247834d2b09c44b7f049bed9deef1, type: 2}
   - {fileID: 2100000, guid: 34f064b1b8dd80d4ab711a820848f9ea, type: 2}
+  Models:
+  - {fileID: 8106953496252917551, guid: 64e9555144fc06b4cae2779159367ac4, type: 3}
+  - {fileID: 7828006358746335547, guid: 849f750967deaa24c9d8fc44de3b9a7d, type: 3}
+  - {fileID: 8803211326278529560, guid: 5edac0b5e1cfe014993feb2c171dab82, type: 3}
+  - {fileID: 4466318784414345974, guid: 1497fa4899474154a8b2159c7cc93a61, type: 3}
   time: 0
 --- !u!4 &982168733
 Transform:

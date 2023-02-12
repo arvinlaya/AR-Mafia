@@ -27,8 +27,6 @@ public class HouseController : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
-        LeftButton.OnDoorEvent += DoorEvent;
-
 
         leftButton = Instantiate(LeftButtonPrefab, transform.position, Quaternion.identity);
         rightButton = Instantiate(RightButtonPrefab, transform.position, Quaternion.identity);
@@ -40,7 +38,7 @@ public class HouseController : MonoBehaviour
         rightButton.owner = PV.Owner;
     }
 
-    void DoorEvent(PhotonView pv)
+    public void DoorEvent(PhotonView pv)
     {
         if (pv == this.PV)
         {

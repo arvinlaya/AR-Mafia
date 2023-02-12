@@ -426,7 +426,6 @@ GameObject:
   - component: {fileID: 3940752932682313804}
   - component: {fileID: 5017356407630823878}
   - component: {fileID: 6625661233652542766}
-  - component: {fileID: 2869635623268536797}
   - component: {fileID: -5482310531164521624}
   - component: {fileID: -3244045088824507373}
   m_Layer: 0
@@ -473,7 +472,6 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: -3244045088824507373}
-  - {fileID: 0}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -489,20 +487,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bc3527412b883349b199dd9985a986d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2869635623268536797
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4466318784414345974}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ba0c9d253e64054c8b64ae2a7e8f945, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PV: {fileID: 0}
-  buttonActive: 0
 --- !u!95 &-5482310531164521624
 Animator:
   serializedVersion: 4

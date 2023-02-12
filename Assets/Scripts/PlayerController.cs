@@ -15,11 +15,11 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public bool buttonActive;
 
     private float step;
-    Transform playerTransform;
-    Transform targetTransform;
+    public Transform playerTransform;
+    public Transform targetTransform;
     private readonly float SPEED = 1;
     private bool movingToMiddle;
-    private Animator animator;
+    public Animator animator;
 
     void Awake()
     {
@@ -31,7 +31,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         playerTransform = gameObject.transform;
         targetTransform = ReferenceManager.Instance.middle.transform;
         movingToMiddle = false;
-        animator = gameObject.GetComponent<Animator>();
+
     }
 
     void Update()
@@ -86,35 +86,45 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
     }
 
+    // [PunRPC]
+    // void RPC_OnSetRole(string role, string targetName)
+    // {
+    //     object[] data = { (FindObjectsOfType<PlayerController>().FirstOrDefault(x => x.PV.Owner.NickName == targetName)).GetComponent<PhotonView>().ViewID };
+
+    //     GameObject model = null;
+
+    //     switch (role)
+    //     {
+    //         case "VILLAGER":
+    //             model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Base"), transform.position, Quaternion.identity, 0, data);
+    //             break;
+
+    //         case "DOCTOR":
+    //             model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Doctor"), transform.position, Quaternion.identity, 0, data);
+    //             break;
+
+    //         case "MAFIA":
+    //             model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Mafia"), transform.position, Quaternion.identity, 0, data);
+    //             break;
+
+    //         case "DETECTIVE":
+    //             model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Detective"), transform.position, Quaternion.identity, 0, data);
+    //             break;
+
+    //         default:
+    //             Debug.Log("MESH ERROR");
+    //             break;
+    //     }
+    //     GameManager.Instance.activateDisplayRole(role);
+
+    // }
+
     [PunRPC]
     void RPC_OnSetRole(string role, string targetName)
     {
         object[] data = { (FindObjectsOfType<PlayerController>().FirstOrDefault(x => x.PV.Owner.NickName == targetName)).GetComponent<PhotonView>().ViewID };
 
-        GameObject model = null;
-
-        switch (role)
-        {
-            case "VILLAGER":
-                model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Base"), transform.position, Quaternion.identity, 0, data);
-                break;
-
-            case "DOCTOR":
-                model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Doctor"), transform.position, Quaternion.identity, 0, data);
-                break;
-
-            case "MAFIA":
-                model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Mafia"), transform.position, Quaternion.identity, 0, data);
-                break;
-
-            case "DETECTIVE":
-                model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Detective"), transform.position, Quaternion.identity, 0, data);
-                break;
-
-            default:
-                Debug.Log("MESH ERROR");
-                break;
-        }
+        GameObject model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Base"), transform.position, Quaternion.identity, 0, data);
         GameManager.Instance.activateDisplayRole(role);
 
     }

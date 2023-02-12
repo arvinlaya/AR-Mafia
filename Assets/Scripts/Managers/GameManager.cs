@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public static int NIGHT_LENGHT = 40; //40 //murder, open door
+    public static int NIGHT_LENGHT = 7; //40 //murder, open door
     public static int DAY_DISCUSSION_LENGHT = 30; //30 // none
     public static int DAY_ACCUSE_LENGHT = 20; //20 // accuse icon
     public static int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20 // none
@@ -155,15 +155,15 @@ public class GameManager : MonoBehaviourPunCallbacks
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
-                // if (player.IsMasterClient)
-                // {
-                //     roleCustomProps.Add("ROLE", "MAFIA");
-                // }
-                // else
-                // {
-                //     roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
-                // }
-                roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+                if (player.IsMasterClient)
+                {
+                    roleCustomProps.Add("ROLE", "MAFIA");
+                }
+                else
+                {
+                    roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+                }
+                // roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
                 roleCustomProps.Add("VOTE_VALUE", 0);
@@ -495,14 +495,11 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         foreach (Player player in PhotonNetwork.PlayerList)
         {
-            if ((bool)player.CustomProperties["IS_DEAD"])
+            if ((bool)player.CustomProperties["IS_DEAD"] == true && (bool)player.CustomProperties["IS_SAVED"] == false)
             {
-                if ((bool)player.CustomProperties["IS_SAVED"] == false)
-                {
-                    yield return StartCoroutine(PlayerManager.getPlayerController(player).dieSequence());
-                    yield return StartCoroutine(PromptManager.Instance.promptMurdered(player));
-                    yield return StartCoroutine(PromptManager.Instance.promptDayDiscussionPhase(player));
-                }
+                yield return StartCoroutine(PlayerManager.getPlayerController(player).dieSequence());
+                yield return StartCoroutine(PromptManager.Instance.promptMurdered(player));
+                yield return StartCoroutine(PromptManager.Instance.promptDayDiscussionPhase(player));
             }
         }
 

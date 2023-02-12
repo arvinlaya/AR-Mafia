@@ -13,8 +13,6 @@ public class LeftButton : MonoBehaviour
     PlayerController ownerController;
     public HouseController house { get; set; }
     public Player owner { get; set; }
-    public event Action OnEvent;
-    public static event Action<PhotonView> OnDoorEvent;
 
     private Renderer renderer;
     // Start is called before the first frame update
@@ -22,7 +20,6 @@ public class LeftButton : MonoBehaviour
     {
         ownerController = PlayerManager.getPlayerController(owner);
         transform.localPosition += offset;
-        OnEvent += OpenDoor;
         GameManager.Instance.OnPhaseChange += ChangePhase;
         renderer = GetComponent<Renderer>();
         renderer.enabled = true;
@@ -33,30 +30,54 @@ public class LeftButton : MonoBehaviour
         switch (GameManager.GAME_STATE)
         {
             case GameManager.GAME_PHASE.NIGHT:
-                OnEvent += OpenDoor;
+                // OnEvent += OpenDoor;
                 renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[0];
                 break;
 
             case GameManager.GAME_PHASE.DAY_DISCUSSION:
-                OnEvent = null;
+                // OnEvent = null;
                 renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
                 break;
 
             case GameManager.GAME_PHASE.DAY_ACCUSE:
-                OnEvent += AccuseVote;
+                // OnEvent += AccuseVote;
                 renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[4];
                 break;
 
             case GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE:
-                OnEvent = null;
+                // OnEvent = null;
                 renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
                 break;
 
             case GameManager.GAME_PHASE.DAY_VOTE:
-                OnEvent += Vote;
+                // OnEvent += Vote;
                 transform.position = ownerController.transform.position;
                 transform.localPosition += offset;
                 renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[6];
+                break;
+        }
+    }
+
+    void OnClick(GameManager.GAME_PHASE GAME_STATE)
+    {
+        switch (GAME_STATE)
+        {
+            case GameManager.GAME_PHASE.NIGHT:
+                OpenDoor();
+                break;
+
+            case GameManager.GAME_PHASE.DAY_DISCUSSION:
+                break;
+
+            case GameManager.GAME_PHASE.DAY_ACCUSE:
+                AccuseVote();
+                break;
+
+            case GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE:
+                break;
+
+            case GameManager.GAME_PHASE.DAY_VOTE:
+                Vote();
                 break;
         }
     }
@@ -72,7 +93,7 @@ public class LeftButton : MonoBehaviour
                 if (hit.transform == gameObject.transform)
                 {
                     StartCoroutine(nameof(clickFeedback));
-                    OnEvent?.Invoke();
+                    OnClick(GameManager.GAME_STATE);
                 }
             }
         }
@@ -85,7 +106,11 @@ public class LeftButton : MonoBehaviour
         if (GameManager.Instance.isDoorCooldown() == false)
         {
             Debug.Log("not cooldown");
-            OnDoorEvent?.Invoke(house.PV);
+            HouseController[] controllers = GameObject.FindObjectsOfType<HouseController>();
+            foreach (HouseController controller in controllers)
+            {
+                house.DoorEvent(house.PV);
+            }
             GameManager.Instance.setDoorCooldown();
         }
     }
