@@ -63,7 +63,7 @@ public class LeftButton : MonoBehaviour
         switch (GAME_STATE)
         {
             case GameManager.GAME_PHASE.NIGHT:
-                OpenDoor();
+                StartCoroutine(nameof(OpenDoor));
                 break;
 
             case GameManager.GAME_PHASE.DAY_DISCUSSION:
@@ -100,12 +100,11 @@ public class LeftButton : MonoBehaviour
 
     }
 
-    void OpenDoor()
+    IEnumerator OpenDoor()
     {
-        Debug.Log("Already cooldown");
+
         if (GameManager.Instance.isDoorCooldown() == false)
         {
-            Debug.Log("not cooldown");
             HouseController[] controllers = GameObject.FindObjectsOfType<HouseController>();
             foreach (HouseController controller in controllers)
             {
@@ -113,18 +112,21 @@ public class LeftButton : MonoBehaviour
             }
             GameManager.Instance.setDoorCooldown();
         }
+
+        yield return new WaitForSeconds(2f);
+
+        PlayerController callerController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
+        callerController.enterHouseSequence(house.PV.ViewID);
     }
 
     void AccuseVote()
     {
-        Debug.Log("TEST");
         if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 0)
         {
-            int voteCount = 1 + (int)owner.CustomProperties["ACCUSE_VOTE_COUNT"];
-            owner.SetCustomProperties(new Hashtable() { { "ACCUSE_VOTE_COUNT", voteCount } });
+            CustomPropertyWrapper.incrementProperty(owner, "ACCUSE_VOTE_COUNT", 1);
 
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTED", owner.NickName } });
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTE_VALUE", 1 } });
+            CustomPropertyWrapper.setPropertyString(PhotonNetwork.LocalPlayer, "VOTED", owner.NickName);
+            CustomPropertyWrapper.setPropertyInt(PhotonNetwork.LocalPlayer, "VOTE_VALUE", 1);
         }
         else if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 1)
         {
@@ -132,15 +134,11 @@ public class LeftButton : MonoBehaviour
             {
                 if ((string)PhotonNetwork.LocalPlayer.CustomProperties["VOTED"] == player.NickName)
                 {
-                    PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTED", owner.NickName } });
+                    CustomPropertyWrapper.setPropertyString(PhotonNetwork.LocalPlayer, "VOTED", owner.NickName);
 
-                    int voteCount = (int)player.CustomProperties["ACCUSE_VOTE_COUNT"] - 1;
-                    player.SetCustomProperties(new Hashtable() { { "ACCUSE_VOTE_COUNT", voteCount } });
+                    CustomPropertyWrapper.decrementProperty(player, "ACCUSE_VOTE_COUNT", 1);
 
-
-                    voteCount = 1 + (int)owner.CustomProperties["ACCUSE_VOTE_COUNT"];
-                    owner.SetCustomProperties(new Hashtable() { { "ACCUSE_VOTE_COUNT", voteCount } });
-
+                    CustomPropertyWrapper.incrementProperty(owner, "ACCUSE_VOTE_COUNT", 1);
                 }
             }
         }
@@ -150,21 +148,17 @@ public class LeftButton : MonoBehaviour
     {
         if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 0)
         {
-            int voteCount = 1 + (int)owner.CustomProperties["INNOCENT_VOTE"];
-            owner.SetCustomProperties(new Hashtable() { { "INNOCENT_VOTE", voteCount } });
+            CustomPropertyWrapper.incrementProperty(owner, "INNOCENT_VOTE", 1);
 
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTE_VALUE", -1 } });
-
+            CustomPropertyWrapper.decrementProperty(PhotonNetwork.LocalPlayer, "VOTE_VALUE", 1);
         }
         else if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 1)
         {
-            int voteCount = (int)owner.CustomProperties["GUILTY_VOTE"] - 1;
-            owner.SetCustomProperties(new Hashtable() { { "GUILTY_VOTE", voteCount } });
+            CustomPropertyWrapper.decrementProperty(owner, "GUILTY_VOTE", 1);
 
-            voteCount = 1 + (int)owner.CustomProperties["INNOCENT_VOTE"];
-            owner.SetCustomProperties(new Hashtable() { { "INNOCENT_VOTE", voteCount } });
+            CustomPropertyWrapper.incrementProperty(owner, "INNOCENT_VOTE", 1);
 
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTE_VALUE", -1 } });
+            CustomPropertyWrapper.setPropertyInt(PhotonNetwork.LocalPlayer, "VOTE_VALUE", -1);
         }
     }
 

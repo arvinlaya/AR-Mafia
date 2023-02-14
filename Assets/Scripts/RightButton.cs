@@ -127,21 +127,17 @@ public class RightButton : MonoBehaviour
     {
         if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 0)
         {
-            int voteCount = 1 + (int)owner.CustomProperties["GUILTY_VOTE"];
-            owner.SetCustomProperties(new Hashtable() { { "GUILTY_VOTE", voteCount } });
+            CustomPropertyWrapper.incrementProperty(owner, "GUILTY_VOTE", 1);
 
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTE_VALUE", 1 } });
-
+            CustomPropertyWrapper.setPropertyInt(PhotonNetwork.LocalPlayer, "VOTE_VALUE", 1);
         }
         else if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == -1)
         {
-            int voteCount = (int)owner.CustomProperties["INNOCENT_VOTE"] - 1;
-            owner.SetCustomProperties(new Hashtable() { { "INNOCENT_VOTE", voteCount } });
+            CustomPropertyWrapper.decrementProperty(owner, "INNOCENT_VOTE", 1);
 
-            voteCount = 1 + (int)owner.CustomProperties["GUILTY_VOTE"];
-            owner.SetCustomProperties(new Hashtable() { { "GUILTY_VOTE", voteCount } });
+            CustomPropertyWrapper.incrementProperty(owner, "GUILTY_VOTE", 1);
 
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTE_VALUE", -1 } });
+            CustomPropertyWrapper.setPropertyInt(PhotonNetwork.LocalPlayer, "VOTE_VALUE", -1);
         }
     }
 

@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public static int NIGHT_LENGHT = 7; //40 //murder, open door
+    public static int NIGHT_LENGHT = 40; //40 //murder, open door
     public static int DAY_DISCUSSION_LENGHT = 30; //30 // none
     public static int DAY_ACCUSE_LENGHT = 20; //20 // accuse icon
     public static int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20 // none
@@ -166,6 +166,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 // roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
+                roleCustomProps.Add("OUTSIDER_COUNT", 0);
                 roleCustomProps.Add("VOTE_VALUE", 0);
                 roleCustomProps.Add("VOTED", "");
                 roleCustomProps.Add("ACCUSE_VOTE_COUNT", 0);
@@ -481,9 +482,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-
-
-
     private IEnumerator dayDiscussionStartSequence(EventData photonEvent)
     {
         foreach (HouseController controller in GameObject.FindObjectsOfType<HouseController>())
@@ -590,6 +588,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             return player2;
         }
     }
+
     public void rotateToCamera(GameObject toRotate, GameObject camera)
     {
         toRotate.transform.LookAt(camera.transform);

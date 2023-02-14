@@ -1142,7 +1142,7 @@ GameObject:
   - component: {fileID: 7895518470670884493}
   - component: {fileID: 6615313773818760957}
   - component: {fileID: 5523206476729358133}
-  - component: {fileID: 7030538547890461076}
+  - component: {fileID: 145189520977244607}
   m_Layer: 0
   m_Name: base
   m_TagString: Untagged
@@ -1218,34 +1218,20 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 7030538547890461076}
+  - {fileID: 0}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &7030538547890461076
-MonoBehaviour:
+--- !u!65 &145189520977244607
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8106953496252917551}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowLayerWeightsInspector: 1
-  ShowParameterInspector: 1
-  m_SynchronizeParameters:
-  - Type: 4
-    SynchronizeType: 1
-    Name: isWalking
-  - Type: 4
-    SynchronizeType: 1
-    Name: isDead
-  - Type: 4
-    SynchronizeType: 1
-    Name: isIdle
-  m_SynchronizeLayers:
-  - SynchronizeType: 1
-    LayerIndex: 0
+  serializedVersion: 2
+  m_Size: {x: 0.9, y: 1.35, z: 1}
+  m_Center: {x: 0, y: 0.65, z: 0}

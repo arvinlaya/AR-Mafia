@@ -16,9 +16,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     private float step;
     public Transform playerTransform;
-    public Transform targetTransform;
-    private readonly float SPEED = 1;
-    private bool movingToMiddle;
+    public Transform middleTransform;
+    private readonly float SPEED = 2;
+    private bool isMovingTo;
+    private Transform moveTarget;
+
+    private HouseController insideOf;
     public Animator animator;
 
     void Awake()
@@ -27,11 +30,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
         player = PhotonNetwork.LocalPlayer;
         PV = GetComponent<PhotonView>();
         buttonActive = false;
-        step = SPEED * Time.deltaTime;
+        step = SPEED * Time.fixedDeltaTime;
         playerTransform = gameObject.transform;
-        targetTransform = ReferenceManager.Instance.middle.transform;
-        movingToMiddle = false;
-
+        middleTransform = ReferenceManager.Instance.middle.transform;
+        isMovingTo = false;
     }
 
     void Update()
@@ -51,16 +53,18 @@ public class PlayerController : MonoBehaviourPunCallbacks
                         {
                             gameObject.SetActive(false);
                         }
+
+                        if (!hitPV.IsMine && hit.transform.tag == "House")
+                        {
+                            HouseController controller = hitPV.GetComponent<HouseController>();
+                            controller.showButton();
+                        }
                     }
                     else
                     {
                         return;
                     }
-                    // if (!hitPV.IsMine)
-                    // {
-                    HouseController controller = hitPV.GetComponent<HouseController>();
-                    controller.showButton();
-                    // }
+
                 }
             }
         }
@@ -68,9 +72,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     void FixedUpdate()
     {
-        if (movingToMiddle)
+        if (isMovingTo)
         {
-            StartCoroutine(nameof(moveToMiddle));
+            move();
         }
     }
 
@@ -86,39 +90,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
     }
 
-    // [PunRPC]
-    // void RPC_OnSetRole(string role, string targetName)
-    // {
-    //     object[] data = { (FindObjectsOfType<PlayerController>().FirstOrDefault(x => x.PV.Owner.NickName == targetName)).GetComponent<PhotonView>().ViewID };
-
-    //     GameObject model = null;
-
-    //     switch (role)
-    //     {
-    //         case "VILLAGER":
-    //             model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Base"), transform.position, Quaternion.identity, 0, data);
-    //             break;
-
-    //         case "DOCTOR":
-    //             model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Doctor"), transform.position, Quaternion.identity, 0, data);
-    //             break;
-
-    //         case "MAFIA":
-    //             model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Mafia"), transform.position, Quaternion.identity, 0, data);
-    //             break;
-
-    //         case "DETECTIVE":
-    //             model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Detective"), transform.position, Quaternion.identity, 0, data);
-    //             break;
-
-    //         default:
-    //             Debug.Log("MESH ERROR");
-    //             break;
-    //     }
-    //     GameManager.Instance.activateDisplayRole(role);
-
-    // }
-
     [PunRPC]
     void RPC_OnSetRole(string role, string targetName)
     {
@@ -128,49 +99,99 @@ public class PlayerController : MonoBehaviourPunCallbacks
         GameManager.Instance.activateDisplayRole(role);
 
     }
+    private void OnTriggerEnter(Collider collider)
+    {
+        transform.position += new Vector3(0, .25f, 0);
+    }
+
+    private void OnTriggerExit(Collider collider)
+    {
+        transform.position += new Vector3(0, -.25f, 0);
+
+    }
+
     public IEnumerator dieSequence()
     {
         yield return new WaitForSeconds(1f);
 
-        StartCoroutine(nameof(moveToMiddle));
+        yield return StartCoroutine(nameof(moveTo), middleTransform);
 
-        yield return new WaitForSeconds(3f);
+        yield return StartCoroutine(nameof(dieAnimation));
 
-        StartCoroutine(nameof(dieAnimation));
+        yield return new WaitForSeconds(2f);
 
-        yield return new WaitForSeconds(4f);
     }
 
     public IEnumerator accusedSequence()
     {
         yield return new WaitForSeconds(1f);
 
-        StartCoroutine(nameof(moveToMiddle));
+        yield return StartCoroutine(nameof(moveTo), middleTransform);
     }
 
     public IEnumerator guiltySequence()
     {
-        StartCoroutine(nameof(dieAnimation));
+        yield return StartCoroutine(nameof(dieAnimation));
 
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(2f);
     }
 
-    private IEnumerator moveToMiddle()
+    public void enterHouseSequence(int houseControllerID)
     {
+        PV.RPC(nameof(RPC_enterHouseSequence), RpcTarget.All, houseControllerID);
+    }
+
+    [PunRPC]
+    public IEnumerator RPC_enterHouseSequence(int houseControllerID)
+    {
+        PhotonView housePV = PhotonView.Find(houseControllerID);
+        HouseController houseController = housePV.GetComponent<HouseController>();
+        Vector3 tempScale = gameObject.transform.localScale;
+        Debug.Log("OUTSIDER COUNT: " + housePV.Owner.CustomProperties["OUTSIDER_COUNT"]);
+
+        if (PV.IsMine)
+        {
+            CustomPropertyWrapper.incrementProperty(housePV.Owner, "OUTSIDER_COUNT", 1);
+        }
+        if (!PV.IsMine)
+        {
+            gameObject.transform.localScale = new Vector3(0, 0, 0);
+        }
+
+        transform.position = houseController.houseFront.position;
+        yield return StartCoroutine(nameof(moveTo), houseController.ownerFront);
+
+        gameObject.transform.localScale = tempScale;
+
+        Transform outsiderTargetLocation = houseController.outsiderLocation[(int)housePV.Owner.CustomProperties["OUTSIDER_COUNT"] - 1];
+        yield return StartCoroutine(nameof(moveTo), outsiderTargetLocation);
+
+    }
+
+    public IEnumerator moveTo(Transform target)
+    {
+        moveTarget = target;
         animator.SetBool("isIdle", false);
         animator.SetBool("isWalking", true);
 
-        movingToMiddle = true;
-        playerTransform.position = Vector3.MoveTowards(playerTransform.position, targetTransform.position, step);
+        isMovingTo = true;
 
-        if (Vector3.Distance(playerTransform.position, targetTransform.position) < 0.001f)
+        yield return new WaitUntil(() => isMovingTo == false);
+
+        yield return new WaitForSeconds(1f);
+    }
+
+    private void move()
+    {
+        Debug.Log(step);
+        playerTransform.position = Vector3.MoveTowards(playerTransform.position, moveTarget.position, step);
+
+        if (Vector3.Distance(playerTransform.position, moveTarget.position) < 0.001f)
         {
-            movingToMiddle = false;
             animator.SetBool("isIdle", true);
             animator.SetBool("isWalking", false);
-            yield return new WaitForEndOfFrame();
+            isMovingTo = false;
         }
-        yield return new WaitForEndOfFrame();
     }
 
     private IEnumerator dieAnimation()

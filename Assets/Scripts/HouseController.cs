@@ -17,6 +17,12 @@ public class HouseController : MonoBehaviour
     RightButton rightButton;
     [SerializeField] LeftButton LeftButtonPrefab;
     [SerializeField] RightButton RightButtonPrefab;
+
+    [SerializeField] public Transform ownerLocation;
+    [SerializeField] public Transform ownerFront;
+    [SerializeField] public Transform houseFront;
+    [SerializeField] public Transform houseOutside;
+    [SerializeField] public Transform[] outsiderLocation;
     public PhotonAnimatorView animatorView;
     void Awake()
     {
