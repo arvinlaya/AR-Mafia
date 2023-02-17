@@ -13,6 +13,16 @@ public class HouseController : MonoBehaviour
     public PhotonView PV { get; set; }
 
     Animator animator;
+    LeftButton leftButton;
+    RightButton rightButton;
+    [SerializeField] LeftButton LeftButtonPrefab;
+    [SerializeField] RightButton RightButtonPrefab;
+
+    [SerializeField] public Transform ownerLocation;
+    [SerializeField] public Transform ownerFront;
+    [SerializeField] public Transform houseFront;
+    [SerializeField] public Transform houseOutside;
+    [SerializeField] public Transform[] outsiderLocation;
     public PhotonAnimatorView animatorView;
     void Awake()
     {
@@ -23,16 +33,18 @@ public class HouseController : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
-        LeftButton.OnDoorEvent += DoorEvent;
 
+        leftButton = Instantiate(LeftButtonPrefab, transform.position, Quaternion.identity);
+        rightButton = Instantiate(RightButtonPrefab, transform.position, Quaternion.identity);
+
+        leftButton.house = this;
+        leftButton.owner = PV.Owner;
+
+        rightButton.house = this;
+        rightButton.owner = PV.Owner;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
-    void DoorEvent(PhotonView pv)
+    public void DoorEvent(PhotonView pv)
     {
         if (pv == this.PV)
         {
@@ -55,6 +67,18 @@ public class HouseController : MonoBehaviour
     public void closeDoor()
     {
         animator.SetBool("isOpen", false);
+    }
+
+    public void showButton()
+    {
+        leftButton.gameObject.SetActive(true);
+        rightButton.gameObject.SetActive(true);
+    }
+
+    public void hideButton()
+    {
+        leftButton.gameObject.SetActive(false);
+        leftButton.gameObject.SetActive(false);
     }
 
 }

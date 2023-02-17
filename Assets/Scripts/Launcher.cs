@@ -30,7 +30,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     //PlayerList
 
     //Max player
-    private const int _maxPlayer = 3;
+    private const int _maxPlayer = 2;
 
     //START GAME
     [SerializeField] TMP_Text waitingForPlayersText;
@@ -304,12 +304,11 @@ public class Launcher : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.LoadLevel(1);//1 = build settings index
-        }
-        PhotonNetwork.LoadLevel(1);//1 = build settings index
-        PV = GetComponent<PhotonView>();
-        if (PV.IsMine)
-        {
-            PV.RPC("RPC_StartGame", RpcTarget.All);
+            PV = GetComponent<PhotonView>();
+            if (PV.IsMine)
+            {
+                PV.RPC(nameof(RPC_StartGame), RpcTarget.All);
+            }
         }
     }
 

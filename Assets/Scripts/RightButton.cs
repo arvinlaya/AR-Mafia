@@ -14,36 +14,66 @@ public class RightButton : MonoBehaviour
     public HouseController house { get; set; }
 
     public Player owner { get; set; }
-    public event Action OnEvent;
+
+    private Renderer renderer;
 
     // Start is called before the first frame update
     void Start()
     {
         ownerController = PlayerManager.getPlayerController(owner);
         transform.localPosition += offset;
-        OnEvent = null;
+        GameManager.Instance.OnPhaseChange += ChangePhase;
+        renderer = GetComponent<Renderer>();
+        renderer.enabled = true;
+    }
 
+    void ChangePhase()
+    {
         switch (GameManager.GAME_STATE)
         {
             case GameManager.GAME_PHASE.NIGHT:
-                OnEvent += Skill;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[getSkillMaterialIndex()];
                 break;
 
             case GameManager.GAME_PHASE.DAY_DISCUSSION:
-                OnEvent = null;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
+                break;
+
+            case GameManager.GAME_PHASE.DAY_ACCUSE:
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
+                break;
+
+            case GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE:
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
+                break;
+
+            case GameManager.GAME_PHASE.DAY_VOTE:
+                transform.position = ownerController.transform.position;
+                transform.localPosition += offset;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[5];
+                break;
+        }
+    }
+
+    void OnClick(GameManager.GAME_PHASE GAME_STATE)
+    {
+        switch (GAME_STATE)
+        {
+            case GameManager.GAME_PHASE.NIGHT:
+                Skill((string)PhotonNetwork.LocalPlayer.CustomProperties["ROLE"], owner);
+                break;
+
+            case GameManager.GAME_PHASE.DAY_DISCUSSION:
                 break;
 
             case GameManager.GAME_PHASE.DAY_ACCUSE:
                 break;
 
             case GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE:
-                OnEvent = null;
                 break;
 
             case GameManager.GAME_PHASE.DAY_VOTE:
-                OnEvent += Vote;
-                transform.position = ownerController.transform.position;
-                transform.localPosition += offset;
+                Vote();
                 break;
         }
     }
@@ -59,31 +89,32 @@ public class RightButton : MonoBehaviour
                 if (hit.transform == gameObject.transform)
                 {
                     StartCoroutine(nameof(clickFeedback));
-                    OnEvent?.Invoke();
+                    OnClick(GameManager.GAME_STATE);
                 }
             }
         }
 
     }
 
-    void Skill()
+    void Skill(string ROLE, Player target)
     {
+        GameManager.Instance.setAbilityCooldown();
         switch (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"])
         {
             case "VILLAGER":
-                new Villager().skill(owner);
+                new Villager().skill(target);
                 break;
 
             case "DOCTOR":
-                new Doctor().skill(owner);
+                new Doctor().skill(target);
                 break;
 
             case "MAFIA":
-                new Mafia().skill(owner);
+                new Mafia().skill(target);
                 break;
 
             case "DETECTIVE":
-                new Detective().skill(owner);
+                new Detective().skill(target);
                 break;
 
             default:
@@ -96,26 +127,41 @@ public class RightButton : MonoBehaviour
     {
         if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 0)
         {
-            int voteCount = 1 + (int)owner.CustomProperties["GUILTY_VOTE"];
-            owner.SetCustomProperties(new Hashtable() { { "GUILTY_VOTE", voteCount } });
+            CustomPropertyWrapper.incrementProperty(owner, "GUILTY_VOTE", 1);
 
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTE_VALUE", 1 } });
-
+            CustomPropertyWrapper.setPropertyInt(PhotonNetwork.LocalPlayer, "VOTE_VALUE", 1);
         }
         else if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == -1)
         {
-            int voteCount = (int)owner.CustomProperties["INNOCENT_VOTE"] - 1;
-            owner.SetCustomProperties(new Hashtable() { { "INNOCENT_VOTE", voteCount } });
+            CustomPropertyWrapper.decrementProperty(owner, "INNOCENT_VOTE", 1);
 
-            voteCount = 1 + (int)owner.CustomProperties["GUILTY_VOTE"];
-            owner.SetCustomProperties(new Hashtable() { { "GUILTY_VOTE", voteCount } });
+            CustomPropertyWrapper.incrementProperty(owner, "GUILTY_VOTE", 1);
 
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTE_VALUE", -1 } });
+            CustomPropertyWrapper.setPropertyInt(PhotonNetwork.LocalPlayer, "VOTE_VALUE", -1);
         }
     }
 
+    int getSkillMaterialIndex()
+    {
+        switch (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"])
+        {
+            case "VILLAGER":
+                return 7;
 
+            case "DOCTOR":
+                return 2;
 
+            case "MAFIA":
+                return 1;
+
+            case "DETECTIVE":
+                return 3;
+
+            default:
+                Debug.Log("ROLE NOT FOUND...");
+                return -1;
+        }
+    }
     IEnumerator clickFeedback()
     {
         gameObject.transform.localScale += new Vector3(-.15f, -.15f, -.15f);

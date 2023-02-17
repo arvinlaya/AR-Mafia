@@ -12,16 +12,17 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private bool isSet;
     Player player;
     public PhotonView PV;
-    [SerializeField] LeftButton LeftButtonPrefab;
-    [SerializeField] RightButton RightButtonPrefab;
     public bool buttonActive;
 
     private float step;
-    Transform playerTransform;
-    Transform targetTransform;
-    private readonly float SPEED = 1;
-    private bool movingToMiddle;
-    private Animator animator;
+    public Transform playerTransform;
+    public Transform middleTransform;
+    private readonly float SPEED = 2;
+    private bool isMovingTo;
+    private Transform moveTarget;
+
+    private HouseController insideOf;
+    public Animator animator;
 
     void Awake()
     {
@@ -29,11 +30,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
         player = PhotonNetwork.LocalPlayer;
         PV = GetComponent<PhotonView>();
         buttonActive = false;
-        step = SPEED * Time.deltaTime;
+        step = SPEED * Time.fixedDeltaTime;
         playerTransform = gameObject.transform;
-        targetTransform = ReferenceManager.Instance.middle.transform;
-        movingToMiddle = false;
-        animator = gameObject.GetComponent<Animator>();
+        middleTransform = ReferenceManager.Instance.middle.transform;
+        isMovingTo = false;
     }
 
     void Update()
@@ -51,27 +51,20 @@ public class PlayerController : MonoBehaviourPunCallbacks
                     {
                         foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
                         {
-                            Destroy(gameObject);
+                            gameObject.SetActive(false);
+                        }
+
+                        if (!hitPV.IsMine && hit.transform.tag == "House")
+                        {
+                            HouseController controller = hitPV.GetComponent<HouseController>();
+                            controller.showButton();
                         }
                     }
                     else
                     {
                         return;
                     }
-                    if (!hitPV.IsMine)
-                    {
-                        LeftButton leftButtonTemp;
-                        RightButton rightButtonTemp;
-                        leftButtonTemp = Instantiate(LeftButtonPrefab, hitPV.transform.position, Quaternion.identity);
-                        rightButtonTemp = Instantiate(RightButtonPrefab, hitPV.transform.position, Quaternion.identity);
 
-                        leftButtonTemp.house = hitPV.GetComponent<HouseController>();
-                        leftButtonTemp.owner = hitPV.Owner;
-
-                        rightButtonTemp.house = hitPV.GetComponent<HouseController>();
-                        rightButtonTemp.owner = hitPV.Owner;
-
-                    }
                 }
             }
         }
@@ -79,9 +72,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     void FixedUpdate()
     {
-        if (movingToMiddle)
+        if (isMovingTo)
         {
-            moveToMiddle();
+            move();
         }
     }
 
@@ -102,82 +95,143 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         object[] data = { (FindObjectsOfType<PlayerController>().FirstOrDefault(x => x.PV.Owner.NickName == targetName)).GetComponent<PhotonView>().ViewID };
 
-        GameObject model = null;
-
-        switch (role)
-        {
-            case "VILLAGER":
-                model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Base"), transform.position, Quaternion.identity, 0, data);
-                break;
-
-            case "DOCTOR":
-                model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Doctor"), transform.position, Quaternion.identity, 0, data);
-                break;
-
-            case "MAFIA":
-                model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Mafia"), transform.position, Quaternion.identity, 0, data);
-                break;
-
-            case "DETECTIVE":
-                model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Detective"), transform.position, Quaternion.identity, 0, data);
-                break;
-
-            default:
-                Debug.Log("MESH ERROR");
-                break;
-        }
+        GameObject model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Base"), transform.position, Quaternion.identity, 0, data);
         GameManager.Instance.activateDisplayRole(role);
 
     }
+    private void OnTriggerEnter(Collider collider)
+    {
+        transform.position += new Vector3(0, .25f, 0);
+    }
+
+    private void OnTriggerExit(Collider collider)
+    {
+        transform.position += new Vector3(0, -.25f, 0);
+
+    }
+
     public IEnumerator dieSequence()
     {
         yield return new WaitForSeconds(1f);
 
-        animator.SetBool("isIdle", false);
-        animator.SetBool("isWalking", true);
+        yield return StartCoroutine(nameof(moveTo), middleTransform);
 
-        movingToMiddle = true;
+        yield return StartCoroutine(nameof(dieAnimation));
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(2f);
 
-        dieAnimation();
-
-        yield return new WaitForSeconds(4f);
     }
 
     public IEnumerator accusedSequence()
     {
         yield return new WaitForSeconds(1f);
 
-        animator.SetBool("isIdle", false);
-        animator.SetBool("isWalking", true);
-
-        movingToMiddle = true;
+        yield return StartCoroutine(nameof(moveTo), middleTransform);
     }
 
     public IEnumerator guiltySequence()
     {
-        dieAnimation();
+        yield return StartCoroutine(nameof(dieAnimation));
 
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(2f);
     }
 
-    private void moveToMiddle()
+    public void enterHouseSequence(int houseControllerID, int ownerControllerID)
     {
-        playerTransform.position = Vector3.MoveTowards(playerTransform.position, targetTransform.position, step);
+        PV.RPC(nameof(RPC_enterHouseSequence), RpcTarget.All, houseControllerID, ownerControllerID);
+    }
 
-        if (Vector3.Distance(playerTransform.position, targetTransform.position) < 0.001f)
+    [PunRPC]
+    public IEnumerator RPC_enterHouseSequence(int houseControllerID, int ownerControllerID)
+    {
+        PhotonView housePV = PhotonView.Find(houseControllerID);
+        PhotonView ownerPV = PhotonView.Find(ownerControllerID);
+        HouseController houseController = housePV.GetComponent<HouseController>();
+        PlayerController ownerController = ownerPV.GetComponent<PlayerController>();
+        Vector3 tempScale = gameObject.transform.localScale;
+        Debug.Log("OUTSIDER COUNT: " + housePV.Owner.CustomProperties["OUTSIDER_COUNT"]);
+
+        if (PV.IsMine)
         {
-            movingToMiddle = false;
-            animator.SetBool("isIdle", true);
-            animator.SetBool("isWalking", false);
+            CustomPropertyWrapper.incrementProperty(housePV.Owner, "OUTSIDER_COUNT", 1);
+        }
+        if (!PV.IsMine)
+        {
+            gameObject.transform.localScale = new Vector3(0, 0, 0);
+        }
+
+        transform.position = houseController.houseFront.position;
+        yield return StartCoroutine(nameof(moveTo), houseController.ownerFront);
+
+        gameObject.transform.localScale = tempScale;
+
+        yield return StartCoroutine(greetAnimation(ownerController));
+
+        Transform outsiderTargetLocation = houseController.outsiderLocation[(int)housePV.Owner.CustomProperties["OUTSIDER_COUNT"] - 1];
+        yield return StartCoroutine(nameof(moveTo), outsiderTargetLocation);
+
+        yield return StartCoroutine(talkAnimation(ownerController));
+    }
+
+    public IEnumerator moveTo(Transform target)
+    {
+        moveTarget = target;
+        animator.SetBool("isIdle", false);
+        animator.SetBool("isWalking", true);
+
+        isMovingTo = true;
+
+        yield return new WaitUntil(() => isMovingTo == false);
+
+        yield return StartCoroutine(nameof(idleAnimation));
+        yield return new WaitForSeconds(1f);
+    }
+
+    private void move()
+    {
+        Debug.Log(step);
+        playerTransform.position = Vector3.MoveTowards(playerTransform.position, moveTarget.position, step);
+
+        if (Vector3.Distance(playerTransform.position, moveTarget.position) < 0.001f)
+        {
+            isMovingTo = false;
         }
     }
 
-    private void dieAnimation()
+    private IEnumerator dieAnimation()
     {
         animator.SetBool("isIdle", false);
         animator.SetBool("isDead", true);
+        yield return new WaitForSeconds(2f);
     }
 
+    private IEnumerator greetAnimation(PlayerController partnerController)
+    {
+        animator.SetBool("isIdle", false);
+        animator.SetTrigger("Greet");
+
+        partnerController.animator.SetBool("isIdle", false);
+        partnerController.animator.SetTrigger("Greet");
+        yield return new WaitForSeconds(2.5f);
+
+        yield return StartCoroutine(partnerController.idleAnimation());
+    }
+
+    private IEnumerator talkAnimation(PlayerController partnerController)
+    {
+        animator.SetBool("isTalking1", true);
+        partnerController.animator.SetBool("isTalking2", true);
+        yield return null;
+    }
+
+    private IEnumerator idleAnimation()
+    {
+        animator.SetBool("isWalking", false);
+        animator.SetBool("isDead", false);
+        animator.SetBool("isTalking1", false);
+        animator.SetBool("isTalking2", false);
+        animator.SetBool("isIdle", true);
+
+        yield return null;
+    }
 }

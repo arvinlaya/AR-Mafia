@@ -78,8 +78,10 @@ public class SpawnManager : MonoBehaviour
     [PunRPC]
     void RPC_InstantiatePlayer(int index)
     {
-        Vector3 pos = spawnPoints[index].position;
-        PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), pos, Quaternion.identity);
-        PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerHouse"), pos, Quaternion.identity);
+        Vector3 housePos = spawnPoints[index].position;
+        GameObject house = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerHouse"), housePos, Quaternion.identity);
+        Vector3 playerPos = house.GetComponent<HouseController>().ownerLocation.position;
+
+        PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), playerPos, Quaternion.identity);
     }
 }

@@ -13,37 +13,71 @@ public class LeftButton : MonoBehaviour
     PlayerController ownerController;
     public HouseController house { get; set; }
     public Player owner { get; set; }
-    public event Action OnEvent;
-    public static event Action<PhotonView> OnDoorEvent;
+
+    private Renderer renderer;
     // Start is called before the first frame update
     void Start()
     {
         ownerController = PlayerManager.getPlayerController(owner);
         transform.localPosition += offset;
-        OnEvent = null;
+        GameManager.Instance.OnPhaseChange += ChangePhase;
+        renderer = GetComponent<Renderer>();
+        renderer.enabled = true;
+    }
 
+    void ChangePhase()
+    {
         switch (GameManager.GAME_STATE)
         {
             case GameManager.GAME_PHASE.NIGHT:
-                OnEvent += OpenDoor;
+                // OnEvent += OpenDoor;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[0];
                 break;
 
             case GameManager.GAME_PHASE.DAY_DISCUSSION:
-                OnEvent = null;
+                // OnEvent = null;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
                 break;
 
             case GameManager.GAME_PHASE.DAY_ACCUSE:
-                OnEvent += AccuseVote;
+                // OnEvent += AccuseVote;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[4];
                 break;
 
             case GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE:
-                OnEvent = null;
+                // OnEvent = null;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
                 break;
 
             case GameManager.GAME_PHASE.DAY_VOTE:
-                OnEvent += Vote;
+                // OnEvent += Vote;
                 transform.position = ownerController.transform.position;
                 transform.localPosition += offset;
+                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[6];
+                break;
+        }
+    }
+
+    void OnClick(GameManager.GAME_PHASE GAME_STATE)
+    {
+        switch (GAME_STATE)
+        {
+            case GameManager.GAME_PHASE.NIGHT:
+                StartCoroutine(nameof(OpenDoor));
+                break;
+
+            case GameManager.GAME_PHASE.DAY_DISCUSSION:
+                break;
+
+            case GameManager.GAME_PHASE.DAY_ACCUSE:
+                AccuseVote();
+                break;
+
+            case GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE:
+                break;
+
+            case GameManager.GAME_PHASE.DAY_VOTE:
+                Vote();
                 break;
         }
     }
@@ -59,32 +93,41 @@ public class LeftButton : MonoBehaviour
                 if (hit.transform == gameObject.transform)
                 {
                     StartCoroutine(nameof(clickFeedback));
-                    OnEvent?.Invoke();
+                    OnClick(GameManager.GAME_STATE);
                 }
             }
         }
 
     }
 
-    void OpenDoor()
+    IEnumerator OpenDoor()
     {
+
         if (GameManager.Instance.isDoorCooldown() == false)
         {
-            OnDoorEvent?.Invoke(house.PV);
+            HouseController[] controllers = GameObject.FindObjectsOfType<HouseController>();
+            foreach (HouseController controller in controllers)
+            {
+                house.DoorEvent(house.PV);
+            }
             GameManager.Instance.setDoorCooldown();
         }
+
+        yield return new WaitForSeconds(2f);
+
+        PlayerController callerController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
+        PlayerController ownerController = PlayerManager.getPlayerController(owner);
+        callerController.enterHouseSequence(house.PV.ViewID, ownerController.PV.ViewID);
     }
 
     void AccuseVote()
     {
-        Debug.Log("TEST");
         if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 0)
         {
-            int voteCount = 1 + (int)owner.CustomProperties["ACCUSE_VOTE_COUNT"];
-            owner.SetCustomProperties(new Hashtable() { { "ACCUSE_VOTE_COUNT", voteCount } });
+            CustomPropertyWrapper.incrementProperty(owner, "ACCUSE_VOTE_COUNT", 1);
 
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTED", owner.NickName } });
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTE_VALUE", 1 } });
+            CustomPropertyWrapper.setPropertyString(PhotonNetwork.LocalPlayer, "VOTED", owner.NickName);
+            CustomPropertyWrapper.setPropertyInt(PhotonNetwork.LocalPlayer, "VOTE_VALUE", 1);
         }
         else if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 1)
         {
@@ -92,15 +135,11 @@ public class LeftButton : MonoBehaviour
             {
                 if ((string)PhotonNetwork.LocalPlayer.CustomProperties["VOTED"] == player.NickName)
                 {
-                    PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTED", owner.NickName } });
+                    CustomPropertyWrapper.setPropertyString(PhotonNetwork.LocalPlayer, "VOTED", owner.NickName);
 
-                    int voteCount = (int)player.CustomProperties["ACCUSE_VOTE_COUNT"] - 1;
-                    player.SetCustomProperties(new Hashtable() { { "ACCUSE_VOTE_COUNT", voteCount } });
+                    CustomPropertyWrapper.decrementProperty(player, "ACCUSE_VOTE_COUNT", 1);
 
-
-                    voteCount = 1 + (int)owner.CustomProperties["ACCUSE_VOTE_COUNT"];
-                    owner.SetCustomProperties(new Hashtable() { { "ACCUSE_VOTE_COUNT", voteCount } });
-
+                    CustomPropertyWrapper.incrementProperty(owner, "ACCUSE_VOTE_COUNT", 1);
                 }
             }
         }
@@ -110,21 +149,17 @@ public class LeftButton : MonoBehaviour
     {
         if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 0)
         {
-            int voteCount = 1 + (int)owner.CustomProperties["INNOCENT_VOTE"];
-            owner.SetCustomProperties(new Hashtable() { { "INNOCENT_VOTE", voteCount } });
+            CustomPropertyWrapper.incrementProperty(owner, "INNOCENT_VOTE", 1);
 
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTE_VALUE", -1 } });
-
+            CustomPropertyWrapper.decrementProperty(PhotonNetwork.LocalPlayer, "VOTE_VALUE", 1);
         }
         else if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 1)
         {
-            int voteCount = (int)owner.CustomProperties["GUILTY_VOTE"] - 1;
-            owner.SetCustomProperties(new Hashtable() { { "GUILTY_VOTE", voteCount } });
+            CustomPropertyWrapper.decrementProperty(owner, "GUILTY_VOTE", 1);
 
-            voteCount = 1 + (int)owner.CustomProperties["INNOCENT_VOTE"];
-            owner.SetCustomProperties(new Hashtable() { { "INNOCENT_VOTE", voteCount } });
+            CustomPropertyWrapper.incrementProperty(owner, "INNOCENT_VOTE", 1);
 
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable() { { "VOTE_VALUE", -1 } });
+            CustomPropertyWrapper.setPropertyInt(PhotonNetwork.LocalPlayer, "VOTE_VALUE", -1);
         }
     }
 

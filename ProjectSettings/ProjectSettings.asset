@@ -893,7 +893,13 @@ PlayerSettings:
   XboxOneOverrideIdentityPublisher: 
   vrEditorSettings: {}
   cloudServicesEnabled:
+    Build: 0
+    Collab: 0
+    Game Performance: 0
+    Purchasing: 0
+    UDP: 0
     UNet: 1
+    Unity Ads: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -907,11 +913,11 @@ PlayerSettings:
     m_VersionName: 
   apiCompatibilityLevel: 6
   activeInputHandler: 0
-  cloudProjectId: a0575930-8e7b-4fdf-89ce-818a56b05164
+  cloudProjectId: 74103569-2453-4935-afbe-0ceaa1be4d68
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: ARMafia
+  organizationId: trainermode74
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   playerDataPath: 

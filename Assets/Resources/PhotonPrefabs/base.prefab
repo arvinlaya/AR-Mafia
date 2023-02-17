@@ -1140,10 +1140,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8920082663557332373}
   - component: {fileID: 7895518470670884493}
-  - component: {fileID: 8611253141542802888}
   - component: {fileID: 6615313773818760957}
   - component: {fileID: 5523206476729358133}
-  - component: {fileID: 7030538547890461076}
+  - component: {fileID: 145189520977244607}
   m_Layer: 0
   m_Name: base
   m_TagString: Untagged
@@ -1180,22 +1179,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bc3527412b883349b199dd9985a986d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8611253141542802888
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8106953496252917551}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ba0c9d253e64054c8b64ae2a7e8f945, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PV: {fileID: 0}
-  LeftButtonPrefab: {fileID: 114759095222960870, guid: 2f6d6329ff42ab043a583761139a7fc4, type: 3}
-  RightButtonPrefab: {fileID: 1038875862570177643, guid: 2bc31caa14ba8074db7cdec2db536de3, type: 3}
-  buttonActive: 0
 --- !u!95 &6615313773818760957
 Animator:
   serializedVersion: 4
@@ -1206,7 +1189,7 @@ Animator:
   m_GameObject: {fileID: 8106953496252917551}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 214ae7ccd0a0ec34180da89950bfbd68, type: 2}
+  m_Controller: {fileID: 9100000, guid: 86f3995d3f30ea0429259a531058ad48, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1234,36 +1217,20 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents:
-  - {fileID: 7030538547890461076}
-  - {fileID: 0}
+  ObservedComponents: []
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &7030538547890461076
-MonoBehaviour:
+--- !u!65 &145189520977244607
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8106953496252917551}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowLayerWeightsInspector: 1
-  ShowParameterInspector: 1
-  m_SynchronizeParameters:
-  - Type: 4
-    SynchronizeType: 1
-    Name: isWalking
-  - Type: 4
-    SynchronizeType: 1
-    Name: isDead
-  - Type: 4
-    SynchronizeType: 1
-    Name: isIdle
-  m_SynchronizeLayers:
-  - SynchronizeType: 1
-    LayerIndex: 0
+  serializedVersion: 2
+  m_Size: {x: 0.9, y: 1.35, z: 1}
+  m_Center: {x: 0, y: 0.65, z: 0}
