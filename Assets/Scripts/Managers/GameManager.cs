@@ -161,7 +161,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 }
                 else
                 {
-                    roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+                    roleCustomProps.Add("ROLE", "VILLAGER");
                 }
                 // roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_DEAD", false);

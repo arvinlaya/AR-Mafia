@@ -136,16 +136,18 @@ public class PlayerController : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(2f);
     }
 
-    public void enterHouseSequence(int houseControllerID)
+    public void enterHouseSequence(int houseControllerID, int ownerControllerID)
     {
-        PV.RPC(nameof(RPC_enterHouseSequence), RpcTarget.All, houseControllerID);
+        PV.RPC(nameof(RPC_enterHouseSequence), RpcTarget.All, houseControllerID, ownerControllerID);
     }
 
     [PunRPC]
-    public IEnumerator RPC_enterHouseSequence(int houseControllerID)
+    public IEnumerator RPC_enterHouseSequence(int houseControllerID, int ownerControllerID)
     {
         PhotonView housePV = PhotonView.Find(houseControllerID);
+        PhotonView ownerPV = PhotonView.Find(ownerControllerID);
         HouseController houseController = housePV.GetComponent<HouseController>();
+        PlayerController ownerController = ownerPV.GetComponent<PlayerController>();
         Vector3 tempScale = gameObject.transform.localScale;
         Debug.Log("OUTSIDER COUNT: " + housePV.Owner.CustomProperties["OUTSIDER_COUNT"]);
 
@@ -163,9 +165,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         gameObject.transform.localScale = tempScale;
 
+        yield return StartCoroutine(greetAnimation(ownerController));
+
         Transform outsiderTargetLocation = houseController.outsiderLocation[(int)housePV.Owner.CustomProperties["OUTSIDER_COUNT"] - 1];
         yield return StartCoroutine(nameof(moveTo), outsiderTargetLocation);
 
+        yield return StartCoroutine(talkAnimation(ownerController));
     }
 
     public IEnumerator moveTo(Transform target)
@@ -178,6 +183,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         yield return new WaitUntil(() => isMovingTo == false);
 
+        yield return StartCoroutine(nameof(idleAnimation));
         yield return new WaitForSeconds(1f);
     }
 
@@ -188,8 +194,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         if (Vector3.Distance(playerTransform.position, moveTarget.position) < 0.001f)
         {
-            animator.SetBool("isIdle", true);
-            animator.SetBool("isWalking", false);
             isMovingTo = false;
         }
     }
@@ -201,4 +205,33 @@ public class PlayerController : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(2f);
     }
 
+    private IEnumerator greetAnimation(PlayerController partnerController)
+    {
+        animator.SetBool("isIdle", false);
+        animator.SetTrigger("Greet");
+
+        partnerController.animator.SetBool("isIdle", false);
+        partnerController.animator.SetTrigger("Greet");
+        yield return new WaitForSeconds(2.5f);
+
+        yield return StartCoroutine(partnerController.idleAnimation());
+    }
+
+    private IEnumerator talkAnimation(PlayerController partnerController)
+    {
+        animator.SetBool("isTalking1", true);
+        partnerController.animator.SetBool("isTalking2", true);
+        yield return null;
+    }
+
+    private IEnumerator idleAnimation()
+    {
+        animator.SetBool("isWalking", false);
+        animator.SetBool("isDead", false);
+        animator.SetBool("isTalking1", false);
+        animator.SetBool("isTalking2", false);
+        animator.SetBool("isIdle", true);
+
+        yield return null;
+    }
 }

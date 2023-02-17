@@ -116,7 +116,8 @@ public class LeftButton : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         PlayerController callerController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
-        callerController.enterHouseSequence(house.PV.ViewID);
+        PlayerController ownerController = PlayerManager.getPlayerController(owner);
+        callerController.enterHouseSequence(house.PV.ViewID, ownerController.PV.ViewID);
     }
 
     void AccuseVote()

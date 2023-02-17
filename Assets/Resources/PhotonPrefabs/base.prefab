@@ -1189,7 +1189,7 @@ Animator:
   m_GameObject: {fileID: 8106953496252917551}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 214ae7ccd0a0ec34180da89950bfbd68, type: 2}
+  m_Controller: {fileID: 9100000, guid: 86f3995d3f30ea0429259a531058ad48, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1217,8 +1217,7 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents:
-  - {fileID: 0}
+  ObservedComponents: []
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
