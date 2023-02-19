@@ -42,32 +42,47 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             if (Input.GetMouseButtonDown(0))
             {
-                RaycastHit hit;
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out hit))
-                {
-                    PhotonView hitPV = hit.transform.GetComponent<PhotonView>();
-                    if (hitPV)
-                    {
-                        foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
-                        {
-                            gameObject.SetActive(false);
-                        }
+                PhotonView hitPV = OnClick();
 
-                        if (!hitPV.IsMine && hit.transform.tag == "House")
+                if (hitPV != null)
+                {
+                    foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+                    {
+                        gameObject.SetActive(false);
+                    }
+
+                    if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.NIGHT)
+                    {
+                        if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "House")
                         {
                             HouseController controller = hitPV.GetComponent<HouseController>();
-                            controller.showButton();
+                            controller.showButtonLeft();
+                            controller.showButtonRight();
                         }
                     }
-                    else
+                    else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
                     {
-                        return;
-                    }
 
+                    }
+                }
+                else
+                {
+                    return;
                 }
             }
         }
+    }
+
+    PhotonView OnClick()
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            return hit.transform.GetComponent<PhotonView>();
+        }
+        return null;
     }
 
     void FixedUpdate()

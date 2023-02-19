@@ -69,13 +69,17 @@ public class HouseController : MonoBehaviour
         animator.SetBool("isOpen", false);
     }
 
-    public void showButton()
+    public void showButtonLeft()
     {
         leftButton.gameObject.SetActive(true);
+    }
+
+    public void showButtonRight()
+    {
         rightButton.gameObject.SetActive(true);
     }
 
-    public void hideButton()
+    public void hideButtonBoth()
     {
         leftButton.gameObject.SetActive(false);
         leftButton.gameObject.SetActive(false);

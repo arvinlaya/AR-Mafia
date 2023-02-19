@@ -27,7 +27,7 @@ public class LeftButton : MonoBehaviour
 
     void ChangePhase()
     {
-        switch (GameManager.GAME_STATE)
+        switch (GameManager.Instance.GAME_STATE)
         {
             case GameManager.GAME_PHASE.NIGHT:
                 // OnEvent += OpenDoor;
@@ -93,7 +93,7 @@ public class LeftButton : MonoBehaviour
                 if (hit.transform == gameObject.transform)
                 {
                     StartCoroutine(nameof(clickFeedback));
-                    OnClick(GameManager.GAME_STATE);
+                    OnClick(GameManager.Instance.GAME_STATE);
                 }
             }
         }
@@ -103,14 +103,14 @@ public class LeftButton : MonoBehaviour
     IEnumerator OpenDoor()
     {
 
-        if (GameManager.Instance.isDoorCooldown() == false)
+        if (GameManager.Instance.openDoorOnCooldown == false)
         {
             HouseController[] controllers = GameObject.FindObjectsOfType<HouseController>();
             foreach (HouseController controller in controllers)
             {
                 house.DoorEvent(house.PV);
             }
-            GameManager.Instance.setDoorCooldown();
+            GameManager.Instance.setDoorCooldown(true);
         }
 
         yield return new WaitForSeconds(2f);

@@ -29,7 +29,7 @@ public class RightButton : MonoBehaviour
 
     void ChangePhase()
     {
-        switch (GameManager.GAME_STATE)
+        switch (GameManager.Instance.GAME_STATE)
         {
             case GameManager.GAME_PHASE.NIGHT:
                 renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[getSkillMaterialIndex()];
@@ -89,7 +89,7 @@ public class RightButton : MonoBehaviour
                 if (hit.transform == gameObject.transform)
                 {
                     StartCoroutine(nameof(clickFeedback));
-                    OnClick(GameManager.GAME_STATE);
+                    OnClick(GameManager.Instance.GAME_STATE);
                 }
             }
         }
@@ -98,7 +98,7 @@ public class RightButton : MonoBehaviour
 
     void Skill(string ROLE, Player target)
     {
-        GameManager.Instance.setAbilityCooldown();
+        GameManager.Instance.setAbilityCooldown(true);
         switch (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"])
         {
             case "VILLAGER":
