@@ -3412,7 +3412,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 146462498}
-  - component: {fileID: 146462499}
   - component: {fileID: 146462500}
   m_Layer: 5
   m_Name: RoomMenu
@@ -3448,20 +3447,6 @@ RectTransform:
   m_AnchoredPosition: {x: -0.0000038146973, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &146462499
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 146462497}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 385ae782831459f4e8a31f8514abcabd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  menuName: room
-  open: 0
 --- !u!114 &146462500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4901,9 +4886,9 @@ RectTransform:
   m_Father: {fileID: 297250757}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 26.681, y: -5.951359}
   m_SizeDelta: {x: 258, y: 87}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &200620283
@@ -6952,7 +6937,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 0.020187, y: 214}
-  m_SizeDelta: {x: 53.362, y: 0}
+  m_SizeDelta: {x: 53.362, y: 23.305435}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &297250758
 MonoBehaviour:
@@ -9126,7 +9111,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &411451468
 RectTransform:
   m_ObjectHideFlags: 0
@@ -27151,10 +27136,11 @@ MonoBehaviour:
   menus:
   - {fileID: 1537023089}
   - {fileID: 411451471}
-  - {fileID: 146462499}
+  - {fileID: 2093219353}
   - {fileID: 480039610}
   - {fileID: 2117164446}
   - {fileID: 1180950105}
+  - {fileID: 1662738030}
 --- !u!114 &1311809072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30284,7 +30270,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1537023088
 RectTransform:
   m_ObjectHideFlags: 0
@@ -39748,9 +39734,9 @@ RectTransform:
   m_Father: {fileID: 297250757}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 26.681, y: -17.354076}
   m_SizeDelta: {x: 258, y: 87}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1977507647
@@ -39797,17 +39783,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1326196838}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 1311809071}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: OpenMenu
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 2117164446}
+          m_ObjectArgumentAssemblyTypeName: Menu, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 1
+          m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1977507648
 MonoBehaviour:
@@ -41729,7 +41715,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 385ae782831459f4e8a31f8514abcabd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuName: room public
+  menuName: room
   open: 0
 --- !u!1 &2094277026
 GameObject:
