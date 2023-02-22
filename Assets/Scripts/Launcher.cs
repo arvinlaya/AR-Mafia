@@ -30,7 +30,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     //PlayerList
 
     //Max player
-    private const int _maxPlayer = 3;
+    private const int _minPlayerToStart = 2;
 
     //START GAME
     [SerializeField] TMP_Text waitingForPlayersText;
@@ -288,7 +288,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
-        if (PhotonNetwork.CurrentRoom.PlayerCount == _maxPlayer)
+        if (PhotonNetwork.CurrentRoom.PlayerCount == _minPlayerToStart)
             startGameButtonPublic.SetActive(PhotonNetwork.IsMasterClient);
     }
 
@@ -337,9 +337,9 @@ public class Launcher : MonoBehaviourPunCallbacks
             privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
             Instantiate(PlayerListItemPrefab, playerListContentPrivate).GetComponent<PlayerListItem>().SetUp(newPlayer);
         }
-        //Debug.Log("PLAYER COUNT: " + PhotonNetwork.CurrentRoom.PlayerCount + "/" + _maxPlayer);
+        //Debug.Log("PLAYER COUNT: " + PhotonNetwork.CurrentRoom.PlayerCount + "/" + _minPlayerToStart);
         ////STARTING GAME
-        bool isMax = PhotonNetwork.CurrentRoom.PlayerCount == _maxPlayer;
+        bool isMax = PhotonNetwork.CurrentRoom.PlayerCount == _minPlayerToStart;
         if (isMax)
         {
             IsMaxPlayer(isMax);
@@ -361,7 +361,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
 
         PhotonNetwork.CreateRoom(stringToCreatePrivateRoom.ToUpper(),
-            new RoomOptions { IsVisible = false, MaxPlayers = _maxPlayer, }
+            new RoomOptions { IsVisible = false, MaxPlayers = _minPlayerToStart, }
             )
             ;
         MenuManager.Instance.OpenMenu("loading");
