@@ -70,7 +70,7 @@ public class LeftButton : MonoBehaviour
                 break;
 
             case GameManager.GAME_PHASE.DAY_ACCUSE:
-                AccuseVote();
+                // AccuseVote();
                 break;
 
             case GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE:
@@ -118,31 +118,6 @@ public class LeftButton : MonoBehaviour
         PlayerController callerController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
         PlayerController ownerController = PlayerManager.getPlayerController(owner);
         callerController.enterHouseSequence(house.PV.ViewID, ownerController.PV.ViewID);
-    }
-
-    void AccuseVote()
-    {
-        if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 0)
-        {
-            CustomPropertyWrapper.incrementProperty(owner, "ACCUSE_VOTE_COUNT", 1);
-
-            CustomPropertyWrapper.setPropertyString(PhotonNetwork.LocalPlayer, "VOTED", owner.NickName);
-            CustomPropertyWrapper.setPropertyInt(PhotonNetwork.LocalPlayer, "VOTE_VALUE", 1);
-        }
-        else if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 1)
-        {
-            foreach (Player player in PhotonNetwork.PlayerList)
-            {
-                if ((string)PhotonNetwork.LocalPlayer.CustomProperties["VOTED"] == player.NickName)
-                {
-                    CustomPropertyWrapper.setPropertyString(PhotonNetwork.LocalPlayer, "VOTED", owner.NickName);
-
-                    CustomPropertyWrapper.decrementProperty(player, "ACCUSE_VOTE_COUNT", 1);
-
-                    CustomPropertyWrapper.incrementProperty(owner, "ACCUSE_VOTE_COUNT", 1);
-                }
-            }
-        }
     }
 
     void Vote()

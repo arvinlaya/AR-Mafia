@@ -55,9 +55,8 @@ public class Model : MonoBehaviour, IPunInstantiateMagicCallback
                     break;
             }
             parentController.animator = newModel.GetComponent<Animator>();
-            newModel.transform.SetParent(parentController.transform);
+            newModel.transform.SetParent(parentController.transform, true);
             newModel.transform.position = parentController.transform.position;
-            parentController.playerTransform = newModel.transform;
         }
 
 

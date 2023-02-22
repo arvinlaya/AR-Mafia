@@ -977,6 +977,7 @@ MonoBehaviour:
   - {fileID: 2054604071}
   - {fileID: 500192372}
   - {fileID: 1445869744}
+  spawnPoints: []
 --- !u!1 &470707963
 GameObject:
   m_ObjectHideFlags: 0
@@ -1006,6 +1007,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ea96e955d1db3847ae41f5befe891fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GAME_STATE: 4
 --- !u!4 &470707966
 Transform:
   m_ObjectHideFlags: 0
@@ -2605,11 +2607,12 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 6b2247834d2b09c44b7f049bed9deef1, type: 2}
   - {fileID: 2100000, guid: 34f064b1b8dd80d4ab711a820848f9ea, type: 2}
   Models:
-  - {fileID: 8106953496252917551, guid: 64e9555144fc06b4cae2779159367ac4, type: 3}
-  - {fileID: 7828006358746335547, guid: 849f750967deaa24c9d8fc44de3b9a7d, type: 3}
-  - {fileID: 8803211326278529560, guid: 5edac0b5e1cfe014993feb2c171dab82, type: 3}
-  - {fileID: 4466318784414345974, guid: 1497fa4899474154a8b2159c7cc93a61, type: 3}
+  - {fileID: 8281500119426396739, guid: 26428844bbeb1b7489582369fe259fbd, type: 3}
+  - {fileID: 2404576234227558094, guid: 38fc38d648f30974ea6aa0a7f6abf3f6, type: 3}
+  - {fileID: 3637055444842549800, guid: de7a14612690eb64b8d8650224a91fae, type: 3}
+  - {fileID: 2404576234227558094, guid: 38fc38d648f30974ea6aa0a7f6abf3f6, type: 3}
   time: 0
+  LayerIgnoreRaycast: 0
 --- !u!4 &982168733
 Transform:
   m_ObjectHideFlags: 0
@@ -3853,6 +3856,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1429913432}
   - component: {fileID: 1429913431}
+  - component: {fileID: 1429913433}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -3937,6 +3941,26 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &1429913433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1429913430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 1
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
 --- !u!1 &1445869743
 GameObject:
   m_ObjectHideFlags: 0

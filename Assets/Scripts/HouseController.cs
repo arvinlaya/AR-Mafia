@@ -21,18 +21,25 @@ public class HouseController : MonoBehaviour
     [SerializeField] public Transform ownerLocation;
     [SerializeField] public Transform ownerFront;
     [SerializeField] public Transform houseFront;
-    [SerializeField] public Transform houseOutside;
     [SerializeField] public Transform[] outsiderLocation;
-    public PhotonAnimatorView animatorView;
+    [SerializeField] public Material houseMaterial;
+    [SerializeField] public Material houseMaterialFade;
+    private bool isOutlined;
+    private bool isHidden;
+    private float fadeSpeed = .05f;
+    private Renderer houseRenderer;
     void Awake()
     {
         PV = GetComponent<PhotonView>();
-        animatorView = GetComponent<PhotonAnimatorView>();
+        gameObject.GetComponent<Outline>().enabled = false;
+        animator = GetComponent<Animator>();
+        houseRenderer = GetComponent<Renderer>();
+        isOutlined = false;
+        isHidden = false;
     }
     // Start is called before the first frame update
     void Start()
     {
-        animator = GetComponent<Animator>();
 
         leftButton = Instantiate(LeftButtonPrefab, transform.position, Quaternion.identity);
         rightButton = Instantiate(RightButtonPrefab, transform.position, Quaternion.identity);
@@ -42,6 +49,8 @@ public class HouseController : MonoBehaviour
 
         rightButton.house = this;
         rightButton.owner = PV.Owner;
+
+        GameManager.Instance.OnPhaseChange += changePhase;
     }
 
     public void DoorEvent(PhotonView pv)
@@ -85,4 +94,53 @@ public class HouseController : MonoBehaviour
         leftButton.gameObject.SetActive(false);
     }
 
+    public void startFadeHouse()
+    {
+        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().sharedMaterial = houseMaterialFade;
+        gameObject.GetComponentInChildren<MeshRenderer>().sharedMaterial = houseMaterialFade;
+        gameObject.layer = ReferenceManager.Instance.LayerIgnoreRaycast;
+        isHidden = true;
+    }
+
+    public void startUnfadeHouse()
+    {
+        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().sharedMaterial = houseMaterial;
+        gameObject.GetComponentInChildren<MeshRenderer>().sharedMaterial = houseMaterial;
+        gameObject.layer = ReferenceManager.Instance.LayerIgnoreRaycast;
+        isHidden = false;
+    }
+
+    private void OnMouseOver()
+    {
+        if (isOutlined == false)
+        {
+            gameObject.GetComponent<Outline>().enabled = true;
+            isOutlined = true;
+        }
+    }
+    private void OnMouseExit()
+    {
+        if (isOutlined == true)
+        {
+            gameObject.GetComponent<Outline>().enabled = false;
+            isOutlined = false;
+        }
+    }
+    private void changePhase()
+    {
+        if (GameManager.Instance.GAME_STATE != GameManager.GAME_PHASE.NIGHT)
+        {
+            if (isHidden == false)
+            {
+                startFadeHouse();
+            }
+        }
+        else
+        {
+            if (isHidden == false)
+            {
+                startUnfadeHouse();
+            }
+        }
+    }
 }

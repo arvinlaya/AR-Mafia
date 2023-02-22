@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public static int NIGHT_LENGHT = 40; //40 //murder, open door
+    public static int NIGHT_LENGHT = 3; //40 //murder, open door
     public static int DAY_DISCUSSION_LENGHT = 30; //30 // none
     public static int DAY_ACCUSE_LENGHT = 20; //20 // accuse icon
     public static int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20 // none
@@ -295,8 +295,18 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private void SetPhase_R(object phase)
     {
+        HouseController houseController;
         GameManager.Instance.GAME_STATE = (GameManager.GAME_PHASE)phase;
         OnPhaseChange?.Invoke();
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if ((bool)player.CustomProperties["IS_DEAD"] == false)
+            {
+                PlayerManager.getPlayerController(player).resetPlayerState();
+                houseController = PlayerManager.getPlayerHouseController(player);
+            }
+        }
+
         InitializeTimer((byte)phase);
     }
 

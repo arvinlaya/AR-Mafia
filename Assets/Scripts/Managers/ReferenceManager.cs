@@ -14,10 +14,10 @@ public class ReferenceManager : MonoBehaviour
     [SerializeField] public GameObject prompt;
     [SerializeField] public GameObject camera;
     [SerializeField] public Material[] ButtonMaterials;
-
     [SerializeField] public GameObject[] Models;
 
     public int time;
+    public int LayerIgnoreRaycast;
     public static ReferenceManager Instance;
     void Awake()
     {
@@ -28,5 +28,10 @@ public class ReferenceManager : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
         Instance = this;
+    }
+
+    void Start()
+    {
+        LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
     }
 }

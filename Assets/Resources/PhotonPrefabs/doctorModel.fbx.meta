@@ -24,7 +24,22 @@ ModelImporter:
   - first:
       74: -2630020535824132839
     second: Armature.002|Walk
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.002
+    second: {fileID: 2100000, guid: af2a0804a6fd0ea4d8f103e03a125a7b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.004
+    second: {fileID: 2100000, guid: af2a0804a6fd0ea4d8f103e03a125a7b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.006
+    second: {fileID: 2100000, guid: af2a0804a6fd0ea4d8f103e03a125a7b, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -256,7 +271,7 @@ ModelImporter:
       maskType: 3
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
-    isReadable: 0
+    isReadable: 1
   meshes:
     lODScreenPercentages: []
     globalScale: 1

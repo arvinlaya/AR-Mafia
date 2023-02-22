@@ -5,6 +5,8 @@ using System.Linq;
 using Photon.Pun;
 using Photon.Realtime;
 using System.IO;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+
 
 public class SpawnManager : MonoBehaviour
 {
@@ -19,8 +21,9 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] Transform[] PlayerSpawn7;
     [SerializeField] Transform[] PlayerSpawn8;
 
-    Transform[] spawnPoints;
+    public Transform[] spawnPoints;
 
+    public IDictionary<Player, Vector3> playerSpawn;
     void Awake()
     {
         PV = GetComponent<PhotonView>();
@@ -31,6 +34,7 @@ public class SpawnManager : MonoBehaviour
         }
         Instance = this;
         Instance.isSet = false;
+        playerSpawn = new Dictionary<Player, Vector3>();
     }
     // Start is called before the first frame update
     void Start()
@@ -45,7 +49,9 @@ public class SpawnManager : MonoBehaviour
             index = 0;
             foreach (Player player in PhotonNetwork.PlayerList)
             {
-                PV.RPC("RPC_InstantiatePlayer", player, index);
+                PV.RPC(nameof(RPC_InstantiatePlayer), player, index);
+                PV.RPC(nameof(RPC_InstantiatePlayerSpawnPoints), RpcTarget.All, player.NickName, index);
+
                 index++;
             }
             Instance.isSet = true;
@@ -83,5 +89,17 @@ public class SpawnManager : MonoBehaviour
         Vector3 playerPos = house.GetComponent<HouseController>().ownerLocation.position;
 
         PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), playerPos, Quaternion.identity);
+    }
+
+    [PunRPC]
+    void RPC_InstantiatePlayerSpawnPoints(string playerNickname, int index)
+    {
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (player.NickName == playerNickname)
+            {
+                playerSpawn.Add(player, spawnPoints[index].position);
+            }
+        }
     }
 }
