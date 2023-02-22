@@ -37,6 +37,11 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] GameObject waitingPlayerCardPublic;
     [SerializeField] GameObject waitingPlayerCardPrivate;
 
+
+
+    [SerializeField] TMP_Text hostNamePublic;
+    [SerializeField] TMP_Text hostNamePrivate;
+
     [SerializeField] GameObject startGameButtonPublic;
     [SerializeField] GameObject startGameButtonPrivate;
 
@@ -169,6 +174,9 @@ public class Launcher : MonoBehaviourPunCallbacks
                 waitingForPlayersText.text = "GET READY";
             }
 
+            string roomMasterName = PhotonNetwork.CurrentRoom.GetPlayer(PhotonNetwork.CurrentRoom.MasterClientId).NickName;
+            hostNamePublic.text = roomMasterName;
+
         }
         //PRIVATE GAME
         else
@@ -178,6 +186,9 @@ public class Launcher : MonoBehaviourPunCallbacks
             privateGameHostName.text = PhotonNetwork.MasterClient.NickName;//Bianca, sa onjoinedroom dati...
             privateGameCode.text = PhotonNetwork.CurrentRoom.Name;
             privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
+
+            string roomMasterName = PhotonNetwork.CurrentRoom.GetPlayer(PhotonNetwork.CurrentRoom.MasterClientId).NickName;
+            hostNamePrivate.text = roomMasterName;
         }
 
         // For Player List
