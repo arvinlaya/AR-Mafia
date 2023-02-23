@@ -25,6 +25,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     private bool isPrivate = false;
     [SerializeField] TMP_InputField privateRoomNameInputField;
     [SerializeField] Transform playerListContentPrivate;
+
     private const int joinPrivateCodeLength = 3;
 
     //PlayerList
@@ -33,7 +34,11 @@ public class Launcher : MonoBehaviourPunCallbacks
     private const int _minPlayerToStart = 2;
 
     //START GAME
-    [SerializeField] TMP_Text waitingForPlayersText;
+
+    //change to "Host can start" when min is met
+    [SerializeField] TMP_Text waitingForPlayersTextPublic;
+    [SerializeField] TMP_Text waitingForPlayersTextPrivate;
+
     [SerializeField] GameObject waitingPlayerCardPublic;
     [SerializeField] GameObject waitingPlayerCardPrivate;
 
@@ -66,6 +71,23 @@ public class Launcher : MonoBehaviourPunCallbacks
     private bool gameStarted = false;
 
     private PhotonView PV;
+
+    // can be use to improve code in the future
+
+    //[PunRPC]
+    //void RPC_MinimumPlayerReached_Public()
+    //{
+    //    //e.g 2/2
+    //    //change waiting text "Host can start"
+    //    if (PhotonNetwork.IsMasterClient)
+    //    {
+    //    waitingPlayerCardPublic.SetActive(false);
+    //    startGameButtonPublic.SetActive(true);
+    //    }
+    //    else { 
+    //    waitingForPlayersTextPublic.text = "Host can start";
+    //    }
+    //}
 
     [PunRPC]
     void RPC_StartGame()
@@ -171,7 +193,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             if (PhotonNetwork.LocalPlayer != PhotonNetwork.MasterClient)
             {
                 Debug.Log("agay dito yung pagka join ko");
-                waitingForPlayersText.text = "GET READY";
+                waitingForPlayersTextPublic.text = "GET READY";
             }
 
             string roomMasterName = PhotonNetwork.CurrentRoom.GetPlayer(PhotonNetwork.CurrentRoom.MasterClientId).NickName;

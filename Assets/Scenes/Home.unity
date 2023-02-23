@@ -16612,7 +16612,7 @@ GameObject:
   - component: {fileID: 799601372}
   - component: {fileID: 799601371}
   m_Layer: 5
-  m_Name: StartButtonPrivate
+  m_Name: StartButtonPublic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26471,12 +26471,13 @@ MonoBehaviour:
   PlayerListItemPrefab: {fileID: 5681248402697335074, guid: c754d6e9df7d5004a8818fd8bad70f13, type: 3}
   privateRoomNameInputField: {fileID: 1032899442}
   playerListContentPrivate: {fileID: 194384479}
-  waitingForPlayersText: {fileID: 282871053}
-  waitingPlayerCardPublic: {fileID: 1202302775}
+  waitingForPlayersTextPublic: {fileID: 2101560083}
+  waitingForPlayersTextPrivate: {fileID: 399389729}
+  waitingPlayerCardPublic: {fileID: 666340308}
   waitingPlayerCardPrivate: {fileID: 453004188}
   hostNamePublic: {fileID: 667734959}
   hostNamePrivate: {fileID: 800622267}
-  startGameButtonPublic: {fileID: 804285418}
+  startGameButtonPublic: {fileID: 799601369}
   startGameButtonPrivate: {fileID: 82731699}
   privateGameNumberOfPlayers: {fileID: 2094277028}
   publicGameNumberOfPlayers: {fileID: 66706496}
