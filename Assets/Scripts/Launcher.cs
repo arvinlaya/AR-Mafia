@@ -55,9 +55,11 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     Hashtable hashRoomOwner = new Hashtable();
 
+    //IGN
     [SerializeField] GameObject ignModal;
     [SerializeField] TMP_InputField ignInputField;
-    [SerializeField] TMP_Text ignText;
+
+    [SerializeField] TMP_InputField ignInputField_notModal;
     [SerializeField] GameObject iconIgn;
 
     [SerializeField] GameObject nameTooLongPrompt;
@@ -132,25 +134,57 @@ public class Launcher : MonoBehaviourPunCallbacks
         MenuManager.Instance.OpenMenu("title");
         Debug.Log("Joined Lobby");
         Debug.Log("nickname: " + PhotonNetwork.NickName);
-        ignModal.gameObject.SetActive(PhotonNetwork.NickName == "");
+
+        //PLAYERPREF
+
+        if (PlayerPrefs.HasKey("Nickname"))
+        {
+
+            string nickname = PhotonNetwork.NickName;
+            ignModal.gameObject.SetActive(false);
+            iconIgn.gameObject.SetActive(false);
+
+            nickname = PlayerPrefs.GetString("Nickname"); //GET the saved nickname
+
+            ignInputField_notModal.text = nickname;
+
+        }
+        else
+        {
+            ignModal.gameObject.SetActive(true);
+        }
+
+
         //PhotonNetwork.NickName = "P#" + Random.Range(0, 100).ToString("000");
+    }
+    public void OnClickClearPlayerPref()
+    {
+        Debug.LogError("Deleting saves");
+        PlayerPrefs.DeleteAll();
     }
 
     public void setIGN()
     {
+
         if (ignInputField.text != "" && ignInputField.text.Length <= 12)
         {
             ignModal.gameObject.SetActive(false);
-            PhotonNetwork.NickName = ignInputField.text.ToUpper();
-            Debug.Log(PhotonNetwork.NickName);
-            ignText.text = ignInputField.text.ToUpper();
-            ignText.gameObject.SetActive(true);
+
+            string nickname = ignInputField.text.ToUpper();
+
+            //show in the middle ign display after setting
+            ignInputField_notModal.text = nickname;
+
             iconIgn.gameObject.SetActive(false);
+
+            Debug.LogError("Saving this nickname: " + nickname);
+            PlayerPrefs.SetString("Nickname", nickname); // save the nickname to PlayerPrefs
+
         }
 
         else if (ignInputField.text.Length > 12)
         {
-            Debug.Log("\nToo long");
+            Debug.Log("\nToo long: " + ignInputField.text);
             nameTooLongPrompt.gameObject.SetActive(true);
         }
 
@@ -165,6 +199,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             Debug.Log("Something went wrong.");
         }
     }
+
 
     public void CreateRoom()
     {

@@ -25344,13 +25344,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1311809071}
-        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
-        m_MethodName: OpenMenu
-        m_Mode: 2
+      - m_Target: {fileID: 1311809070}
+        m_TargetAssemblyTypeName: Launcher, Assembly-CSharp
+        m_MethodName: OnClickClearPlayerPref
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 1662738030}
-          m_ObjectArgumentAssemblyTypeName: Menu, Assembly-CSharp
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -26361,7 +26361,7 @@ MonoBehaviour:
   publicGameNumberOfPlayers: {fileID: 66706496}
   ignModal: {fileID: 265653522}
   ignInputField: {fileID: 1628949404}
-  ignText: {fileID: 286594158}
+  ignInputField_notModal: {fileID: 1147656292}
   iconIgn: {fileID: 583156098}
   nameTooLongPrompt: {fileID: 1546738790}
   nameIsEmptyPrompt: {fileID: 71103351}
