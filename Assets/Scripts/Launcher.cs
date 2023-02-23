@@ -163,6 +163,46 @@ public class Launcher : MonoBehaviourPunCallbacks
         PlayerPrefs.DeleteAll();
     }
 
+    public void OnChangeResetIGN()
+    {
+        string updatedName = ignInputField_notModal.text;
+        Debug.LogError("NEW NAME: " + ignInputField.text);
+        if (updatedName != "" && updatedName.Length <= 12)
+        {
+            ignModal.gameObject.SetActive(false);
+
+            string nickname = updatedName.ToUpper();
+
+            //show in the middle ign display after setting
+            updatedName = nickname;
+
+            iconIgn.gameObject.SetActive(false);
+
+            Debug.LogError("Saving this nickname: " + nickname);
+            PlayerPrefs.SetString("Nickname", nickname); // save the nickname to PlayerPrefs
+            PhotonNetwork.NickName = nickname;
+
+        }
+
+        else if (updatedName.Length > 12)
+        {
+            Debug.Log("\nToo long: " + updatedName);
+            nameTooLongPrompt.gameObject.SetActive(true);
+        }
+
+        else if (updatedName == "")
+        {
+            nameIsEmptyPrompt.gameObject.SetActive(true);
+            Debug.Log("\nCannot be Empty String");
+        }
+
+        else
+        {
+            Debug.Log("Something went wrong.");
+        }
+        
+    }
+
     public void setIGN()
     {
 
