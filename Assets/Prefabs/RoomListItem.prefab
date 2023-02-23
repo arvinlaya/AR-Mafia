@@ -32,7 +32,7 @@ RectTransform:
   m_Children:
   - {fileID: 7765013950345160304}
   m_Father: {fileID: 4541081984878855234}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -387,7 +387,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4541081984878855234}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -778,7 +778,7 @@ RectTransform:
   - {fileID: 3177062802884449747}
   - {fileID: 4665694926567252090}
   m_Father: {fileID: 4541081984878855234}
-  m_RootOrder: 4
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1799,9 +1799,9 @@ RectTransform:
   - {fileID: 4541081983082556748}
   - {fileID: 4541081983472194161}
   - {fileID: 4541081984638725571}
-  - {fileID: 7521448896150053318}
   - {fileID: 3462096668298831163}
   - {fileID: 6044946921420360509}
+  - {fileID: 7521448896150053318}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1862,6 +1862,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   text: {fileID: 4541081983082556747}
   player_Count: {fileID: 4541081983472194160}
+  promptText: {fileID: 7628406811475578160}
   promtFull: {fileID: 3331397313781979434}
   privateCodeModal: {fileID: 16342551691920526}
   privateCodeInputField: {fileID: 798312990718995259}
@@ -3105,6 +3106,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3511481276774681396}
+        m_TargetAssemblyTypeName: RoomListItem, Assembly-CSharp
+        m_MethodName: OnClickOkayPrompt
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0

@@ -283,7 +283,9 @@ public class Launcher : MonoBehaviourPunCallbacks
             MenuManager.Instance.OpenMenu("room private");
             Debug.Log("PRIVATE ROOM CODE: " + PhotonNetwork.CurrentRoom.Name + "\nOnJoinedRoom() (Private)");
             privateGameHostName.text = PhotonNetwork.MasterClient.NickName;//Bianca, sa onjoinedroom dati...
-            privateGameCode.text = PhotonNetwork.CurrentRoom.Name;
+            roomNameText_private.text = PhotonNetwork.CurrentRoom.Name;
+            //TODO Room code Pho
+            privateGameCode.text = (string)PhotonNetwork.CurrentRoom.CustomProperties["password"];
             privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
 
             string roomMasterName = PhotonNetwork.CurrentRoom.GetPlayer(PhotonNetwork.CurrentRoom.MasterClientId).NickName;
@@ -318,7 +320,6 @@ public class Launcher : MonoBehaviourPunCallbacks
                 Instantiate(PlayerListItemPrefab, playerListContentPrivate).GetComponent<PlayerListItem>().SetUp(players[i]);
             }
         }
-
 
         //startGameButton.SetActive(PhotonNetwork.IsMasterClient);
         Debug.Log("Number of players in the room: " + PhotonNetwork.CurrentRoom.PlayerCount.ToString());
@@ -366,22 +367,9 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
         publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
+        IsMaxPlayer(false);
+
     }
-
-
-    IEnumerator CheckPrivateRooms(List<RoomInfo> roomList)
-    {
-        yield return new WaitForSeconds(0.5f); // Wait for half a second
-
-        foreach (RoomInfo room in roomList)
-        {
-            if (room.CustomProperties.ContainsKey("isPrivate") && (bool)room.CustomProperties["isPrivate"])
-            {
-                Debug.Log("Found a private room: " + room.Name + " (password: " + (string)room.CustomProperties["password"] + ")");
-            }
-        }
-    }
-
 
     //ONLY called when list of rooms change, not specific rooms
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -396,29 +384,32 @@ public class Launcher : MonoBehaviourPunCallbacks
             Destroy(trans.gameObject);
         }
 
-        StartCoroutine(CheckPrivateRooms(roomList));
+        //StartCoroutine(CheckPrivateRooms(roomList));
 
 
-        //for (int i = 0; i < roomList.Count; i++)
-        //{
+        if (roomList.Count > 0)
+        {
+            for (int i = 0; i < roomList.Count; i++)
+            {
 
-        //    RoomInfo currentRoom = roomList[i];
+                RoomInfo currentRoom = roomList[i];
 
-        //    Debug.LogError("CREATED PRIVATE GAME. HAS CODE: " + currentRoom.CustomProperties.ContainsKey("isPrivate"));
+                if(currentRoom.CustomProperties.ContainsKey("isPrivate"))
+                Debug.Log("Found a private currentRoom: " + currentRoom.Name + " (password: " + (string)currentRoom.CustomProperties["password"] + ")");
 
-        //    Debug.Log("contains room_code: " + currentRoom.CustomProperties.ContainsKey("room_code"));
 
-        //    if (currentRoom.RemovedFromList)
-        //        continue; // ignore/don't display
+                if (currentRoom.RemovedFromList)
+                    continue; // ignore/don't display
 
-        //    else if(currentRoom.CustomProperties.ContainsKey("room_code"))//is Private, different component
-        //    {
-        //        Instantiate(roomListItemPrefab, roomListContent_Private).GetComponent<RoomListItem>().SetUp(currentRoom);
-        //    }
-        //    else
-        //        Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItem>().SetUp(currentRoom);
-        //    
-        //}
+                else if (currentRoom.CustomProperties.ContainsKey("isPrivate"))//is Private, different component
+                {
+                    Instantiate(roomListItemPrefab, roomListContent_Private).GetComponent<RoomListItem>().SetUp(currentRoom);
+                }
+                else
+                    Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItem>().SetUp(currentRoom);
+
+            }
+        }
     }
 
     public override void OnMasterClientSwitched(Player newMasterClient)
@@ -497,15 +488,12 @@ public class Launcher : MonoBehaviourPunCallbacks
             password += glyphs[Random.Range(0, glyphs.Length)];
         }
 
-
-
         string roomName = "PR-" + Random.Range(0, 1000).ToString("0000");
-        Debug.Log("CREATING PRIVATE ROOM:" + roomName+ ":" + password);
-
+        Debug.Log("CREATING PRIVATE ROOM:" + roomName + ":" + password);
 
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.CustomRoomProperties = new Hashtable() { { "isPrivate", true }, { "password", password } };
-        roomOptions.CustomRoomPropertiesForLobby = new string[] { "isPrivate","password" };
+        roomOptions.CustomRoomPropertiesForLobby = new string[] { "isPrivate", "password" };
         roomOptions.MaxPlayers = 4;
 
         PhotonNetwork.CreateRoom(roomName, roomOptions);
