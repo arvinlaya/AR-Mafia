@@ -44,6 +44,7 @@ MonoBehaviour:
   - RPC_ShowPreGameMenu
   - RPC_StartGame
   - RPC_meWasKicked
+  - RPC_MinimumPlayerReached_Public
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

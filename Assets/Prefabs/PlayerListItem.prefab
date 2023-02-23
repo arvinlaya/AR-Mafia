@@ -643,7 +643,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIGN: {fileID: 5681248401632953314}
-  playerPosition: {fileID: 0}
+  playerPosition: {fileID: 8470673297680203047}
   hostLabel: {fileID: 8801954483631637688}
   kickButton: {fileID: 5681248402440323877}
 --- !u!1 &8801954483631637688

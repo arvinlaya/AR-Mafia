@@ -20,17 +20,26 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
     {
         player = _player;
         playerIGN.text = _player.NickName;
-        playerPosition.text = "Player " + _player.ActorNumber.ToString();
-        //if (PhotonNetwork.IsMasterClient && PhotonNetwork.LocalPlayer.NickName )
+        playerPosition.text =  _player.ActorNumber.ToString();
+
+        // room master name = this player item card
         if (PhotonNetwork.MasterClient.NickName == _player.NickName)
         {
             hostLabel.SetActive(true);
             kickButton.SetActive(false);
         }
-        //else hostLabel.SetActive(false);//GOOD for "Host", Problem: Client should not see "kick" button
-        else if (PhotonNetwork.LocalPlayer.NickName != PhotonNetwork.MasterClient.NickName)
+        else if(player.NickName != PhotonNetwork.MasterClient.NickName) // This player is not the room master
         {
-            kickButton.SetActive(false);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                hostLabel.SetActive(false);
+                kickButton.SetActive(true);
+            }
+            else//not room master 
+            {
+                hostLabel.SetActive(false);
+                kickButton.SetActive(false);
+            }
         }
     }
 
