@@ -368,6 +368,21 @@ public class Launcher : MonoBehaviourPunCallbacks
         publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
     }
 
+
+    IEnumerator CheckPrivateRooms(List<RoomInfo> roomList)
+    {
+        yield return new WaitForSeconds(0.5f); // Wait for half a second
+
+        foreach (RoomInfo room in roomList)
+        {
+            if (room.CustomProperties.ContainsKey("isPrivate") && (bool)room.CustomProperties["isPrivate"])
+            {
+                Debug.Log("Found a private room: " + room.Name + " (password: " + (string)room.CustomProperties["password"] + ")");
+            }
+        }
+    }
+
+
     //ONLY called when list of rooms change, not specific rooms
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
@@ -381,22 +396,29 @@ public class Launcher : MonoBehaviourPunCallbacks
             Destroy(trans.gameObject);
         }
 
-        for (int i = 0; i < roomList.Count; i++)
-        {
-            RoomInfo currentRoom = roomList[i];
-            Debug.Log("contains room_code: " + currentRoom.CustomProperties.ContainsKey("room_code"));
+        StartCoroutine(CheckPrivateRooms(roomList));
 
-            if (currentRoom.RemovedFromList)
-                continue; // ignore/don't display
 
-            else if(currentRoom.CustomProperties.ContainsKey("room_code"))//is Private, different component
-            {
-                Instantiate(roomListItemPrefab, roomListContent_Private).GetComponent<RoomListItem>().SetUp(currentRoom);
-            }
-            else
-                Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItem>().SetUp(currentRoom);
-            
-        }
+        //for (int i = 0; i < roomList.Count; i++)
+        //{
+
+        //    RoomInfo currentRoom = roomList[i];
+
+        //    Debug.LogError("CREATED PRIVATE GAME. HAS CODE: " + currentRoom.CustomProperties.ContainsKey("isPrivate"));
+
+        //    Debug.Log("contains room_code: " + currentRoom.CustomProperties.ContainsKey("room_code"));
+
+        //    if (currentRoom.RemovedFromList)
+        //        continue; // ignore/don't display
+
+        //    else if(currentRoom.CustomProperties.ContainsKey("room_code"))//is Private, different component
+        //    {
+        //        Instantiate(roomListItemPrefab, roomListContent_Private).GetComponent<RoomListItem>().SetUp(currentRoom);
+        //    }
+        //    else
+        //        Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItem>().SetUp(currentRoom);
+        //    
+        //}
     }
 
     public override void OnMasterClientSwitched(Player newMasterClient)
@@ -468,21 +490,25 @@ public class Launcher : MonoBehaviourPunCallbacks
         //Creating the Code for the Room
         const string glyphs = "abcdefghijklmnopqrstuvwxyz"; //add the characters you want
         int charAmount = Random.Range(joinPrivateCodeLength, joinPrivateCodeLength); //set those to the minimum and maximum length of your string
-        string stringToCreatePrivateRoom = "";
+        string password = "";
 
         for (int i = 0; i < charAmount; i++)
         {
-            stringToCreatePrivateRoom += glyphs[Random.Range(0, glyphs.Length)];
+            password += glyphs[Random.Range(0, glyphs.Length)];
         }
 
 
-        // Create a new private room
-        Hashtable customRoomProperties = new Hashtable();
-        customRoomProperties.Add("isPrivate", true);
-        Debug.LogError("Room Code" + stringToCreatePrivateRoom);
-        customRoomProperties.Add("room_code", stringToCreatePrivateRoom);
 
-        PhotonNetwork.CreateRoom("PR-" + Random.Range(0, 1000).ToString("0000"), new RoomOptions { CustomRoomProperties = customRoomProperties, MaxPlayers = _minPlayerToStart });
+        string roomName = "PR-" + Random.Range(0, 1000).ToString("0000");
+        Debug.Log("CREATING PRIVATE ROOM:" + roomName+ ":" + password);
+
+
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.CustomRoomProperties = new Hashtable() { { "isPrivate", true }, { "password", password } };
+        roomOptions.CustomRoomPropertiesForLobby = new string[] { "isPrivate","password" };
+        roomOptions.MaxPlayers = 4;
+
+        PhotonNetwork.CreateRoom(roomName, roomOptions);
 
         MenuManager.Instance.OpenMenu("loading");
         isPrivate = true;
