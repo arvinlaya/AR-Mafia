@@ -13,17 +13,19 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     [SerializeField] TMP_Text errorText;
     [SerializeField] TMP_Text roomNameText;
+    [SerializeField] TMP_Text roomNameText_private;
     [SerializeField] TMP_Text privateGameCode;
     [SerializeField] TMP_Text privateGameHostName;
     //PART 2
     [SerializeField] Transform roomListContent;
+    [SerializeField] Transform roomListContent_Private;
     [SerializeField] GameObject roomListItemPrefab;
     //PART 2.5
     [SerializeField] Transform playerListContent;
     [SerializeField] GameObject PlayerListItemPrefab;
 
     private bool isPrivate = false;
-    [SerializeField] TMP_InputField privateRoomNameInputField;
+    //[SerializeField] TMP_InputField privateRoomNameInputField;
     [SerializeField] Transform playerListContentPrivate;
 
     private const int joinPrivateCodeLength = 3;
@@ -200,7 +202,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             Debug.Log("Something went wrong.");
         }
-        
+
     }
 
     public void setIGN()
@@ -374,13 +376,27 @@ public class Launcher : MonoBehaviourPunCallbacks
             Destroy(trans.gameObject);
         }
 
-        for (int i = 0; i < roomList.Count; i++)
+        foreach (Transform trans in roomListContent_Private)
         {
-            if (roomList[i].RemovedFromList)
-                continue;
-            Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItem>().SetUp(roomList[i]);
+            Destroy(trans.gameObject);
         }
 
+        for (int i = 0; i < roomList.Count; i++)
+        {
+            RoomInfo currentRoom = roomList[i];
+            Debug.Log("contains room_code: " + currentRoom.CustomProperties.ContainsKey("room_code"));
+
+            if (currentRoom.RemovedFromList)
+                continue; // ignore/don't display
+
+            else if(currentRoom.CustomProperties.ContainsKey("room_code"))//is Private, different component
+            {
+                Instantiate(roomListItemPrefab, roomListContent_Private).GetComponent<RoomListItem>().SetUp(currentRoom);
+            }
+            else
+                Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItem>().SetUp(currentRoom);
+            
+        }
     }
 
     public override void OnMasterClientSwitched(Player newMasterClient)
@@ -449,18 +465,25 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void CreateRoomPrivate()
     {
+        //Creating the Code for the Room
         const string glyphs = "abcdefghijklmnopqrstuvwxyz"; //add the characters you want
         int charAmount = Random.Range(joinPrivateCodeLength, joinPrivateCodeLength); //set those to the minimum and maximum length of your string
         string stringToCreatePrivateRoom = "";
+
         for (int i = 0; i < charAmount; i++)
         {
             stringToCreatePrivateRoom += glyphs[Random.Range(0, glyphs.Length)];
         }
 
-        PhotonNetwork.CreateRoom(stringToCreatePrivateRoom.ToUpper(),
-            new RoomOptions { IsVisible = false, MaxPlayers = _minPlayerToStart, }
-            )
-            ;
+
+        // Create a new private room
+        Hashtable customRoomProperties = new Hashtable();
+        customRoomProperties.Add("isPrivate", true);
+        Debug.LogError("Room Code" + stringToCreatePrivateRoom);
+        customRoomProperties.Add("room_code", stringToCreatePrivateRoom);
+
+        PhotonNetwork.CreateRoom("PR-" + Random.Range(0, 1000).ToString("0000"), new RoomOptions { CustomRoomProperties = customRoomProperties, MaxPlayers = _minPlayerToStart });
+
         MenuManager.Instance.OpenMenu("loading");
         isPrivate = true;
     }
@@ -468,9 +491,10 @@ public class Launcher : MonoBehaviourPunCallbacks
     public void JoinRoomPrivate()
     {
         isPrivate = true;
-        PhotonNetwork.JoinRoom(privateRoomNameInputField.text.ToUpper());
-        MenuManager.Instance.OpenMenu("loading");
-
+        ////Instead of  entering name, Enter code first
+        ////copy logic of entering from public room
+        //PhotonNetwork.JoinRoom(privateRoomNameInputField.text.ToUpper());
+        //MenuManager.Instance.OpenMenu("loading");
     }
 
     [PunRPC]
