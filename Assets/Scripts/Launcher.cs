@@ -33,7 +33,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     //PlayerList
 
     //Max player
-    private const int _minPlayerToStart = 2;
+    private const int _maxPlayer = 2;
 
     //START GAME
 
@@ -414,7 +414,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
-        if (PhotonNetwork.CurrentRoom.PlayerCount == _minPlayerToStart)
+        if (PhotonNetwork.CurrentRoom.PlayerCount == _maxPlayer)
             startGameButtonPublic.SetActive(PhotonNetwork.IsMasterClient);
     }
 
@@ -465,7 +465,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
         //Debug.Log("PLAYER COUNT: " + PhotonNetwork.CurrentRoom.PlayerCount + "/" + _minPlayerToStart);
         ////STARTING GAME
-        bool isMax = PhotonNetwork.CurrentRoom.PlayerCount == _minPlayerToStart;
+        bool isMax = PhotonNetwork.CurrentRoom.PlayerCount == _maxPlayer;
         if (isMax)
         {
             IsMaxPlayer(isMax);
