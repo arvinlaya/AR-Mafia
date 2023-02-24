@@ -138,15 +138,12 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         if (PlayerPrefs.HasKey("Nickname"))
         {
-
             string nickname = PhotonNetwork.NickName;
             ignModal.gameObject.SetActive(false);
             iconIgn.gameObject.SetActive(false);
-
             nickname = PlayerPrefs.GetString("Nickname"); //GET the saved nickname
-
             ignInputField_notModal.text = nickname;
-
+            PhotonNetwork.NickName = nickname;
         }
         else
         {
@@ -178,6 +175,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             Debug.LogError("Saving this nickname: " + nickname);
             PlayerPrefs.SetString("Nickname", nickname); // save the nickname to PlayerPrefs
+            PhotonNetwork.NickName = nickname;
 
         }
 
@@ -390,8 +388,8 @@ public class Launcher : MonoBehaviourPunCallbacks
 
                 RoomInfo currentRoom = roomList[i];
 
-                if(currentRoom.CustomProperties.ContainsKey("isPrivate"))
-                Debug.Log("Found a private currentRoom: " + currentRoom.Name + " (password: " + (string)currentRoom.CustomProperties["password"] + ")");
+                if (currentRoom.CustomProperties.ContainsKey("isPrivate"))
+                    Debug.Log("Found a private currentRoom: " + currentRoom.Name + " (password: " + (string)currentRoom.CustomProperties["password"] + ")");
 
 
                 if (currentRoom.RemovedFromList)
