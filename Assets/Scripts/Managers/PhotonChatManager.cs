@@ -33,6 +33,8 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
 
     private string myChannelName;
 
+    bool isMafia = false;
+
     public void UsernameOnValueChange(string valueIn)
     {
         username = valueIn;
@@ -90,16 +92,17 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         myChannelName = PhotonNetwork.CurrentRoom.Name;
         chatClient.Subscribe(new string[] { myChannelName });
 
-        if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("ROLE"))
+        //TODO Gawing "PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("ROLE")" pag 'di na pang demo
+        if (PhotonNetwork.LocalPlayer.NickName.Length > 3) isMafia = true;
+
+        chatPanel.SetActive(true);
+        //if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("ROLE"))
+        if (isMafia)
         {
-            //Debug.Log("ROLE: " + PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString());
-            //if (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA")
-            if ( PhotonNetwork.LocalPlayer.NickName.Length > 3)
-            {
-                chatClient.Subscribe(new string[] { "MafiaCH" });
-                firstChatMessageForMafia.SetActive(true);
-            }
+            chatClient.Subscribe(new string[] { "MafiaCH" });
+            firstChatMessageForMafia.SetActive(true);
         }
+        else firstChatMessageForMafia.SetActive(false);
     }
 
     public void OnDisconnected()
@@ -116,7 +119,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         //    messages[0].ToString().Contains("(MAFIA)")
         //    )
         if (
-            PhotonNetwork.LocalPlayer.NickName.Length > 3
+            isMafia
             &&
             messages[0].ToString().Contains("(MAFIA)")
             )
@@ -125,8 +128,8 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         }
         else
         {
-        }
             Instantiate(chatDisplayItemPrefab2, chatDisplayContent).GetComponent<ChatDisplayItem>().SetUp(channelName, senders, messages);
+        }
     }
 
     public void OnPrivateMessage(string sender, object message, string channelName)
