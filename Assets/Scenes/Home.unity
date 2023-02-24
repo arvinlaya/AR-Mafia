@@ -3235,6 +3235,7 @@ MonoBehaviour:
   privateReceiver: 
   chatField: {fileID: 0}
   chatDisplayItemPrefab2: {fileID: 0}
+  firstChatMessageForMafia: {fileID: 0}
   chatDisplayContent: {fileID: 0}
 --- !u!1 &156325217
 GameObject:
@@ -12114,7 +12115,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &588485029
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18047,7 +18048,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &955403634
 RectTransform:
   m_ObjectHideFlags: 0
@@ -21200,7 +21201,19 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1311809074}
+        m_TargetAssemblyTypeName: RoomListManager, Assembly-CSharp
+        m_MethodName: UpdateRoomListUI
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -24111,6 +24124,7 @@ GameObject:
   - component: {fileID: 1311809070}
   - component: {fileID: 1311809071}
   - component: {fileID: 1311809072}
+  - component: {fileID: 1311809074}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -24229,8 +24243,8 @@ MonoBehaviour:
   privateGameCode: {fileID: 2102116912}
   privateGameHostName: {fileID: 800622267}
   roomListContent: {fileID: 1302584161}
-  roomListContent_Private: {fileID: 1834777018}
   roomListItemPrefab: {fileID: 4541081984878855235, guid: 12ba504e8d692444281ea7303ff07d7a, type: 3}
+  roomListContent_Private: {fileID: 1834777018}
   playerListContent: {fileID: 392271092}
   PlayerListItemPrefab: {fileID: 5681248402697335074, guid: c754d6e9df7d5004a8818fd8bad70f13, type: 3}
   playerListContentPrivate: {fileID: 194384479}
@@ -24293,6 +24307,23 @@ MonoBehaviour:
   sceneViewId: 1
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &1311809074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1311809065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 718d81f4305fc824ba9dfd52ec6e4704, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomListItemPrefab: {fileID: 4541081984878855235, guid: 12ba504e8d692444281ea7303ff07d7a, type: 3}
+  roomListContent: {fileID: 1302584161}
+  searchInputField: {fileID: 1178137881}
+  roomListContent_Private: {fileID: 1834777018}
+  searchInputField_Private: {fileID: 1996186628}
 --- !u!1 &1322261451
 GameObject:
   m_ObjectHideFlags: 0
@@ -33100,6 +33131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1571665152f7294c8bc303290e9f584, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isSet: 0
 --- !u!4 &1800651930
 Transform:
   m_ObjectHideFlags: 0
@@ -35055,7 +35087,7 @@ GameObject:
   - component: {fileID: 1996186629}
   - component: {fileID: 1996186628}
   m_Layer: 5
-  m_Name: search-room
+  m_Name: search-room-private
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35162,7 +35194,19 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1311809074}
+        m_TargetAssemblyTypeName: RoomListManager, Assembly-CSharp
+        m_MethodName: UpdateRoomListUI
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -40026,6 +40070,7 @@ MonoBehaviour:
   privateReceiver: 
   chatField: {fileID: 853744042177663887}
   chatDisplayItemPrefab2: {fileID: 0}
+  firstChatMessageForMafia: {fileID: 0}
   chatDisplayContent: {fileID: 0}
 --- !u!1001 &4541081984336557759
 PrefabInstance:
