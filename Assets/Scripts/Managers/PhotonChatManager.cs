@@ -26,10 +26,14 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
     //[SerializeField] TMP_Text chatDisplay;
     [SerializeField] TMP_Text chatDisplayItemPrefab2;
 
+    [SerializeField] GameObject firstChatMessageForMafia;
+
     [SerializeField] Transform chatDisplayContent;
     Player player;
 
     private string myChannelName;
+
+    bool isMafia = false;
 
     public void UsernameOnValueChange(string valueIn)
     {
@@ -88,12 +92,17 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         myChannelName = PhotonNetwork.CurrentRoom.Name;
         chatClient.Subscribe(new string[] { myChannelName });
 
-        if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("ROLE"))
+        //TODO Gawing "PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("ROLE")" pag 'di na pang demo
+        if (PhotonNetwork.LocalPlayer.NickName.Length > 3) isMafia = true;
+
+        chatPanel.SetActive(true);
+        //if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("ROLE"))
+        if (isMafia)
         {
-            Debug.Log("ROLE: " + PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString());
-            if (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA")
-                chatClient.Subscribe(new string[] { "MafiaCH" });
+            chatClient.Subscribe(new string[] { "MafiaCH" });
+            firstChatMessageForMafia.SetActive(true);
         }
+        else firstChatMessageForMafia.SetActive(false);
     }
 
     public void OnDisconnected()
@@ -104,8 +113,13 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
 
     public void OnGetMessages(string channelName, string[] senders, object[] messages)
     {
+        //if (
+        //    PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA"
+        //    &&
+        //    messages[0].ToString().Contains("(MAFIA)")
+        //    )
         if (
-            PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA"
+            isMafia
             &&
             messages[0].ToString().Contains("(MAFIA)")
             )
