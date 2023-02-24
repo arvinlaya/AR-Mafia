@@ -26,6 +26,8 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
     //[SerializeField] TMP_Text chatDisplay;
     [SerializeField] TMP_Text chatDisplayItemPrefab2;
 
+    [SerializeField] GameObject firstChatMessageForMafia;
+
     [SerializeField] Transform chatDisplayContent;
     Player player;
 
@@ -90,9 +92,13 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
 
         if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("ROLE"))
         {
-            Debug.Log("ROLE: " + PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString());
-            if (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA")
+            //Debug.Log("ROLE: " + PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString());
+            //if (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA")
+            if ( PhotonNetwork.LocalPlayer.NickName.Length > 3)
+            {
                 chatClient.Subscribe(new string[] { "MafiaCH" });
+                firstChatMessageForMafia.SetActive(true);
+            }
         }
     }
 
@@ -104,8 +110,13 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
 
     public void OnGetMessages(string channelName, string[] senders, object[] messages)
     {
+        //if (
+        //    PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA"
+        //    &&
+        //    messages[0].ToString().Contains("(MAFIA)")
+        //    )
         if (
-            PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA"
+            PhotonNetwork.LocalPlayer.NickName.Length > 3
             &&
             messages[0].ToString().Contains("(MAFIA)")
             )
@@ -114,8 +125,8 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         }
         else
         {
-            Instantiate(chatDisplayItemPrefab2, chatDisplayContent).GetComponent<ChatDisplayItem>().SetUp(channelName, senders, messages);
         }
+            Instantiate(chatDisplayItemPrefab2, chatDisplayContent).GetComponent<ChatDisplayItem>().SetUp(channelName, senders, messages);
     }
 
     public void OnPrivateMessage(string sender, object message, string channelName)
