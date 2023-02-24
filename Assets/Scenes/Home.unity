@@ -13297,6 +13297,7 @@ GameObject:
   m_Component:
   - component: {fileID: 682391148}
   - component: {fileID: 682391149}
+  - component: {fileID: 682391150}
   m_Layer: 5
   m_Name: PreGameMenu-5
   m_TagString: Untagged
@@ -13345,6 +13346,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 682391147}
   m_CullTransparentMesh: 1
+--- !u!114 &682391150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 682391147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 385ae782831459f4e8a31f8514abcabd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menuName: pre-5
+  open: 0
 --- !u!1 &690152166
 GameObject:
   m_ObjectHideFlags: 0
@@ -24265,6 +24280,7 @@ MonoBehaviour:
   nameTooLongPrompt: {fileID: 1546738790}
   nameIsEmptyPrompt: {fileID: 71103351}
   wasKickedPromt: {fileID: 1091429965}
+  pre_5_text: {fileID: 1720132576}
 --- !u!114 &1311809071
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24285,6 +24301,7 @@ MonoBehaviour:
   - {fileID: 2117164446}
   - {fileID: 1180950105}
   - {fileID: 1662738030}
+  - {fileID: 682391150}
 --- !u!114 &1311809072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31344,7 +31361,7 @@ GameObject:
   - component: {fileID: 1720132577}
   - component: {fileID: 1720132576}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Countdown Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

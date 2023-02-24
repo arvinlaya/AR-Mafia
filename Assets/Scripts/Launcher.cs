@@ -67,6 +67,8 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     [SerializeField] GameObject wasKickedPromt;
 
+    [SerializeField] TMP_Text  pre_5_text;
+
     private bool leftNotKicked = true;
 
     private bool gameStarted = false;
@@ -414,19 +416,16 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     IEnumerator waiter()
     {
-        //TODO: If Else Kung ilan yung Players, kung ilan yung number of players in the room
-        //NOTE: Max is 8, minimum is 5... 5 or 6 or 7 or 8
 
-        //NOTE: For final product, ganito yung lalagay:
-        Debug.Log("Loading Pre-game Screen # : " + PhotonNetwork.CurrentRoom.PlayerCount.ToString());
-        //MenuManager.Instance.OpenMenu("pre-game-"+PhotonNetwork.CurrentRoom.PlayerCount.ToString());
+        MenuManager.Instance.OpenMenu("pre-5"); //... While testing, ganito muna... "laging sa 5 players..."
 
-        //... While testing, ganito muna... "laging sa 5 players..."
-        MenuManager.Instance.OpenMenu("pre-game-5");
-
-
-        //Wait for 5 seconds
-        yield return new WaitForSeconds(5);
+        byte time_start = 0;
+        for (int i = 5; i > time_start; i--)
+        {
+            pre_5_text.text = "Game begins in "+ i + "..." ;
+            yield return new WaitForSeconds(1.0f);
+        }
+        //yield return new WaitForSeconds(5);
         PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
     }
 
@@ -434,12 +433,12 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.LoadLevel(1);//1 = build settings index
             PV = GetComponent<PhotonView>();
             if (PV.IsMine)
             {
                 PV.RPC(nameof(RPC_StartGame), RpcTarget.All);
             }
+            //PhotonNetwork.LoadLevel(1);//1 = build settings index
         }
     }
 
