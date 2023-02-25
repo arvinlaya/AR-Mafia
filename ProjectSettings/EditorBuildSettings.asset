@@ -12,17 +12,20 @@ EditorBuildSettings:
     path: Assets/Scenes/Game.unity
     guid: d7531d0614a421549a7f723ff276d2f0
   - enabled: 0
-    path: Assets/Scenes/LobbyPrivate.unity
-    guid: e73273609e5308f40914ff9e631f5f1c
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 0
-    path: Assets/Scenes/LobbyPublic.unity
-    guid: ada693b97a156a348805908dd5a8739f
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 0
-    path: Assets/Scenes/OnlineRooms.unity
-    guid: 7bdb9a6e5de33bc4a8fe3efc56d19fb2
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 0
-    path: Assets/Scenes/SampleScene.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: Assets/Prefabs/AR prompts/AR prompts.unity
+    guid: 54c04588eb2ac144e89fad9a1de62808
   m_configObjects:
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: e3f99a26d3c966148acdc4e3b54cff97, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 5c58b2a6b4a2907469bd4bde0d1f47dc, type: 2}
