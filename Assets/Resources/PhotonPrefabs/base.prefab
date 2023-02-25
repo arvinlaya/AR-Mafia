@@ -1142,6 +1142,7 @@ GameObject:
   - component: {fileID: 8673408747634414166}
   - component: {fileID: 491070291368429322}
   - component: {fileID: 976797971589052945}
+  - component: {fileID: -6386612079222427420}
   m_Layer: 7
   m_Name: base
   m_TagString: Player
@@ -1220,3 +1221,21 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &-6386612079222427420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8281500119426396739}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 0.951896, g: 0.54147387, b: 0.9811321, a: 1}
+  outlineWidth: 10
+  precomputeOutline: 1
+  bakeKeys: []
+  bakeValues: []

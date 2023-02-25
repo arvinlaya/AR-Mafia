@@ -13,8 +13,7 @@ GameObject:
   - component: {fileID: -1095615260637519349}
   - component: {fileID: -3862168738993582377}
   - component: {fileID: -2371574015260390189}
-  - component: {fileID: 1267407714214201263}
-  - component: {fileID: -6200755812862986760}
+  - component: {fileID: 4318530159945507564}
   m_Layer: 7
   m_Name: PlayerController
   m_TagString: Player
@@ -134,25 +133,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1267407714214201263
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3754946709794028000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 0
-  outlineColor: {r: 0.951896, g: 0.54147387, b: 0.9811321, a: 1}
-  outlineWidth: 10
-  precomputeOutline: 1
-  bakeKeys: []
-  bakeValues: []
---- !u!65 &-6200755812862986760
+--- !u!65 &4318530159945507564
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -163,5 +144,5 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.9, y: 1.35, z: 1}
-  m_Center: {x: 0, y: 0.65, z: 0}
+  m_Size: {x: 1.7500001, y: 4.683378, z: 1.1898807}
+  m_Center: {x: 0, y: 2.1583111, z: -0.094940335}

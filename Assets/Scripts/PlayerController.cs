@@ -6,6 +6,7 @@ using Photon.Realtime;
 using System.IO;
 using System.Linq;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using ExitGames.Client.Photon;
 
 public class PlayerController : MonoBehaviourPunCallbacks
 {
@@ -19,6 +20,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private bool isMovingTo;
     private Transform moveTarget;
     private bool isOutlined;
+    private HouseController playerHouse;
     public Animator animator;
     void Awake()
     {
@@ -30,7 +32,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         middleTransform = ReferenceManager.Instance.middle.transform;
         isMovingTo = false;
         isOutlined = false;
-        gameObject.GetComponent<Outline>().enabled = false;
+        playerHouse = PlayerManager.getPlayerHouseController(PV.Owner);
     }
 
     void Update()
@@ -43,7 +45,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
                 if (hitPV != null)
                 {
-                    Debug.Log(GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.NIGHT);
                     if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.NIGHT)
                     {
                         foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
@@ -61,9 +62,25 @@ public class PlayerController : MonoBehaviourPunCallbacks
                     }
                     else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
                     {
+                        Debug.Log(!hitPV.IsMine);
+                        Debug.Log(hitPV.GetComponent<Transform>().tag);
                         if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
                         {
-                            hitPV.GetComponent<PlayerController>().AccuseVote();
+                            if (VoteManager.Instance.hasAccuseVoted == false)
+                            {
+                                VoteManager.Instance.hasAccuseVoted = true;
+                                VoteManager.Instance.castAccuseVote_S(hitPV.Owner.NickName);
+                            }
+                        }
+                    }
+                    else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
+                    {
+                        Debug.Log(!hitPV.IsMine);
+                        Debug.Log(hitPV.GetComponent<Transform>().tag);
+
+                        if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
+                        {
+                            VoteManager.Instance.openEliminationVotePrompt();
                         }
                     }
                 }
@@ -115,30 +132,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         GameObject model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Base"), transform.position, Quaternion.identity, 0, data);
         GameManager.Instance.activateDisplayRole(role);
 
-    }
-    void AccuseVote()
-    {
-        if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 0)
-        {
-            CustomPropertyWrapper.incrementProperty(player: PV.Owner, "ACCUSE_VOTE_COUNT", 1);
-
-            CustomPropertyWrapper.setPropertyString(PhotonNetwork.LocalPlayer, "VOTED", PV.Owner.NickName);
-            CustomPropertyWrapper.setPropertyInt(PhotonNetwork.LocalPlayer, "VOTE_VALUE", 1);
-        }
-        else if ((int)PhotonNetwork.LocalPlayer.CustomProperties["VOTE_VALUE"] == 1)
-        {
-            foreach (Player player in PhotonNetwork.PlayerList)
-            {
-                if ((string)PhotonNetwork.LocalPlayer.CustomProperties["VOTED"] == player.NickName)
-                {
-                    CustomPropertyWrapper.setPropertyString(PhotonNetwork.LocalPlayer, "VOTED", PV.Owner.NickName);
-
-                    CustomPropertyWrapper.decrementProperty(player, "ACCUSE_VOTE_COUNT", 1);
-
-                    CustomPropertyWrapper.incrementProperty(PV.Owner, "ACCUSE_VOTE_COUNT", 1);
-                }
-            }
-        }
     }
     public void resetPlayerState()
     {
@@ -273,39 +266,37 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private void OnTriggerEnter(Collider collider)
     {
         transform.position += new Vector3(0, .25f, 0);
-        Debug.Log("I AM HIT ASDASD");
     }
 
     private void OnTriggerExit(Collider collider)
     {
         transform.position += new Vector3(0, -.25f, 0);
     }
-    private void OnMouseOver()
+    private void OnMouseEnter()
     {
+        Debug.Log("Player enter");
         if (isOutlined == false)
         {
-            gameObject.GetComponent<Outline>().enabled = true;
+            Color tempColor = playerHouse.houseRenderer.material.color;
+            tempColor.a = .1f;
+            playerHouse.houseRenderer.material.color = tempColor;
+
+            gameObject.GetComponentInChildren<Outline>().enabled = true;
             isOutlined = true;
         }
     }
 
     private void OnMouseExit()
     {
+        Debug.Log("Player exit");
         if (isOutlined == true)
         {
-            gameObject.GetComponent<Outline>().enabled = false;
+            Color tempColor = playerHouse.houseRenderer.material.color;
+            tempColor.a = .3f;
+            playerHouse.houseRenderer.material.color = tempColor;
+
+            gameObject.GetComponentInChildren<Outline>().enabled = false;
             isOutlined = false;
         }
-    }
-
-    private void showAccuseVotes()
-    {
-        foreach (Player player in PhotonNetwork.PlayerList)
-        {
-            string output = player.NickName + " VOTES\n" +
-                            "VOTES: " + player.CustomProperties["ACCUSE_VOTE_COUNT"];
-            Debug.Log(output);
-        }
-        Debug.Log("==============================================");
     }
 }

@@ -8,11 +8,14 @@ using ExitGames.Client.Photon;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using TMPro;
 using System;
+using System.Linq;
 public class GameManager : MonoBehaviourPunCallbacks
 {
     public enum EVENT_CODE : byte
     {
         REFRESH_TIMER,
+        CAST_ACCUSE_VOTE,
+        CAST_ELIMINATION_VOTE,
         DAY_DISCUSSION_START,
         DAY_ACCUSE_START,
         DAY_ACCUSE_DEFENSE_START,
@@ -32,15 +35,13 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public static GameManager Instance;
     public static int NIGHT_LENGHT = 3; //40 //murder, open door
-    public static int DAY_DISCUSSION_LENGHT = 30; //30 // none
-    public static int DAY_ACCUSE_LENGHT = 20; //20 // accuse icon
-    public static int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20 // none
+    public static int DAY_DISCUSSION_LENGHT = 5; //30 // none
+    public static int DAY_ACCUSE_LENGHT = 5; //20 // accuse icon
+    public static int DAY_ACCUSE_DEFENSE_LENGHT = 5; //20 // none
     public static int DAY_VOTE_LENGHT = 20; //20 // guilty, not guilty
     public static int DOOR_COOLDOWN = 15; //15
     public static int ABILITY_COODLDOWN = NIGHT_LENGHT; //40
-
     public static int ROLE_PANEL_DURATION = 3;
-
     public static int GAME_START = 3;
 
     public GAME_PHASE GAME_STATE = GAME_PHASE.NIGHT;
@@ -55,7 +56,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     int abilityCastTime;
     private int currentTime;
     private Coroutine timerCoroutine;
-
+    private Dictionary<Player, int> highestAccusedPlayerDict;
     private Player highestAccusedPlayer;
     void Awake()
     {
@@ -179,11 +180,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                 roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
                 roleCustomProps.Add("OUTSIDER_COUNT", 0);
-                roleCustomProps.Add("VOTE_VALUE", 0);
-                roleCustomProps.Add("VOTED", "");
-                roleCustomProps.Add("ACCUSE_VOTE_COUNT", 0);
-                roleCustomProps.Add("GUILTY_VOTE", 0);
-                roleCustomProps.Add("INNOCENT_VOTE", 0);
                 player.SetCustomProperties(roleCustomProps);
                 index++;
             }
@@ -295,15 +291,17 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private void SetPhase_R(object phase)
     {
-        HouseController houseController;
         GameManager.Instance.GAME_STATE = (GameManager.GAME_PHASE)phase;
         OnPhaseChange?.Invoke();
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             if ((bool)player.CustomProperties["IS_DEAD"] == false)
             {
+                if (highestAccusedPlayer != null && highestAccusedPlayer == player)
+                {
+                    continue;
+                }
                 PlayerManager.getPlayerController(player).resetPlayerState();
-                houseController = PlayerManager.getPlayerHouseController(player);
             }
         }
 
@@ -413,6 +411,15 @@ public class GameManager : MonoBehaviourPunCallbacks
             ReferenceManager.Instance.time = (int)photonEvent.CustomData;
             RefreshTimer_R((object)photonEvent.CustomData);
         }
+        else if (eventCode == (byte)GameManager.EVENT_CODE.CAST_ACCUSE_VOTE)
+        {
+            VoteManager.Instance.castAccuseVote_R((string)photonEvent.CustomData);
+        }
+        else if (eventCode == (byte)GameManager.EVENT_CODE.CAST_ELIMINATION_VOTE)
+        {
+            object[] data = (object[])photonEvent.CustomData;
+            VoteManager.Instance.castEliminationVote_R((VoteManager.VOTE_CASTED)data[0], (VoteManager.VOTE_CASTED)data[1]);
+        }
         else
         {
             GameManager.Instance.setDoorCooldown(false);
@@ -509,14 +516,19 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (highestAccusedPlayer != null)
         {
-            if ((int)highestAccusedPlayer.CustomProperties["ACCUSE_VOTE_COUNT"] > 0)
+            if (VoteManager.Instance.isGuilty())
             {
                 yield return StartCoroutine(PlayerManager.getPlayerController(highestAccusedPlayer).guiltySequence());
                 yield return new WaitForSeconds(2f);
                 yield return StartCoroutine(PromptManager.Instance.promptTemporary("The village agreed that " + highestAccusedPlayer.NickName + " is the murderer.", 5f));
             }
+            else
+            {
+                yield return StartCoroutine(PromptManager.Instance.promptTemporary("The village agreed that " + highestAccusedPlayer.NickName + " is innocent.", 5f));
+            }
         }
-
+        VoteManager.Instance.resetAll();
+        yield return null;
         SetPhase_R((object)photonEvent.CustomData);
     }
 
@@ -566,40 +578,21 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private IEnumerator dayAccuseDefenseStartSequence(EventData photonEvent)
     {
+        VoteManager.Instance.showVotes();
         foreach (HouseController controller in GameObject.FindObjectsOfType<HouseController>())
         {
             controller.openDoor();
         }
 
         yield return new WaitForSeconds(2f);
+        highestAccusedPlayerDict = VoteManager.Instance.getHighestAccusedPlayer();
         highestAccusedPlayer = null;
-
-        // Get highest accuse voted player
-        foreach (Player player in PhotonNetwork.PlayerList)
+        if (highestAccusedPlayerDict != null)
         {
-            if ((int)player.CustomProperties["ACCUSE_VOTE_COUNT"] > 0)
-            {
-                if (highestAccusedPlayer == null)
-                {
-                    highestAccusedPlayer = player;
-                }
-                else
-                {
-                    // Returns null if current highest vote == current contender vote
-                    highestAccusedPlayer = higherAccuseVote(highestAccusedPlayer, player);
-                    if (highestAccusedPlayer == null)
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (highestAccusedPlayer != null)
-        {
+            highestAccusedPlayer = highestAccusedPlayerDict.ElementAt(0).Key;
             yield return StartCoroutine(PlayerManager.getPlayerController(highestAccusedPlayer).accusedSequence());
-            yield return StartCoroutine(PromptManager.Instance.promptTemporary(highestAccusedPlayer.NickName + " is accused as a murderer by the village.", 5f));
-            yield return StartCoroutine(PromptManager.Instance.promptStay("The village will now vote if " + highestAccusedPlayer.NickName + "is guilty or innocent."));
+            yield return StartCoroutine(PromptManager.Instance.promptTemporary(highestAccusedPlayer.NickName + " is accused as the murderer in the village.", 5f));
+            yield return StartCoroutine(PromptManager.Instance.promptStay(highestAccusedPlayer.NickName + " will now have to convince the villager that he/she is innocent."));
             SetPhase_R((object)photonEvent.CustomData);
 
             yield return new WaitForSeconds(2f);
@@ -617,27 +610,9 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private IEnumerator dayVoteStartSequence(EventData photonEvent)
     {
-        yield return StartCoroutine(PromptManager.Instance.promptTemporary("The will now make a decision if " + highestAccusedPlayer + " is guilty of the charges", 5f));
+        yield return StartCoroutine(PromptManager.Instance.promptTemporary("The village will now make a decision if " + highestAccusedPlayer + " is guilty of the charges", 5f));
 
         SetPhase_R((object)photonEvent.CustomData);
-    }
-
-    private Player higherAccuseVote(Player player1, Player player2)
-    {
-        int player1VoteCount = (int)player1.CustomProperties["ACCUSE_VOTE_COUNT"];
-        int player2VoteCount = (int)player2.CustomProperties["ACCUSE_VOTE_COUNT"];
-        if (player1VoteCount > player2VoteCount)
-        {
-            return player1;
-        }
-        else if (player1VoteCount < player2VoteCount)
-        {
-            return player2;
-        }
-        else
-        {
-            return null;
-        }
     }
 
     public void rotateToCamera(GameObject toRotate, GameObject camera)

@@ -172,6 +172,8 @@ MonoBehaviour:
   - {fileID: 4273899192439245192}
   houseMaterial: {fileID: 2100000, guid: 4004aea7c0a43eb4496b024103a1e2be, type: 2}
   houseMaterialFade: {fileID: 2100000, guid: 1540303099559a842be7ff71f2a9f5de, type: 2}
+  houseRenderer: {fileID: 0}
+  doorRenderer: {fileID: 0}
 --- !u!95 &7172814032712514227
 Animator:
   serializedVersion: 4
