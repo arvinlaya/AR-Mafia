@@ -67,7 +67,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     [SerializeField] GameObject wasKickedPromt;
 
-    [SerializeField] TMP_Text  pre_5_text;
+    [SerializeField] TMP_Text pre_5_text;
 
     private bool leftNotKicked = true;
 
@@ -95,8 +95,14 @@ public class Launcher : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_StartGame()
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
+
+        }
+
         //NOTE: Wala ng ikot, "loadingMenu" na dinaanan
-        StartCoroutine(waiter());
+        // StartCoroutine(waiter());
     }
 
     void Awake()
@@ -145,7 +151,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             iconIgn.gameObject.SetActive(false);
             nickname = PlayerPrefs.GetString("Nickname"); //GET the saved nickname
             ignInputField_notModal.text = nickname;
-            PhotonNetwork.NickName = nickname;
+            PhotonNetwork.NickName = nickname + (new System.Random().Next(1, 100));
         }
         else
         {
@@ -422,11 +428,15 @@ public class Launcher : MonoBehaviourPunCallbacks
         byte time_start = 0;
         for (int i = 5; i > time_start; i--)
         {
-            pre_5_text.text = "Game begins in "+ i + "..." ;
+            pre_5_text.text = "Game begins in " + i + "...";
             yield return new WaitForSeconds(1.0f);
         }
         //yield return new WaitForSeconds(5);
-        PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
+        }
     }
 
     public void StartGame()
