@@ -47,6 +47,8 @@ MonoBehaviour:
   - RPC_StartGame
   - RPC_meWasKicked
   - RPC_enterHouseSequence
+  - RPC_InstantiatePlayerSpawnPoints
+  - RPC_castAccuseVote
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

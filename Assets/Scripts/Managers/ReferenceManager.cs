@@ -14,11 +14,13 @@ public class ReferenceManager : MonoBehaviour
     [SerializeField] public GameObject prompt;
     [SerializeField] public GameObject camera;
     [SerializeField] public Material[] ButtonMaterials;
-
     [SerializeField] public GameObject[] Models;
-
+    [SerializeField] public GameObject eliminationVotePrompt;
     public int time;
+    public int LayerIgnoreRaycast;
+    public int LayerHouse;
     public static ReferenceManager Instance;
+
     void Awake()
     {
         if (Instance)
@@ -28,5 +30,11 @@ public class ReferenceManager : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
         Instance = this;
+    }
+
+    void Start()
+    {
+        LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
+        LayerHouse = LayerMask.NameToLayer("House");
     }
 }

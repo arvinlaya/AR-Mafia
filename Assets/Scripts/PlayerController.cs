@@ -6,34 +6,33 @@ using Photon.Realtime;
 using System.IO;
 using System.Linq;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using ExitGames.Client.Photon;
 
 public class PlayerController : MonoBehaviourPunCallbacks
 {
     private bool isSet;
-    Player player;
     public PhotonView PV;
     public bool buttonActive;
-
     private float step;
     public Transform playerTransform;
     public Transform middleTransform;
     private readonly float SPEED = 2;
     private bool isMovingTo;
     private Transform moveTarget;
-
-    private HouseController insideOf;
+    private bool isOutlined;
+    private HouseController playerHouse;
     public Animator animator;
-
     void Awake()
     {
         isSet = false;
-        player = PhotonNetwork.LocalPlayer;
         PV = GetComponent<PhotonView>();
         buttonActive = false;
         step = SPEED * Time.fixedDeltaTime;
         playerTransform = gameObject.transform;
         middleTransform = ReferenceManager.Instance.middle.transform;
         isMovingTo = false;
+        isOutlined = false;
+        playerHouse = PlayerManager.getPlayerHouseController(PV.Owner);
     }
 
     void Update()
@@ -42,32 +41,67 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             if (Input.GetMouseButtonDown(0))
             {
-                RaycastHit hit;
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out hit))
+                PhotonView hitPV = OnClick();
+
+                if (hitPV != null)
                 {
-                    PhotonView hitPV = hit.transform.GetComponent<PhotonView>();
-                    if (hitPV)
+                    if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.NIGHT)
                     {
                         foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
                         {
                             gameObject.SetActive(false);
                         }
 
-                        if (!hitPV.IsMine && hit.transform.tag == "House")
+                        Debug.Log(hitPV.GetComponent<Transform>().tag);
+                        if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "House")
                         {
                             HouseController controller = hitPV.GetComponent<HouseController>();
-                            controller.showButton();
+                            controller.showButtonLeft();
+                            controller.showButtonRight();
                         }
                     }
-                    else
+                    else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
                     {
-                        return;
+                        Debug.Log(!hitPV.IsMine);
+                        Debug.Log(hitPV.GetComponent<Transform>().tag);
+                        if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
+                        {
+                            if (VoteManager.Instance.hasAccuseVoted == false)
+                            {
+                                VoteManager.Instance.hasAccuseVoted = true;
+                                VoteManager.Instance.castAccuseVote_S(hitPV.Owner.NickName);
+                            }
+                        }
                     }
+                    else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
+                    {
+                        Debug.Log(!hitPV.IsMine);
+                        Debug.Log(hitPV.GetComponent<Transform>().tag);
 
+                        if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
+                        {
+                            VoteManager.Instance.openEliminationVotePrompt();
+                        }
+                    }
+                }
+                else
+                {
+                    return;
                 }
             }
         }
+    }
+
+    PhotonView OnClick()
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            return hit.transform.GetComponent<PhotonView>();
+        }
+        return null;
     }
 
     void FixedUpdate()
@@ -99,15 +133,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
         GameManager.Instance.activateDisplayRole(role);
 
     }
-    private void OnTriggerEnter(Collider collider)
+    public void resetPlayerState()
     {
-        transform.position += new Vector3(0, .25f, 0);
-    }
-
-    private void OnTriggerExit(Collider collider)
-    {
-        transform.position += new Vector3(0, -.25f, 0);
-
+        transform.position = SpawnManager.Instance.playerSpawn[PV.Owner];
+        StartCoroutine(idleAnimation());
     }
 
     public IEnumerator dieSequence()
@@ -189,7 +218,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     private void move()
     {
-        Debug.Log(step);
         playerTransform.position = Vector3.MoveTowards(playerTransform.position, moveTarget.position, step);
 
         if (Vector3.Distance(playerTransform.position, moveTarget.position) < 0.001f)
@@ -233,5 +261,42 @@ public class PlayerController : MonoBehaviourPunCallbacks
         animator.SetBool("isIdle", true);
 
         yield return null;
+    }
+
+    private void OnTriggerEnter(Collider collider)
+    {
+        transform.position += new Vector3(0, .25f, 0);
+    }
+
+    private void OnTriggerExit(Collider collider)
+    {
+        transform.position += new Vector3(0, -.25f, 0);
+    }
+    private void OnMouseEnter()
+    {
+        Debug.Log("Player enter");
+        if (isOutlined == false)
+        {
+            Color tempColor = playerHouse.houseRenderer.material.color;
+            tempColor.a = .1f;
+            playerHouse.houseRenderer.material.color = tempColor;
+
+            gameObject.GetComponentInChildren<Outline>().enabled = true;
+            isOutlined = true;
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        Debug.Log("Player exit");
+        if (isOutlined == true)
+        {
+            Color tempColor = playerHouse.houseRenderer.material.color;
+            tempColor.a = .3f;
+            playerHouse.houseRenderer.material.color = tempColor;
+
+            gameObject.GetComponentInChildren<Outline>().enabled = false;
+            isOutlined = false;
+        }
     }
 }

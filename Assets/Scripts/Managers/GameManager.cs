@@ -8,11 +8,14 @@ using ExitGames.Client.Photon;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using TMPro;
 using System;
+using System.Linq;
 public class GameManager : MonoBehaviourPunCallbacks
 {
     public enum EVENT_CODE : byte
     {
         REFRESH_TIMER,
+        CAST_ACCUSE_VOTE,
+        CAST_ELIMINATION_VOTE,
         DAY_DISCUSSION_START,
         DAY_ACCUSE_START,
         DAY_ACCUSE_DEFENSE_START,
@@ -31,31 +34,30 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public static int NIGHT_LENGHT = 40; //40 //murder, open door
-    public static int DAY_DISCUSSION_LENGHT = 30; //30 // none
-    public static int DAY_ACCUSE_LENGHT = 20; //20 // accuse icon
-    public static int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20 // none
+    public static int NIGHT_LENGHT = 3; //40 //murder, open door
+    public static int DAY_DISCUSSION_LENGHT = 5; //30 // none
+    public static int DAY_ACCUSE_LENGHT = 5; //20 // accuse icon
+    public static int DAY_ACCUSE_DEFENSE_LENGHT = 5; //20 // none
     public static int DAY_VOTE_LENGHT = 20; //20 // guilty, not guilty
     public static int DOOR_COOLDOWN = 15; //15
     public static int ABILITY_COODLDOWN = NIGHT_LENGHT; //40
-
     public static int ROLE_PANEL_DURATION = 3;
-
     public static int GAME_START = 3;
 
-    public static GAME_PHASE GAME_STATE = GAME_PHASE.NIGHT;
+    public GAME_PHASE GAME_STATE = GAME_PHASE.NIGHT;
     PhotonView PV;
     Role[] roles;
     TMP_Text uiTimer;
-    Player accusedPlayer;
-    public bool onDoorCooldown { get; set; }
-    public bool onAbilityCooldown { get; set; }
+
+    public bool openDoorOnCooldown { get; set; }
+    public bool abilityOnCooldown { get; set; }
     public event Action OnPhaseChange;
-    int openDoorTime;
-    int abilityTime;
+    int openDoorCastTime;
+    int abilityCastTime;
     private int currentTime;
     private Coroutine timerCoroutine;
-
+    private Dictionary<Player, int> highestAccusedPlayerDict;
+    private Player highestAccusedPlayer;
     void Awake()
     {
         if (Instance)
@@ -68,8 +70,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        onDoorCooldown = false;
-        onAbilityCooldown = false;
+        setDoorCooldown(false);
+        setAbilityCooldown(false);
         Instance.uiTimer = ReferenceManager.Instance.UITimer;
         Instance.PV = Instance.gameObject.GetComponent<PhotonView>();
         Invoke("removeDisplayRole", ROLE_PANEL_DURATION);
@@ -100,35 +102,46 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public void setDoorCooldown()
+    public void setDoorCooldown(bool value)
     {
-        openDoorTime = ReferenceManager.Instance.time;
-        onDoorCooldown = true;
-    }
-
-    public bool isDoorCooldown()
-    {
-        if ((openDoorTime - DOOR_COOLDOWN) >= ReferenceManager.Instance.time)
+        if (value == true)
         {
-            onDoorCooldown = false;
+            openDoorCastTime = ReferenceManager.Instance.time;
+            openDoorOnCooldown = true;
         }
-        return onDoorCooldown;
-
-    }
-
-    public void setAbilityCooldown()
-    {
-        abilityTime = ReferenceManager.Instance.time;
-
-    }
-
-    public bool isAbilityCooldown()
-    {
-        if ((abilityTime - ABILITY_COODLDOWN) >= ReferenceManager.Instance.time)
+        else
         {
-            onAbilityCooldown = false;
+            openDoorOnCooldown = false;
         }
-        return onAbilityCooldown;
+    }
+
+    public void openDoorCooldownCheck()
+    {
+        if ((openDoorCastTime - DOOR_COOLDOWN) <= ReferenceManager.Instance.time)
+        {
+            abilityOnCooldown = false;
+        }
+    }
+
+    public void setAbilityCooldown(bool value)
+    {
+        if (value == true)
+        {
+            abilityCastTime = ReferenceManager.Instance.time;
+            abilityOnCooldown = true;
+        }
+        else
+        {
+            abilityOnCooldown = false;
+        }
+    }
+
+    public void abilityCooldownCheck()
+    {
+        if ((abilityCastTime - ABILITY_COODLDOWN) <= ReferenceManager.Instance.time)
+        {
+            abilityOnCooldown = false;
+        }
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
@@ -167,11 +180,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                 roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
                 roleCustomProps.Add("OUTSIDER_COUNT", 0);
-                roleCustomProps.Add("VOTE_VALUE", 0);
-                roleCustomProps.Add("VOTED", "");
-                roleCustomProps.Add("ACCUSE_VOTE_COUNT", 0);
-                roleCustomProps.Add("GUILTY_VOTE", 0);
-                roleCustomProps.Add("INNOCENT_VOTE", 0);
                 player.SetCustomProperties(roleCustomProps);
                 index++;
             }
@@ -251,7 +259,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void SetPhase_S(object phase)
     {
         GameManager.EVENT_CODE event_code = 0;
-        object data = phase;
 
         if ((byte)GameManager.GAME_PHASE.NIGHT == (byte)phase)
         {
@@ -275,7 +282,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
 
 
-        PhotonNetwork.RaiseEvent((byte)event_code, data,
+        PhotonNetwork.RaiseEvent((byte)event_code, phase,
                                     new RaiseEventOptions
                                     {
                                         Receivers = ReceiverGroup.All
@@ -284,13 +291,27 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private void SetPhase_R(object phase)
     {
-        GameManager.GAME_STATE = (GameManager.GAME_PHASE)phase;
+        GameManager.Instance.GAME_STATE = (GameManager.GAME_PHASE)phase;
         OnPhaseChange?.Invoke();
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if ((bool)player.CustomProperties["IS_DEAD"] == false)
+            {
+                if (highestAccusedPlayer != null && highestAccusedPlayer == player)
+                {
+                    continue;
+                }
+                PlayerManager.getPlayerController(player).resetPlayerState();
+            }
+        }
+
         InitializeTimer((byte)phase);
     }
 
     private void InitializeTimer(byte phase)
     {
+        setDoorCooldown(false);
+        setAbilityCooldown(false);
         if (phase == (byte)GameManager.GAME_PHASE.NIGHT)
         {
             currentTime = GameManager.NIGHT_LENGHT;
@@ -327,30 +348,29 @@ public class GameManager : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(1f);
 
         currentTime -= 1;
-
         if (currentTime <= 0)
         {
             timerCoroutine = null;
             //RaiseEvent PHASE_END
             if (PhotonNetwork.IsMasterClient)
             {
-                if (GameManager.GAME_STATE == GameManager.GAME_PHASE.NIGHT)
+                if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.NIGHT)
                 {
                     SetPhase_S(GameManager.GAME_PHASE.DAY_DISCUSSION);
                 }
-                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_DISCUSSION)
+                else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_DISCUSSION)
                 {
                     SetPhase_S(GameManager.GAME_PHASE.DAY_ACCUSE);
                 }
-                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
+                else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
                 {
                     SetPhase_S(GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE);
                 }
-                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE)
+                else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE)
                 {
                     SetPhase_S(GameManager.GAME_PHASE.DAY_VOTE);
                 }
-                else if (GameManager.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
+                else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
                 {
                     SetPhase_S(GameManager.GAME_PHASE.NIGHT);
                 }
@@ -379,6 +399,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void RefreshTimer_R(object data)
     {
         currentTime = (int)data;
+        openDoorCooldownCheck();
+        abilityCooldownCheck();
         RefreshTimerUI();
     }
     private void OnEvent(EventData photonEvent)
@@ -389,9 +411,18 @@ public class GameManager : MonoBehaviourPunCallbacks
             ReferenceManager.Instance.time = (int)photonEvent.CustomData;
             RefreshTimer_R((object)photonEvent.CustomData);
         }
+        else if (eventCode == (byte)GameManager.EVENT_CODE.CAST_ACCUSE_VOTE)
+        {
+            VoteManager.Instance.castAccuseVote_R((string)photonEvent.CustomData);
+        }
+        else if (eventCode == (byte)GameManager.EVENT_CODE.CAST_ELIMINATION_VOTE)
+        {
+            object[] data = (object[])photonEvent.CustomData;
+            VoteManager.Instance.castEliminationVote_R((VoteManager.VOTE_CASTED)data[0], (VoteManager.VOTE_CASTED)data[1]);
+        }
         else
         {
-            GameManager.Instance.onDoorCooldown = false;
+            GameManager.Instance.setDoorCooldown(false);
 
             if (eventCode == (byte)GameManager.EVENT_CODE.NIGHT_START)
             {
@@ -416,7 +447,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 {
                     gameObject.SetActive(false);
                 }
-                SetPhase_R((object)photonEvent.CustomData);
+                StartCoroutine(dayAccuseStartSequence(photonEvent));
 
             }
             else if (eventCode == (byte)GameManager.EVENT_CODE.DAY_ACCUSE_DEFENSE_START)
@@ -433,8 +464,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 {
                     gameObject.SetActive(false);
                 }
-                SetPhase_R((object)photonEvent.CustomData);
-
+                StartCoroutine(dayAccuseDefenseStartSequence(photonEvent));
             }
         }
     }
@@ -481,9 +511,30 @@ public class GameManager : MonoBehaviourPunCallbacks
             SetPhase_S(GameManager.GAME_PHASE.NIGHT);
         }
     }
+    private IEnumerator nightStartSequence(EventData photonEvent)
+    {
+
+        if (highestAccusedPlayer != null)
+        {
+            if (VoteManager.Instance.isGuilty())
+            {
+                yield return StartCoroutine(PlayerManager.getPlayerController(highestAccusedPlayer).guiltySequence());
+                yield return new WaitForSeconds(2f);
+                yield return StartCoroutine(PromptManager.Instance.promptTemporary("The village agreed that " + highestAccusedPlayer.NickName + " is the murderer.", 5f));
+            }
+            else
+            {
+                yield return StartCoroutine(PromptManager.Instance.promptTemporary("The village agreed that " + highestAccusedPlayer.NickName + " is innocent.", 5f));
+            }
+        }
+        VoteManager.Instance.resetAll();
+        yield return null;
+        SetPhase_R((object)photonEvent.CustomData);
+    }
 
     private IEnumerator dayDiscussionStartSequence(EventData photonEvent)
     {
+        bool isSomeoneDead = false;
         foreach (HouseController controller in GameObject.FindObjectsOfType<HouseController>())
         {
             controller.openDoor();
@@ -496,15 +547,22 @@ public class GameManager : MonoBehaviourPunCallbacks
             if ((bool)player.CustomProperties["IS_DEAD"] == true && (bool)player.CustomProperties["IS_SAVED"] == false)
             {
                 yield return StartCoroutine(PlayerManager.getPlayerController(player).dieSequence());
-                yield return StartCoroutine(PromptManager.Instance.promptMurdered(player));
-                yield return StartCoroutine(PromptManager.Instance.promptDayDiscussionPhase(player));
+                yield return StartCoroutine(PromptManager.Instance.promptTemporary(player.NickName + " was poisoned after they had a conversation with the mafia last night.", 5f));
+                isSomeoneDead = true;
             }
         }
+
+        if (isSomeoneDead == false)
+        {
+            yield return StartCoroutine(PromptManager.Instance.promptTemporary("The mafia lurked in the shadows and passed a night without killing a villager.", 5f));
+        }
+
+        yield return StartCoroutine(PromptManager.Instance.promptStay("The village woke up and will start discussing about the event that occured last night."));
 
         SetPhase_R((object)photonEvent.CustomData);
     }
 
-    private IEnumerator dayAccuseDefenseStartSequence(EventData photonEvent)
+    private IEnumerator dayAccuseStartSequence(EventData photonEvent)
     {
         foreach (HouseController controller in GameObject.FindObjectsOfType<HouseController>())
         {
@@ -512,81 +570,49 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
 
         yield return new WaitForSeconds(2f);
-        Player highestAccuseVote = null;
 
-        foreach (Player player in PhotonNetwork.PlayerList)
+        yield return StartCoroutine(PromptManager.Instance.promptStay("The village will now start voting who they think is the mafia.\n\nMinimum votes required: 2"));
+
+        SetPhase_R((object)photonEvent.CustomData);
+    }
+
+    private IEnumerator dayAccuseDefenseStartSequence(EventData photonEvent)
+    {
+        VoteManager.Instance.showVotes();
+        foreach (HouseController controller in GameObject.FindObjectsOfType<HouseController>())
         {
-            if ((int)player.CustomProperties["ACCUSE_VOTE_COUNT"] > 0)
-            {
-                if (highestAccuseVote == null)
-                {
-                    highestAccuseVote = player;
-                }
-                else
-                {
-                    highestAccuseVote = higherAccuseVote(highestAccuseVote, player);
-                }
-            }
-
+            controller.openDoor();
         }
 
-        if (highestAccuseVote != null)
-        {
-
-            foreach (Player player in PhotonNetwork.PlayerList)
-            {
-                if (highestAccuseVote.NickName != player.NickName)
-                {
-                    if ((int)highestAccuseVote.CustomProperties["ACCUSE_VOTE_COUNT"] == (int)player.CustomProperties["ACCUSE_VOTE_COUNT"])
-                    {
-                        highestAccuseVote = null;
-                    }
-                }
-
-            }
-            if (highestAccuseVote != null)
-            {
-                yield return StartCoroutine(PlayerManager.getPlayerController(highestAccuseVote).accusedSequence());
-                yield return StartCoroutine(PromptManager.Instance.promptAccused(highestAccuseVote));
-                yield return StartCoroutine(PromptManager.Instance.promptAccusedPhase(highestAccuseVote));
-            }
-        }
-        accusedPlayer = highestAccuseVote;
         yield return new WaitForSeconds(2f);
-
-        SetPhase_R((object)photonEvent.CustomData);
-
-    }
-
-    private IEnumerator nightStartSequence(EventData photonEvent)
-    {
-        if (accusedPlayer != null)
+        highestAccusedPlayerDict = VoteManager.Instance.getHighestAccusedPlayer();
+        highestAccusedPlayer = null;
+        if (highestAccusedPlayerDict != null)
         {
-            if ((int)accusedPlayer.CustomProperties["ACCUSE_VOTE_COUNT"] > 0)
-            {
-                yield return StartCoroutine(PlayerManager.getPlayerController(accusedPlayer).guiltySequence());
-                yield return new WaitForSeconds(2f);
-                yield return StartCoroutine(PromptManager.Instance.promptGuilty(accusedPlayer));
+            highestAccusedPlayer = highestAccusedPlayerDict.ElementAt(0).Key;
+            yield return StartCoroutine(PlayerManager.getPlayerController(highestAccusedPlayer).accusedSequence());
+            yield return StartCoroutine(PromptManager.Instance.promptTemporary(highestAccusedPlayer.NickName + " is accused as the murderer in the village.", 5f));
+            yield return StartCoroutine(PromptManager.Instance.promptStay(highestAccusedPlayer.NickName + " will now have to convince the villager that he/she is innocent."));
+            SetPhase_R((object)photonEvent.CustomData);
 
-            }
-        }
-
-
-        SetPhase_R((object)photonEvent.CustomData);
-    }
-
-    private Player higherAccuseVote(Player player1, Player player2)
-    {
-        int player1VoteCount = (int)player1.CustomProperties["ACCUSE_VOTE_COUNT"];
-        int player2VoteCount = (int)player2.CustomProperties["ACCUSE_VOTE_COUNT"];
-        if (player1VoteCount > player2VoteCount)
-        {
-            return player1;
+            yield return new WaitForSeconds(2f);
         }
         else
         {
-            return player2;
+            yield return StartCoroutine(PromptManager.Instance.promptTemporary("The village did not agreed upon who they think is the mafia.", 5f));
+            yield return StartCoroutine(PromptManager.Instance.promptStay("The village will proceed to sleep another night."));
+            if (PhotonNetwork.IsMasterClient)
+            {
+                SetPhase_S(GameManager.GAME_PHASE.NIGHT);
+            }
         }
+    }
+
+    private IEnumerator dayVoteStartSequence(EventData photonEvent)
+    {
+        yield return StartCoroutine(PromptManager.Instance.promptTemporary("The village will now make a decision if " + highestAccusedPlayer + " is guilty of the charges", 5f));
+
+        SetPhase_R((object)photonEvent.CustomData);
     }
 
     public void rotateToCamera(GameObject toRotate, GameObject camera)

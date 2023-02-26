@@ -21,18 +21,27 @@ public class HouseController : MonoBehaviour
     [SerializeField] public Transform ownerLocation;
     [SerializeField] public Transform ownerFront;
     [SerializeField] public Transform houseFront;
-    [SerializeField] public Transform houseOutside;
     [SerializeField] public Transform[] outsiderLocation;
-    public PhotonAnimatorView animatorView;
+    [SerializeField] public Material houseMaterial;
+    [SerializeField] public Material houseMaterialFade;
+    public MeshRenderer houseRenderer;
+    public SkinnedMeshRenderer doorRenderer;
+    private bool isOutlined;
+    private bool isHidden;
+    private float fadeSpeed = .05f;
     void Awake()
     {
         PV = GetComponent<PhotonView>();
-        animatorView = GetComponent<PhotonAnimatorView>();
+        gameObject.GetComponent<Outline>().enabled = false;
+        animator = GetComponent<Animator>();
+        houseRenderer = GetComponentInChildren<MeshRenderer>();
+        doorRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+        isOutlined = false;
+        isHidden = false;
     }
     // Start is called before the first frame update
     void Start()
     {
-        animator = GetComponent<Animator>();
 
         leftButton = Instantiate(LeftButtonPrefab, transform.position, Quaternion.identity);
         rightButton = Instantiate(RightButtonPrefab, transform.position, Quaternion.identity);
@@ -42,6 +51,8 @@ public class HouseController : MonoBehaviour
 
         rightButton.house = this;
         rightButton.owner = PV.Owner;
+
+        GameManager.Instance.OnPhaseChange += changePhase;
     }
 
     public void DoorEvent(PhotonView pv)
@@ -69,16 +80,69 @@ public class HouseController : MonoBehaviour
         animator.SetBool("isOpen", false);
     }
 
-    public void showButton()
+    public void showButtonLeft()
     {
         leftButton.gameObject.SetActive(true);
+    }
+
+    public void showButtonRight()
+    {
         rightButton.gameObject.SetActive(true);
     }
 
-    public void hideButton()
+    public void hideButtonBoth()
     {
         leftButton.gameObject.SetActive(false);
         leftButton.gameObject.SetActive(false);
     }
 
+    public void startFadeHouse()
+    {
+        doorRenderer.sharedMaterial = houseMaterialFade;
+        houseRenderer.sharedMaterial = houseMaterialFade;
+        gameObject.layer = ReferenceManager.Instance.LayerIgnoreRaycast;
+        isHidden = true;
+    }
+
+    public void startUnfadeHouse()
+    {
+        doorRenderer.sharedMaterial = houseMaterial;
+        houseRenderer.sharedMaterial = houseMaterial;
+        gameObject.layer = ReferenceManager.Instance.LayerHouse;
+        isHidden = false;
+    }
+
+    private void OnMouseEnter()
+    {
+        if (isOutlined == false)
+        {
+            gameObject.GetComponent<Outline>().enabled = true;
+            isOutlined = true;
+        }
+    }
+    private void OnMouseExit()
+    {
+        if (isOutlined == true)
+        {
+            gameObject.GetComponent<Outline>().enabled = false;
+            isOutlined = false;
+        }
+    }
+    private void changePhase()
+    {
+        if (GameManager.Instance.GAME_STATE != GameManager.GAME_PHASE.NIGHT)
+        {
+            if (isHidden == false)
+            {
+                startFadeHouse();
+            }
+        }
+        else
+        {
+            if (isHidden == false)
+            {
+                startUnfadeHouse();
+            }
+        }
+    }
 }
