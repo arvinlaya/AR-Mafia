@@ -16,6 +16,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         REFRESH_TIMER,
         CAST_ACCUSE_VOTE,
         CAST_ELIMINATION_VOTE,
+        PLAYER_KILLED,
+        VILLAGER_WIN,
+        MAFIA_WIN,
         DAY_DISCUSSION_START,
         DAY_ACCUSE_START,
         DAY_ACCUSE_DEFENSE_START,
@@ -31,6 +34,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         DAY_ACCUSE_DEFENSE,
         DAY_VOTE,
         NIGHT
+    }
+
+    public enum GAME_WINNER : byte
+    {
+        VILLAGER,
+        MAFIA,
+        ONGOING
     }
 
     public static GameManager Instance;
@@ -58,8 +68,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     private Coroutine timerCoroutine;
     private Dictionary<Player, int> highestAccusedPlayerDict;
     private Player highestAccusedPlayer;
+    private Dictionary<Player, bool> aliveList;
     void Awake()
     {
+
         if (Instance)
         {
             Destroy(gameObject);
@@ -74,6 +86,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         setAbilityCooldown(false);
         Instance.uiTimer = ReferenceManager.Instance.UITimer;
         Instance.PV = Instance.gameObject.GetComponent<PhotonView>();
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            aliveList.Add(player, true);
+        }
         Invoke("removeDisplayRole", ROLE_PANEL_DURATION);
         Invoke("startGame", GAME_START);
     }
@@ -101,7 +117,21 @@ public class GameManager : MonoBehaviourPunCallbacks
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
     }
+    public void playerKilled_S(Player player)
+    {
+        GameManager.EVENT_CODE event_code = GameManager.EVENT_CODE.PLAYER_KILLED;
 
+        PhotonNetwork.RaiseEvent((byte)event_code, player.NickName,
+                                    new RaiseEventOptions
+                                    {
+                                        Receivers = ReceiverGroup.All
+                                    },
+                                    new SendOptions { Reliability = true });
+    }
+    public void playerKilled_R(Player player)
+    {
+        aliveList[player] = false;
+    }
     public void setDoorCooldown(bool value)
     {
         if (value == true)
@@ -259,10 +289,21 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void SetPhase_S(object phase)
     {
         GameManager.EVENT_CODE event_code = 0;
+        GameManager.GAME_WINNER game_winner;
 
         if ((byte)GameManager.GAME_PHASE.NIGHT == (byte)phase)
         {
             event_code = GameManager.EVENT_CODE.NIGHT_START;
+
+            game_winner = checkWinCondition();
+            if (game_winner == GameManager.GAME_WINNER.VILLAGER)
+            {
+                event_code = GameManager.EVENT_CODE.VILLAGER_WIN;
+            }
+            else if (game_winner == GameManager.GAME_WINNER.MAFIA)
+            {
+                event_code = GameManager.EVENT_CODE.MAFIA_WIN;
+            }
         }
         else if ((byte)GameManager.GAME_PHASE.DAY_DISCUSSION == (byte)phase)
         {
@@ -280,8 +321,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             event_code = GameManager.EVENT_CODE.DAY_VOTE_START;
         }
-
-
         PhotonNetwork.RaiseEvent((byte)event_code, phase,
                                     new RaiseEventOptions
                                     {
@@ -406,10 +445,19 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void OnEvent(EventData photonEvent)
     {
         byte eventCode = photonEvent.Code;
+
         if (eventCode == (byte)GameManager.EVENT_CODE.REFRESH_TIMER)
         {
             ReferenceManager.Instance.time = (int)photonEvent.CustomData;
             RefreshTimer_R((object)photonEvent.CustomData);
+        }
+        else if (eventCode == (byte)GameManager.EVENT_CODE.VILLAGER_WIN)
+        {
+
+        }
+        else if (eventCode == (byte)GameManager.EVENT_CODE.MAFIA_WIN)
+        {
+
         }
         else if (eventCode == (byte)GameManager.EVENT_CODE.CAST_ACCUSE_VOTE)
         {
@@ -419,6 +467,18 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             object[] data = (object[])photonEvent.CustomData;
             VoteManager.Instance.castEliminationVote_R((VoteManager.VOTE_CASTED)data[0], (VoteManager.VOTE_CASTED)data[1]);
+        }
+        else if (eventCode == (byte)GameManager.EVENT_CODE.PLAYER_KILLED)
+        {
+            object data = (object)photonEvent.CustomData;
+            string playerName = (string)data;
+
+            Player killedPlayer = PlayerManager.getPlayerByName(playerName);
+
+            if (killedPlayer != null)
+            {
+                playerKilled_R(killedPlayer);
+            }
         }
         else
         {
@@ -513,7 +573,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private IEnumerator nightStartSequence(EventData photonEvent)
     {
-
         if (highestAccusedPlayer != null)
         {
             if (VoteManager.Instance.isGuilty())
@@ -613,6 +672,43 @@ public class GameManager : MonoBehaviourPunCallbacks
         yield return StartCoroutine(PromptManager.Instance.promptTemporary("The village will now make a decision if " + highestAccusedPlayer + " is guilty of the charges", 5f));
 
         SetPhase_R((object)photonEvent.CustomData);
+    }
+
+    private GameManager.GAME_WINNER checkWinCondition()
+    {
+        int mafiaCount = 0;
+        int villagerCount = 0;
+        string role;
+        foreach (KeyValuePair<Player, bool> entry in aliveList)
+        {
+            if (entry.Value == false)
+            {
+                continue;
+            }
+            role = (string)entry.Key.CustomProperties["ROLE"];
+
+            if (role.Trim() == "MAFIA")
+            {
+                mafiaCount++;
+            }
+            else
+            {
+                villagerCount++;
+            }
+        }
+
+        if (mafiaCount <= 0)
+        {
+            return GameManager.GAME_WINNER.VILLAGER;
+        }
+        else if (mafiaCount >= villagerCount)
+        {
+            return GameManager.GAME_WINNER.MAFIA;
+        }
+        else
+        {
+            return GameManager.GAME_WINNER.ONGOING;
+        }
     }
 
     public void rotateToCamera(GameObject toRotate, GameObject camera)

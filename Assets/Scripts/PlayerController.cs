@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private Transform moveTarget;
     private bool isOutlined;
     private HouseController playerHouse;
+    private bool disabledControls;
     public Animator animator;
     void Awake()
     {
@@ -37,7 +38,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (PV.IsMine)
+        if (PV.IsMine && disabledControls == false)
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -112,6 +113,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
     }
 
+    public void disableControls(bool state)
+    {
+        disabledControls = state;
+    }
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
         base.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
@@ -231,6 +236,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
         animator.SetBool("isIdle", false);
         animator.SetBool("isDead", true);
         yield return new WaitForSeconds(2f);
+
+        disableControls(true);
     }
 
     private IEnumerator greetAnimation(PlayerController partnerController)

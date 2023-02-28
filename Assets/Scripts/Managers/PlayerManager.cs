@@ -33,6 +33,19 @@ public class PlayerManager : MonoBehaviour
         }
         return null;
     }
+
+    public static Player getPlayerByName(string playerName)
+    {
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (player.NickName == playerName)
+            {
+                return player;
+            }
+        }
+        return null;
+    }
+
     public static HouseController getPlayerHouseController(Player player)
     {
         foreach (HouseController controller in GameObject.FindObjectsOfType<HouseController>())
