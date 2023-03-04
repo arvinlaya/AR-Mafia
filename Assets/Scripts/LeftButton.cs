@@ -30,27 +30,22 @@ public class LeftButton : MonoBehaviour
         switch (GameManager.Instance.GAME_STATE)
         {
             case GameManager.GAME_PHASE.NIGHT:
-                // OnEvent += OpenDoor;
                 renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[0];
                 break;
 
             case GameManager.GAME_PHASE.DAY_DISCUSSION:
-                // OnEvent = null;
                 renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
                 break;
 
             case GameManager.GAME_PHASE.DAY_ACCUSE:
-                // OnEvent += AccuseVote;
                 renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[4];
                 break;
 
             case GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE:
-                // OnEvent = null;
                 renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
                 break;
 
             case GameManager.GAME_PHASE.DAY_VOTE:
-                // OnEvent += Vote;
                 transform.position = ownerController.transform.position;
                 transform.localPosition += offset;
                 renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[6];
@@ -66,19 +61,19 @@ public class LeftButton : MonoBehaviour
                 StartCoroutine(nameof(OpenDoor));
                 break;
 
-            case GameManager.GAME_PHASE.DAY_DISCUSSION:
-                break;
+                // case GameManager.GAME_PHASE.DAY_DISCUSSION:
+                //     break;
 
-            case GameManager.GAME_PHASE.DAY_ACCUSE:
-                // AccuseVote();
-                break;
+                // case GameManager.GAME_PHASE.DAY_ACCUSE:
+                //     // AccuseVote();
+                //     break;
 
-            case GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE:
-                break;
+                // case GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE:
+                //     break;
 
-            case GameManager.GAME_PHASE.DAY_VOTE:
-                Vote();
-                break;
+                // case GameManager.GAME_PHASE.DAY_VOTE:
+                //     Vote();
+                //     break;
         }
     }
 
@@ -98,6 +93,7 @@ public class LeftButton : MonoBehaviour
             }
         }
 
+        GameManager.Instance.rotateToCamera(gameObject.transform, ReferenceManager.Instance.camera.transform, 10f, 0, 0);
     }
 
     IEnumerator OpenDoor()

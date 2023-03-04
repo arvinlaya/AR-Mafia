@@ -86,6 +86,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         setAbilityCooldown(false);
         Instance.uiTimer = ReferenceManager.Instance.UITimer;
         Instance.PV = Instance.gameObject.GetComponent<PhotonView>();
+        aliveList = new Dictionary<Player, bool>();
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             aliveList.Add(player, true);
@@ -711,8 +712,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public void rotateToCamera(GameObject toRotate, GameObject camera)
+    public void rotateToCamera(Transform toRotate, Transform target)
     {
-        toRotate.transform.LookAt(camera.transform);
+        toRotate.LookAt(target);
+    }
+
+    public void rotateToCamera(Transform toRotate, Transform target, float offsetX, float offsetY, float offsetZ)
+    {
+        toRotate.LookAt(target);
+        toRotate.rotation *= Quaternion.Euler(offsetX, offsetY, offsetZ);
     }
 }
