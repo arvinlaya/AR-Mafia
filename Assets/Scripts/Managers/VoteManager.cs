@@ -14,6 +14,7 @@ public class VoteManager : MonoBehaviour
     int guiltyVotes;
     int innocentVotes;
     private VoteManager.VOTE_CASTED vote_casted;
+    private string playerAccused;
     public enum VOTE_CASTED : byte
     {
         NONE,
@@ -39,9 +40,15 @@ public class VoteManager : MonoBehaviour
         vote_casted = VOTE_CASTED.NONE;
     }
 
-    public void castAccuseVote_S(string playerName)
+    public void castAccuseVote_S()
     {
-        PhotonNetwork.RaiseEvent((byte)GameManager.EVENT_CODE.CAST_ACCUSE_VOTE, playerName,
+        if (hasAccuseVoted == true)
+        {
+            return;
+        }
+        hasAccuseVoted = true;
+        closeAccuseVotePrompt();
+        PhotonNetwork.RaiseEvent((byte)GameManager.EVENT_CODE.CAST_ACCUSE_VOTE, playerAccused,
                                     new RaiseEventOptions
                                     {
                                         Receivers = ReceiverGroup.All
@@ -61,6 +68,8 @@ public class VoteManager : MonoBehaviour
         {
             playerAccuseVotes.Add(votedPlayer, 1);
         }
+
+        Debug.Log("VOTED THIS PLAYER");
     }
 
     public void castEliminationVote_S(string newVoteCastedString)
@@ -167,6 +176,15 @@ public class VoteManager : MonoBehaviour
         vote_casted = VOTE_CASTED.NONE;
     }
 
+    public void openAccuseVotePrompt(string playerName)
+    {
+        playerAccused = playerName;
+        ReferenceManager.Instance.accuseVotePrompt.SetActive(true);
+    }
+    public void closeAccuseVotePrompt()
+    {
+        ReferenceManager.Instance.accuseVotePrompt.SetActive(false);
+    }
     public void openEliminationVotePrompt()
     {
         ReferenceManager.Instance.eliminationVotePrompt.SetActive(true);

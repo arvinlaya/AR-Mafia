@@ -22,8 +22,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private bool isOutlined;
     private HouseController playerHouse;
     private bool disabledControls;
+    private bool isMovementSync;
+    private bool isSequenceRunning;
     public Animator animator;
     public PhotonAnimatorView animationSync;
+    public PhotonTransformView transformSync;
+
     void Awake()
     {
         isSet = false;
@@ -35,7 +39,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         isMovingTo = false;
         isOutlined = false;
         playerHouse = PlayerManager.getPlayerHouseController(PV.Owner);
-
+        transformSync = GetComponent<PhotonTransformView>();
     }
 
     void Update()
@@ -69,11 +73,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
                         Debug.Log(hitPV.GetComponent<Transform>().tag);
                         if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
                         {
-                            if (VoteManager.Instance.hasAccuseVoted == false)
-                            {
-                                VoteManager.Instance.hasAccuseVoted = true;
-                                VoteManager.Instance.castAccuseVote_S(hitPV.Owner.NickName);
-                            }
+                            VoteManager.Instance.openAccuseVotePrompt(hitPV.Owner.NickName);
                         }
                     }
                     else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
@@ -148,6 +148,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     public IEnumerator dieSequence()
     {
+
         yield return new WaitForSeconds(1f);
 
         yield return StartCoroutine(nameof(moveTo), middleTransform);
@@ -211,32 +212,61 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     public IEnumerator moveTo(Transform target)
     {
-        moveTarget = target;
-        animator.SetBool("isIdle", false);
-        animator.SetBool("isWalking", true);
+        if (isMovementSync == true)
+        {
+            isSequenceRunning = true;
+        }
+        else
+        {
+            isSequenceRunning = false;
+        }
 
-        isMovingTo = true;
+        if (isMovementSync == true && PV.IsMine)
+        {
+            moveTarget = target;
+            animator.SetBool("isIdle", false);
+            animator.SetBool("isWalking", true);
 
-        yield return new WaitUntil(() => isMovingTo == false);
+            isMovingTo = true;
 
-        yield return StartCoroutine(nameof(idleAnimation));
+            yield return new WaitUntil(() => isMovingTo == false);
+
+            yield return StartCoroutine(nameof(idleAnimation));
+
+            PV.RPC(nameof(RPC_animationFinished), RpcTarget.All);
+        }
+        else
+        {
+            moveTarget = target;
+            animator.SetBool("isIdle", false);
+            animator.SetBool("isWalking", true);
+
+            isMovingTo = true;
+
+            yield return new WaitUntil(() => isMovingTo == false);
+
+            yield return StartCoroutine(nameof(idleAnimation));
+        }
+
+        yield return new WaitUntil(() => isSequenceRunning == false);
+
         yield return new WaitForSeconds(1f);
     }
 
-    public void setAnimationSync(bool state)
+    public void setMovementSync(bool state)
     {
-        if (PV.IsMine)
+        if (state == true)
         {
-            if (state == true)
-            {
-                animationSync.enabled = true;
-            }
-            else
-            {
-                animationSync.enabled = false;
-            }
+            animationSync.enabled = true;
+            transformSync.enabled = true;
+            isMovementSync = true;
         }
-
+        else
+        {
+            animationSync.enabled = false;
+            transformSync.enabled = false;
+            isMovementSync = false;
+        }
     }
 
     private void move()
@@ -251,8 +281,17 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     private IEnumerator dieAnimation()
     {
+        isSequenceRunning = true;
         animator.SetBool("isIdle", false);
         animator.SetBool("isDead", true);
+
+        if (PV.IsMine)
+        {
+            PV.RPC(nameof(RPC_animationFinished), RpcTarget.All);
+        }
+
+        yield return new WaitUntil(() => isSequenceRunning == false);
+
         yield return new WaitForSeconds(2f);
 
         disableControls(true);
@@ -323,6 +362,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
             gameObject.GetComponentInChildren<Outline>().enabled = false;
             isOutlined = false;
         }
+    }
+
+    [PunRPC]
+    public void RPC_animationFinished()
+    {
+        isSequenceRunning = false;
     }
 
 }

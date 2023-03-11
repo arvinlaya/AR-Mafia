@@ -44,8 +44,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public static int NIGHT_LENGHT = 3; //40 //murder, open door
-    public static int DAY_DISCUSSION_LENGHT = 5; //30 // none
+    public static int NIGHT_LENGHT = 10; //40 //murder, open door
+    public static int DAY_DISCUSSION_LENGHT = 10; //30 // none
     public static int DAY_ACCUSE_LENGHT = 5; //20 // accuse icon
     public static int DAY_ACCUSE_DEFENSE_LENGHT = 5; //20 // none
     public static int DAY_VOTE_LENGHT = 20; //20 // guilty, not guilty
@@ -350,14 +350,23 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private void SetPhase_R(object phase)
     {
-        PlayerController myController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
-        if ((GameManager.GAME_PHASE)phase == GameManager.GAME_PHASE.NIGHT)
+        foreach (KeyValuePair<Player, bool> player in aliveList)
         {
-            myController.setAnimationSync(false);
-        }
-        else
-        {
-            myController.setAnimationSync(true);
+            // If player is not alive
+            if (player.Value == false)
+            {
+                continue;
+            }
+
+            Debug.Log("SETTING ANIMATION SYNC STATE");
+            if ((GameManager.GAME_PHASE)phase == GameManager.GAME_PHASE.NIGHT)
+            {
+                PlayerManager.getPlayerController(player.Key).setMovementSync(false);
+            }
+            else
+            {
+                PlayerManager.getPlayerController(player.Key).setMovementSync(true);
+            }
         }
 
         GameManager.Instance.GAME_STATE = (GameManager.GAME_PHASE)phase;
