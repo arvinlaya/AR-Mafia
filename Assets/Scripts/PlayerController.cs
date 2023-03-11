@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private HouseController playerHouse;
     private bool disabledControls;
     public Animator animator;
+    public PhotonAnimatorView animationSync;
     void Awake()
     {
         isSet = false;
@@ -34,6 +35,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         isMovingTo = false;
         isOutlined = false;
         playerHouse = PlayerManager.getPlayerHouseController(PV.Owner);
+
     }
 
     void Update()
@@ -221,6 +223,22 @@ public class PlayerController : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(1f);
     }
 
+    public void setAnimationSync(bool state)
+    {
+        if (PV.IsMine)
+        {
+            if (state == true)
+            {
+                animationSync.enabled = true;
+            }
+            else
+            {
+                animationSync.enabled = false;
+            }
+        }
+
+    }
+
     private void move()
     {
         playerTransform.position = Vector3.MoveTowards(playerTransform.position, moveTarget.position, step);
@@ -306,4 +324,5 @@ public class PlayerController : MonoBehaviourPunCallbacks
             isOutlined = false;
         }
     }
+
 }

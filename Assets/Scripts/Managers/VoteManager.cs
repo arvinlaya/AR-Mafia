@@ -126,7 +126,13 @@ public class VoteManager : MonoBehaviour
 
     public Dictionary<Player, int> getHighestAccusedPlayer()
     {
+
         playerAccuseVotes = playerAccuseVotes.OrderBy(player => player.Value).ToDictionary(player => player.Key, player => player.Value);
+
+        if (playerAccuseVotes.Count < 1)
+        {
+            return null;
+        }
 
         if (playerAccuseVotes.Count > 1)
         {

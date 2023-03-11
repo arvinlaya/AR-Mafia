@@ -296,7 +296,17 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             event_code = GameManager.EVENT_CODE.NIGHT_START;
 
-            game_winner = checkWinCondition();
+
+            // UNCOMMENT AFTER DEBUGGING
+            // UNCOMMENT AFTER DEBUGGING
+            // UNCOMMENT AFTER DEBUGGING
+            // UNCOMMENT AFTER DEBUGGING
+            // UNCOMMENT AFTER DEBUGGING
+            // UNCOMMENT AFTER DEBUGGING
+            // UNCOMMENT AFTER DEBUGGING
+            // game_winner = checkWinCondition();
+            game_winner = GAME_WINNER.ONGOING;
+
             if (game_winner == GameManager.GAME_WINNER.VILLAGER)
             {
                 event_code = GameManager.EVENT_CODE.VILLAGER_WIN;
@@ -322,6 +332,15 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             event_code = GameManager.EVENT_CODE.DAY_VOTE_START;
         }
+
+        if ((byte)event_code == (byte)GameManager.EVENT_CODE.NIGHT_START)
+        {
+            DayCycleManager.Instance.setDayState(DayCycleManager.DAY_STATE.NIGHT);
+        }
+        else
+        {
+            DayCycleManager.Instance.setDayState(DayCycleManager.DAY_STATE.DAY);
+        }
         PhotonNetwork.RaiseEvent((byte)event_code, phase,
                                     new RaiseEventOptions
                                     {
@@ -331,6 +350,16 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private void SetPhase_R(object phase)
     {
+        PlayerController myController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
+        if ((GameManager.GAME_PHASE)phase == GameManager.GAME_PHASE.NIGHT)
+        {
+            myController.setAnimationSync(false);
+        }
+        else
+        {
+            myController.setAnimationSync(true);
+        }
+
         GameManager.Instance.GAME_STATE = (GameManager.GAME_PHASE)phase;
         OnPhaseChange?.Invoke();
         foreach (Player player in PhotonNetwork.PlayerList)
@@ -454,11 +483,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         else if (eventCode == (byte)GameManager.EVENT_CODE.VILLAGER_WIN)
         {
-
+            Debug.Log("VILLAGER WON");
         }
         else if (eventCode == (byte)GameManager.EVENT_CODE.MAFIA_WIN)
         {
-
+            Debug.Log("MAFIA WON");
         }
         else if (eventCode == (byte)GameManager.EVENT_CODE.CAST_ACCUSE_VOTE)
         {
