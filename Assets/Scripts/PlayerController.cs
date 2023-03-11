@@ -21,7 +21,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private Transform moveTarget;
     private bool isOutlined;
     private HouseController playerHouse;
+    private bool disabledControls;
     public Animator animator;
+    public PhotonAnimatorView animationSync;
     void Awake()
     {
         isSet = false;
@@ -33,11 +35,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
         isMovingTo = false;
         isOutlined = false;
         playerHouse = PlayerManager.getPlayerHouseController(PV.Owner);
+
     }
 
     void Update()
     {
-        if (PV.IsMine)
+        if (PV.IsMine && disabledControls == false)
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -112,6 +115,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
     }
 
+    public void disableControls(bool state)
+    {
+        disabledControls = state;
+    }
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
         base.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
@@ -216,6 +223,22 @@ public class PlayerController : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(1f);
     }
 
+    public void setAnimationSync(bool state)
+    {
+        if (PV.IsMine)
+        {
+            if (state == true)
+            {
+                animationSync.enabled = true;
+            }
+            else
+            {
+                animationSync.enabled = false;
+            }
+        }
+
+    }
+
     private void move()
     {
         playerTransform.position = Vector3.MoveTowards(playerTransform.position, moveTarget.position, step);
@@ -231,6 +254,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
         animator.SetBool("isIdle", false);
         animator.SetBool("isDead", true);
         yield return new WaitForSeconds(2f);
+
+        disableControls(true);
     }
 
     private IEnumerator greetAnimation(PlayerController partnerController)
@@ -299,4 +324,5 @@ public class PlayerController : MonoBehaviourPunCallbacks
             isOutlined = false;
         }
     }
+
 }

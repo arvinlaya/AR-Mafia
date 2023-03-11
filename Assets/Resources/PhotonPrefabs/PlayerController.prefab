@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -3862168738993582377}
   - component: {fileID: -2371574015260390189}
   - component: {fileID: 4318530159945507564}
+  - component: {fileID: -4871648973881126567}
   m_Layer: 7
   m_Name: PlayerController
   m_TagString: Player
@@ -96,7 +97,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: -4871648973881126567}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -117,6 +119,7 @@ MonoBehaviour:
   playerTransform: {fileID: 0}
   middleTransform: {fileID: 0}
   animator: {fileID: 0}
+  animationSync: {fileID: 0}
 --- !u!54 &-2371574015260390189
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -146,3 +149,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.7500001, y: 4.683378, z: 1.1898807}
   m_Center: {x: 0, y: 2.1583111, z: -0.094940335}
+--- !u!114 &-4871648973881126567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3754946709794028000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1

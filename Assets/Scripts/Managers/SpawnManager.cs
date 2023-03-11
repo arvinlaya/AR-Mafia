@@ -46,6 +46,10 @@ public class SpawnManager : MonoBehaviour
     {
         if (Instance.isSet == false)
         {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Directional Light"), Vector3.zero, Quaternion.identity);
+            }
             index = 0;
             foreach (Player player in PhotonNetwork.PlayerList)
             {

@@ -24,7 +24,7 @@ public class PromptManager : MonoBehaviour
     {
         if (promptOn)
         {
-            GameManager.Instance.rotateToCamera(ReferenceManager.Instance.prompt, ReferenceManager.Instance.camera);
+            GameManager.Instance.rotateToCamera(ReferenceManager.Instance.prompt.transform, ReferenceManager.Instance.camera.transform);
         }
     }
 

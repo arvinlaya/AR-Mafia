@@ -94,6 +94,7 @@ public class RightButton : MonoBehaviour
             }
         }
 
+        GameManager.Instance.rotateToCamera(gameObject.transform, ReferenceManager.Instance.camera.transform, 10f, 0, 0);
     }
 
     void Skill(string ROLE, Player target)
