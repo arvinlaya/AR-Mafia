@@ -49,6 +49,7 @@ MonoBehaviour:
   - RPC_enterHouseSequence
   - RPC_InstantiatePlayerSpawnPoints
   - RPC_castAccuseVote
+  - RPC_animationFinished
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

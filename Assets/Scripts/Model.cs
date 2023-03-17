@@ -28,10 +28,10 @@ public class Model : MonoBehaviour, IPunInstantiateMagicCallback
             Destroy(gameObject);
         }
 
+        GameObject newModel = null;
         if (PV.IsMine)
         {
             Destroy(gameObject);
-            GameObject newModel = null;
             switch (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"])
             {
                 case "VILLAGER":
@@ -58,6 +58,10 @@ public class Model : MonoBehaviour, IPunInstantiateMagicCallback
             parentController.animationSync = newModel.GetComponent<PhotonAnimatorView>();
             newModel.transform.SetParent(parentController.transform, true);
             newModel.transform.position = parentController.transform.position;
+        }
+        else
+        {
+            parentController.animationSync = GetComponentInChildren<PhotonAnimatorView>();
         }
 
 

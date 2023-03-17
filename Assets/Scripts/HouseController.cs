@@ -31,6 +31,7 @@ public class HouseController : MonoBehaviour
     private float fadeSpeed = .05f;
     void Awake()
     {
+        gameObject.tag = "House";
         PV = GetComponent<PhotonView>();
         gameObject.GetComponent<Outline>().enabled = false;
         animator = GetComponent<Animator>();

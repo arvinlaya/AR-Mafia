@@ -120,6 +120,7 @@ MonoBehaviour:
   middleTransform: {fileID: 0}
   animator: {fileID: 0}
   animationSync: {fileID: 0}
+  transformSync: {fileID: 0}
 --- !u!54 &-2371574015260390189
 Rigidbody:
   m_ObjectHideFlags: 0

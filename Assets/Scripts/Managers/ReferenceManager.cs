@@ -16,6 +16,7 @@ public class ReferenceManager : MonoBehaviour
     [SerializeField] public Material[] ButtonMaterials;
     [SerializeField] public GameObject[] Models;
     [SerializeField] public GameObject eliminationVotePrompt;
+    [SerializeField] public GameObject accuseVotePrompt;
     [SerializeField] public GameObject lighting;
     public int time;
     public int LayerIgnoreRaycast;
