@@ -16,7 +16,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         REFRESH_TIMER,
         CAST_ACCUSE_VOTE,
         CAST_ELIMINATION_VOTE,
-        PLAYER_KILLED,
         VILLAGER_WIN,
         MAFIA_WIN,
         DAY_DISCUSSION_START,
@@ -68,7 +67,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     private Coroutine timerCoroutine;
     private Dictionary<Player, int> highestAccusedPlayerDict;
     private Player highestAccusedPlayer;
-    private Dictionary<Player, bool> aliveList;
+    private List<Player> aliveList;
+
     void Awake()
     {
 
@@ -82,14 +82,15 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        ReadyManager.Instance.setRequiredReady(PhotonNetwork.PlayerList.Count());
         setDoorCooldown(false);
         setAbilityCooldown(false);
         Instance.uiTimer = ReferenceManager.Instance.UITimer;
         Instance.PV = Instance.gameObject.GetComponent<PhotonView>();
-        aliveList = new Dictionary<Player, bool>();
+        aliveList = new List<Player>();
         foreach (Player player in PhotonNetwork.PlayerList)
         {
-            aliveList.Add(player, true);
+            aliveList.Add(player);
         }
         Invoke("removeDisplayRole", ROLE_PANEL_DURATION);
         Invoke("startGame", GAME_START);
@@ -117,21 +118,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
-    }
-    public void playerKilled_S(Player player)
-    {
-        GameManager.EVENT_CODE event_code = GameManager.EVENT_CODE.PLAYER_KILLED;
-
-        PhotonNetwork.RaiseEvent((byte)event_code, player.NickName,
-                                    new RaiseEventOptions
-                                    {
-                                        Receivers = ReceiverGroup.All
-                                    },
-                                    new SendOptions { Reliability = true });
-    }
-    public void playerKilled_R(Player player)
-    {
-        aliveList[player] = false;
     }
     public void setDoorCooldown(bool value)
     {
@@ -199,15 +185,15 @@ public class GameManager : MonoBehaviourPunCallbacks
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
-                if (player.IsMasterClient)
-                {
-                    roleCustomProps.Add("ROLE", "MAFIA");
-                }
-                else
-                {
-                    roleCustomProps.Add("ROLE", "VILLAGER");
-                }
-                // roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+                // if (player.IsMasterClient)
+                // {
+                //     roleCustomProps.Add("ROLE", "MAFIA");
+                // }
+                // else
+                // {
+                //     roleCustomProps.Add("ROLE", "VILLAGER");
+                // }
+                roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
                 roleCustomProps.Add("OUTSIDER_COUNT", 0);
@@ -348,31 +334,15 @@ public class GameManager : MonoBehaviourPunCallbacks
                                     },
                                     new SendOptions { Reliability = true });
     }
-    private void SetPhase_R(object phase)
+    private IEnumerator SetPhase_R(object phase)
     {
-        foreach (KeyValuePair<Player, bool> player in aliveList)
-        {
-            // If player is not alive
-            if (player.Value == false)
-            {
-                continue;
-            }
-
-            Debug.Log("SETTING ANIMATION SYNC STATE");
-            if ((GameManager.GAME_PHASE)phase == GameManager.GAME_PHASE.NIGHT)
-            {
-                PlayerManager.getPlayerController(player.Key).setMovementSync(false);
-            }
-            else
-            {
-                PlayerManager.getPlayerController(player.Key).setMovementSync(true);
-            }
-        }
 
         GameManager.Instance.GAME_STATE = (GameManager.GAME_PHASE)phase;
         OnPhaseChange?.Invoke();
         foreach (Player player in PhotonNetwork.PlayerList)
         {
+            setAnimationSyncState(player, (GameManager.GAME_PHASE)phase);
+
             if ((bool)player.CustomProperties["IS_DEAD"] == false)
             {
                 if (highestAccusedPlayer != null && highestAccusedPlayer == player)
@@ -382,6 +352,10 @@ public class GameManager : MonoBehaviourPunCallbacks
                 PlayerManager.getPlayerController(player).resetPlayerState();
             }
         }
+
+        ReadyManager.Instance.setReady(true);
+
+        yield return new WaitUntil(() => ReadyManager.Instance.getIsAllReady());
 
         InitializeTimer((byte)phase);
     }
@@ -507,18 +481,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             object[] data = (object[])photonEvent.CustomData;
             VoteManager.Instance.castEliminationVote_R((VoteManager.VOTE_CASTED)data[0], (VoteManager.VOTE_CASTED)data[1]);
         }
-        else if (eventCode == (byte)GameManager.EVENT_CODE.PLAYER_KILLED)
-        {
-            object data = (object)photonEvent.CustomData;
-            string playerName = (string)data;
-
-            Player killedPlayer = PlayerManager.getPlayerByName(playerName);
-
-            if (killedPlayer != null)
-            {
-                playerKilled_R(killedPlayer);
-            }
-        }
         else
         {
             GameManager.Instance.setDoorCooldown(false);
@@ -627,7 +589,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         VoteManager.Instance.resetAll();
         yield return null;
-        SetPhase_R((object)photonEvent.CustomData);
+        yield return StartCoroutine(SetPhase_R((object)photonEvent.CustomData));
     }
 
     private IEnumerator dayDiscussionStartSequence(EventData photonEvent)
@@ -657,7 +619,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         yield return StartCoroutine(PromptManager.Instance.promptStay("The village woke up and will start discussing about the event that occured last night."));
 
-        SetPhase_R((object)photonEvent.CustomData);
+        yield return StartCoroutine(SetPhase_R((object)photonEvent.CustomData));
+
     }
 
     private IEnumerator dayAccuseStartSequence(EventData photonEvent)
@@ -671,7 +634,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         yield return StartCoroutine(PromptManager.Instance.promptStay("The village will now start voting who they think is the mafia.\n\nMinimum votes required: 2"));
 
-        SetPhase_R((object)photonEvent.CustomData);
+        yield return StartCoroutine(SetPhase_R((object)photonEvent.CustomData));
+
     }
 
     private IEnumerator dayAccuseDefenseStartSequence(EventData photonEvent)
@@ -691,7 +655,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             yield return StartCoroutine(PlayerManager.getPlayerController(highestAccusedPlayer).accusedSequence());
             yield return StartCoroutine(PromptManager.Instance.promptTemporary(highestAccusedPlayer.NickName + " is accused as the murderer in the village.", 5f));
             yield return StartCoroutine(PromptManager.Instance.promptStay(highestAccusedPlayer.NickName + " will now have to convince the villager that he/she is innocent."));
-            SetPhase_R((object)photonEvent.CustomData);
+            yield return StartCoroutine(SetPhase_R((object)photonEvent.CustomData));
+
 
             yield return new WaitForSeconds(2f);
         }
@@ -710,7 +675,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         yield return StartCoroutine(PromptManager.Instance.promptTemporary("The village will now make a decision if " + highestAccusedPlayer + " is guilty of the charges", 5f));
 
-        SetPhase_R((object)photonEvent.CustomData);
+        yield return StartCoroutine(SetPhase_R((object)photonEvent.CustomData));
+
     }
 
     private GameManager.GAME_WINNER checkWinCondition()
@@ -718,13 +684,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         int mafiaCount = 0;
         int villagerCount = 0;
         string role;
-        foreach (KeyValuePair<Player, bool> entry in aliveList)
+        foreach (Player player in aliveList)
         {
-            if (entry.Value == false)
-            {
-                continue;
-            }
-            role = (string)entry.Key.CustomProperties["ROLE"];
+            role = (string)player.CustomProperties["ROLE"];
 
             if (role.Trim() == "MAFIA")
             {
@@ -759,5 +721,23 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         toRotate.LookAt(target);
         toRotate.rotation *= Quaternion.Euler(offsetX, offsetY, offsetZ);
+    }
+
+    public void removeFromAliveList(Player player)
+    {
+        aliveList.Remove(player);
+    }
+
+    private void setAnimationSyncState(Player player, GameManager.GAME_PHASE phase)
+    {
+        Debug.Log("SETTING ANIMATION SYNC STATE");
+        if (phase == GameManager.GAME_PHASE.NIGHT)
+        {
+            PlayerManager.getPlayerController(player).setMovementSync(false);
+        }
+        else
+        {
+            PlayerManager.getPlayerController(player).setMovementSync(true);
+        }
     }
 }

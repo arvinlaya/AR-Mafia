@@ -281,6 +281,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     private IEnumerator dieAnimation()
     {
+        GameManager.Instance.removeFromAliveList(PV.Owner);
+
         isSequenceRunning = true;
         animator.SetBool("isIdle", false);
         animator.SetBool("isDead", true);
@@ -293,7 +295,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         yield return new WaitUntil(() => isSequenceRunning == false);
 
         yield return new WaitForSeconds(2f);
-
         disableControls(true);
     }
 

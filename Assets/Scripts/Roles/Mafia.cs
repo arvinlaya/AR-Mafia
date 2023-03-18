@@ -13,6 +13,5 @@ class Mafia : Role
     public void skill(Player target)
     {
         target.SetCustomProperties(new Hashtable() { { "IS_DEAD", true } });
-        GameManager.Instance.playerKilled_S(target);
     }
 }
