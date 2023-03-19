@@ -16,8 +16,11 @@ public class ReferenceManager : MonoBehaviour
     [SerializeField] public Material[] ButtonMaterials;
     [SerializeField] public GameObject[] Models;
     [SerializeField] public GameObject eliminationVotePrompt;
+    [SerializeField] public GameObject victoryVillagerPrompt;
+    [SerializeField] public GameObject victoryMafiaPrompt;
+    [SerializeField] public GameObject resultPrompt;
     [SerializeField] public GameObject accuseVotePrompt;
-    [SerializeField] public GameObject lighting;
+    [SerializeField] public CanvasGroup hideableCanvas;
     public int time;
     public int LayerIgnoreRaycast;
     public int LayerHouse;

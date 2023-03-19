@@ -9,6 +9,7 @@ TagManager:
   - PlayerSpawn6
   - PlayerSpawn7
   - PlayerSpawn5
+  - House
   layers:
   - Default
   - TransparentFX

@@ -48,9 +48,6 @@ public class DayCycleManager : MonoBehaviour
                 Debug.LogError("WRONG DAY STATE VALUE");
                 break;
         }
-
-        Debug.Log(dayCycleAnimator.GetBool("IsDay"));
-        Debug.Log(dayCycleAnimator.GetBool("IsNight"));
     }
 
 

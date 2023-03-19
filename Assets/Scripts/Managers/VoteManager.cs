@@ -194,4 +194,19 @@ public class VoteManager : MonoBehaviour
     {
         ReferenceManager.Instance.eliminationVotePrompt.SetActive(false);
     }
+
+    public Dictionary<Player, int> getPlayerAccuseVotes()
+    {
+        return playerAccuseVotes;
+    }
+
+    public int getGuiltyVotes()
+    {
+        return guiltyVotes;
+    }
+
+    public int getInnocentVotes()
+    {
+        return innocentVotes;
+    }
 }

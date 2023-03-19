@@ -140,7 +140,7 @@ public class HouseController : MonoBehaviour
         }
         else
         {
-            if (isHidden == false)
+            if (isHidden == true)
             {
                 startUnfadeHouse();
             }

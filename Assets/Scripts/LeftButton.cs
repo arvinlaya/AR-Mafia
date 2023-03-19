@@ -98,22 +98,32 @@ public class LeftButton : MonoBehaviour
 
     IEnumerator OpenDoor()
     {
-
-        if (GameManager.Instance.openDoorOnCooldown == false)
+        if (CooldownManager.Instance.getIsDoorCooldown() == false)
         {
+            Debug.Log("NOT COOLDOWN ANYMORE");
+
             HouseController[] controllers = GameObject.FindObjectsOfType<HouseController>();
             foreach (HouseController controller in controllers)
             {
                 house.DoorEvent(house.PV);
             }
-            GameManager.Instance.setDoorCooldown(true);
+            CooldownManager.Instance.setDoorCooldown(true);
+            CooldownManager.Instance.setDoorCastTime(ReferenceManager.Instance.time);
+
+            LogManager.Instance.openDoorAction(PhotonNetwork.LocalPlayer.NickName, house.PV.Owner.NickName);
+
+            yield return new WaitForSeconds(2f);
+
+            PlayerController callerController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
+            PlayerController ownerController = PlayerManager.getPlayerController(owner);
+            callerController.enterHouseSequence(house.PV.ViewID, ownerController.PV.ViewID);
+        }
+        else
+        {
+            LogManager.Instance.openDoorCooldown(CooldownManager.Instance.getDoorCooldownRemaining(ReferenceManager.Instance.time));
         }
 
-        yield return new WaitForSeconds(2f);
 
-        PlayerController callerController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
-        PlayerController ownerController = PlayerManager.getPlayerController(owner);
-        callerController.enterHouseSequence(house.PV.ViewID, ownerController.PV.ViewID);
     }
 
     void Vote()

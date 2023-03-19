@@ -99,29 +99,34 @@ public class RightButton : MonoBehaviour
 
     void Skill(string ROLE, Player target)
     {
-        GameManager.Instance.setAbilityCooldown(true);
-        switch (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"])
+        if (CooldownManager.Instance.getIsSkillCooldown() == false)
         {
-            case "VILLAGER":
-                new Villager().skill(target);
-                break;
+            switch (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"])
+            {
+                case "VILLAGER":
+                    new Villager().skill(target);
+                    break;
 
-            case "DOCTOR":
-                new Doctor().skill(target);
-                break;
+                case "DOCTOR":
+                    new Doctor().skill(target);
+                    break;
 
-            case "MAFIA":
-                new Mafia().skill(target);
-                break;
+                case "MAFIA":
+                    new Mafia().skill(target);
+                    break;
 
-            case "DETECTIVE":
-                new Detective().skill(target);
-                break;
+                case "DETECTIVE":
+                    new Detective().skill(target);
+                    break;
 
-            default:
-                Debug.Log("ROLE NOT FOUND...");
-                break;
+                default:
+                    Debug.Log("ROLE NOT FOUND...");
+                    break;
+            }
         }
+
+        CooldownManager.Instance.setSkillCooldown(true);
+
     }
 
     void Vote()

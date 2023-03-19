@@ -1,4 +1,5 @@
 using Photon.Realtime;
+using Photon.Pun;
 using UnityEngine;
 
 class Detective : Role
@@ -13,5 +14,6 @@ class Detective : Role
     public void skill(Player target)
     {
         Debug.Log(target + " ROLE IS: " + target.CustomProperties["ROLE"]);
+        LogManager.Instance.addDetectiveAction(PhotonNetwork.LocalPlayer.NickName, target.NickName);
     }
 }
