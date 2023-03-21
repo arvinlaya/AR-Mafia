@@ -109,20 +109,27 @@ public class RightButton : MonoBehaviour
 
                 case "DOCTOR":
                     new Doctor().skill(target);
+                    StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.DOCTOR_SKILL, 0));
                     break;
 
                 case "MAFIA":
                     new Mafia().skill(target);
+                    StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.MAFIA_SKILL, 0));
                     break;
 
                 case "DETECTIVE":
                     new Detective().skill(target);
+                    StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.DETECTIVE_SKILL, 0));
                     break;
 
                 default:
                     Debug.Log("ROLE NOT FOUND...");
                     break;
             }
+        }
+        else
+        {
+            LogManager.Instance.skillCooldown();
         }
 
         CooldownManager.Instance.setSkillCooldown(true);

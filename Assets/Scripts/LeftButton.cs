@@ -100,12 +100,13 @@ public class LeftButton : MonoBehaviour
     {
         if (CooldownManager.Instance.getIsDoorCooldown() == false)
         {
-            Debug.Log("NOT COOLDOWN ANYMORE");
+            StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.DOOR_OPEN_CLOSE, 0f));
 
             HouseController[] controllers = GameObject.FindObjectsOfType<HouseController>();
             foreach (HouseController controller in controllers)
             {
                 house.DoorEvent(house.PV);
+                SoundManager.Instance.playGameClip(SoundManager.DOOR_OPEN_CLOSE, 0);
             }
             CooldownManager.Instance.setDoorCooldown(true);
             CooldownManager.Instance.setDoorCastTime(ReferenceManager.Instance.time);
@@ -122,7 +123,6 @@ public class LeftButton : MonoBehaviour
         {
             LogManager.Instance.openDoorCooldown(CooldownManager.Instance.getDoorCooldownRemaining(ReferenceManager.Instance.time));
         }
-
 
     }
 

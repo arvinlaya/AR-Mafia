@@ -146,4 +146,9 @@ public class HouseController : MonoBehaviour
             }
         }
     }
+
+    public void ignoreRaycast()
+    {
+        gameObject.layer = ReferenceManager.Instance.LayerIgnoreRaycast;
+    }
 }

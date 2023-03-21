@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         isOutlined = false;
         playerHouse = PlayerManager.getPlayerHouseController(PV.Owner);
         transformSync = GetComponent<PhotonTransformView>();
+
     }
 
     void Update()
@@ -142,7 +143,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
     }
     public void resetPlayerState()
     {
-        transform.position = SpawnManager.Instance.playerSpawn[PV.Owner];
+        isMovingTo = false;
+        transform.position = playerHouse.ownerLocation.position;
         StartCoroutine(idleAnimation());
     }
 
@@ -208,6 +210,13 @@ public class PlayerController : MonoBehaviourPunCallbacks
         yield return StartCoroutine(nameof(moveTo), outsiderTargetLocation);
 
         yield return StartCoroutine(talkAnimation(ownerController));
+    }
+
+    public IEnumerator goBackToHouseSequence()
+    {
+        yield return StartCoroutine(nameof(moveTo), playerHouse.ownerFront);
+
+        yield return StartCoroutine(nameof(moveTo), playerHouse.ownerLocation);
     }
 
     public IEnumerator moveTo(Transform target)
@@ -369,6 +378,11 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public void RPC_animationFinished()
     {
         isSequenceRunning = false;
+    }
+
+    public void ignoreRaycast()
+    {
+        gameObject.layer = ReferenceManager.Instance.LayerIgnoreRaycast;
     }
 
 }
