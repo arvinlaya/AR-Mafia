@@ -97,9 +97,9 @@ public class LogManager : MonoBehaviour
         }
     }
 
-    public void skillCooldown(int remaining)
+    public void skillCooldown()
     {
-        string message = $"Your skill is still on cooldown for <color=\"yellow\">{remaining}</color> seconds";
+        string message = $"You can only use your ability once per night.";
         GameObject logItem = Instantiate(log, content.transform);
 
         logItem.GetComponent<TMP_Text>().SetText(message);
