@@ -10,6 +10,7 @@ public class ReferenceManager : MonoBehaviour
     [SerializeField] public TMP_Text UITimer;
     [SerializeField] public Transform middle;
     [SerializeField] public GameObject panelParent;
+    [SerializeField] public GameObject RoleRevealPrefab;
     [SerializeField] public GameObject[] rolePanels;
     [SerializeField] public GameObject prompt;
     [SerializeField] public GameObject camera;

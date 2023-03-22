@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public const int NIGHT_LENGHT = 5; //40 //murder, open door
+    public const int NIGHT_LENGHT = 10; //40 //murder, open door
     public const int DAY_DISCUSSION_LENGHT = 5; //30 // none
     public const int DAY_ACCUSE_LENGHT = 5; //20 // accuse icon
     public const int DAY_ACCUSE_DEFENSE_LENGHT = 5; //20 // none
@@ -63,6 +63,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private Dictionary<Player, int> highestAccusedPlayerDict;
     private Player highestAccusedPlayer;
     private List<Player> aliveList;
+    private bool firstNight;
 
     void Awake()
     {
@@ -83,12 +84,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         Instance.uiTimer = ReferenceManager.Instance.UITimer;
         Instance.PV = Instance.gameObject.GetComponent<PhotonView>();
         aliveList = new List<Player>();
+        firstNight = true;
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             aliveList.Add(player);
         }
         Invoke("removeDisplayRole", ROLE_PANEL_DURATION);
         Invoke("startGame", GAME_START);
+
     }
 
     // Start is called before the first frame update
@@ -145,7 +148,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 }
                 else
                 {
-                    roleCustomProps.Add("ROLE", "DOCTOR");
+                    roleCustomProps.Add("ROLE", "DETECTIVE");
                 }
                 // roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_DEAD", false);
@@ -236,16 +239,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             event_code = GameManager.EVENT_CODE.NIGHT_START;
 
-
-            // UNCOMMENT AFTER DEBUGGING
-            // UNCOMMENT AFTER DEBUGGING
-            // UNCOMMENT AFTER DEBUGGING
-            // UNCOMMENT AFTER DEBUGGING
-            // UNCOMMENT AFTER DEBUGGING
-            // UNCOMMENT AFTER DEBUGGING
-            // UNCOMMENT AFTER DEBUGGING
-            // game_winner = checkWinCondition();
-            game_winner = GAME_WINNER.ONGOING;
+            game_winner = checkWinCondition();
 
             if (game_winner == GameManager.GAME_WINNER.VILLAGER)
             {
@@ -357,6 +351,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(1f);
 
         currentTime -= 1;
+
         if (currentTime <= 0)
         {
             timerCoroutine = null;
@@ -410,6 +405,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         currentTime = (int)data;
         CooldownManager.Instance.doorCooldownCheck(currentTime);
         RefreshTimerUI();
+
+        if (currentTime == 5)
+        {
+            SoundManager.Instance.playGameClip(SoundManager.TIME_ENDING, 0);
+        }
     }
     private void OnEvent(EventData photonEvent)
     {
@@ -558,7 +558,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         VoteManager.Instance.resetAll();
 
-        closeAllDoors();
+        if (firstNight == false)
+        {
+            closeAllDoors();
+        }
+
+        firstNight = false;
         StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.DOOR_OPEN_CLOSE, 0));
 
         yield return StartCoroutine(SetPhase_R((object)photonEvent.CustomData));
