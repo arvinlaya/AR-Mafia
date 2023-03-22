@@ -18,6 +18,7 @@ public class SoundManager : MonoBehaviour
     public const int DOOR_OPEN_CLOSE = 5;
     public const int TIME_ENDING = 6;
     public const int TIME_ENDS = 7;
+    public const int GAME_BGM = 8;
 
     void Awake()
     {

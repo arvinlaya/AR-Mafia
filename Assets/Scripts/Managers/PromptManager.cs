@@ -109,6 +109,38 @@ public class PromptManager : MonoBehaviour
         promptOn = false;
     }
 
+    public IEnumerator roleReveal(string role, Transform houseLocation)
+    {
+        Vector3 offset = new Vector3(-1, 5, 0);
+
+        GameObject roleRevealPrefab = Instantiate(ReferenceManager.Instance.RoleRevealPrefab, houseLocation);
+        roleRevealPrefab.transform.localPosition += offset;
+
+        if (role.Trim() == "MAFIA")
+        {
+            role = "<color=\"red\">" + role + "</color>";
+        }
+        else if (role.Trim() == "DOCTOR")
+        {
+            role = "<color=\"blue\">" + role + "</color>";
+        }
+        else
+        {
+            role = "<color=\"yellow\">" + role + "</color>";
+        }
+
+        roleRevealPrefab.GetComponent<TextMesh>().text = role;
+
+        yield return new WaitForSeconds(2f);
+
+        Destroy(roleRevealPrefab);
+    }
+
+    public void callRoleReveal(string role, Transform houseLocation)
+    {
+        StartCoroutine(roleReveal(role, houseLocation));
+    }
+
     public void resetPrompt()
     {
         if (promptOn == true)
