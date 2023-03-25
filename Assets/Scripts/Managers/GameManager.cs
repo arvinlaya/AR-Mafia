@@ -43,10 +43,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public const int NIGHT_LENGHT = 10; //40 //murder, open door
-    public const int DAY_DISCUSSION_LENGHT = 5; //30 // none
-    public const int DAY_ACCUSE_LENGHT = 5; //20 // accuse icon
-    public const int DAY_ACCUSE_DEFENSE_LENGHT = 5; //20 // none
+    public const int NIGHT_LENGHT = 3; //40 //murder, open door
+    public const int DAY_DISCUSSION_LENGHT = 3; //30 // none
+    public const int DAY_ACCUSE_LENGHT = 3; //20 // accuse icon
+    public const int DAY_ACCUSE_DEFENSE_LENGHT = 3; //20 // none
     public const int DAY_VOTE_LENGHT = 5; //20 // guilty, not guilty
     public const int ROLE_PANEL_DURATION = 3;
     public const int GAME_START = 3;
@@ -64,6 +64,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     private Player highestAccusedPlayer;
     private List<Player> aliveList;
     private bool firstNight;
+    private int dayCount;
+    private int aliveCount;
 
     void Awake()
     {
@@ -85,10 +87,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         Instance.PV = Instance.gameObject.GetComponent<PhotonView>();
         aliveList = new List<Player>();
         firstNight = true;
+        dayCount = 0;
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             aliveList.Add(player);
         }
+        aliveCount = aliveList.Count;
+
         Invoke("removeDisplayRole", ROLE_PANEL_DURATION);
         Invoke("startGame", GAME_START);
 
@@ -237,9 +242,13 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if ((byte)GameManager.GAME_PHASE.NIGHT == (byte)phase)
         {
+            dayCount += 1;
+
+            Instance.PV.RPC(nameof(RPC_setDayCount), RpcTarget.All, dayCount);
             event_code = GameManager.EVENT_CODE.NIGHT_START;
 
-            game_winner = checkWinCondition();
+            // game_winner = checkWinCondition();
+            game_winner = GameManager.GAME_WINNER.ONGOING;
 
             if (game_winner == GameManager.GAME_WINNER.VILLAGER)
             {
@@ -528,6 +537,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private IEnumerator nightStartSequence(EventData photonEvent)
     {
+
         resetOutsiderCount();
 
         PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer).disableControls(true);
@@ -600,6 +610,10 @@ public class GameManager : MonoBehaviourPunCallbacks
                 yield return StartCoroutine(PromptManager.Instance.promptTemporary(player.NickName + " was poisoned after they had a conversation with the mafia last night.", 5f));
                 yield return StartCoroutine(PromptManager.Instance.promptTemporary("The mafia lurked in the shadows and passed a night without killing a villager.", 5f));
                 aliveList.Remove(player);
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    PV.RPC(nameof(RPC_setAliveCount), RpcTarget.All, aliveList.Count);
+                }
             }
             else if (isDead == true && isSaved == true)
             {
@@ -784,4 +798,15 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
+    [PunRPC]
+    private void RPC_setDayCount(int dayCount)
+    {
+        LogManager.Instance.updateDayCount(dayCount);
+    }
+
+    [PunRPC]
+    private void RPC_setAliveCount(int aliveCount)
+    {
+        LogManager.Instance.updateAliveCount(aliveCount);
+    }
 }
