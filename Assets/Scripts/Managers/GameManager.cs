@@ -43,11 +43,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public const int NIGHT_LENGHT = 3; //40 //murder, open door
-    public const int DAY_DISCUSSION_LENGHT = 3; //30 // none
-    public const int DAY_ACCUSE_LENGHT = 3; //20 // accuse icon
-    public const int DAY_ACCUSE_DEFENSE_LENGHT = 3; //20 // none
-    public const int DAY_VOTE_LENGHT = 5; //20 // guilty, not guilty
+    public const int NIGHT_LENGHT = 40; //40 //murder, open door
+    public const int DAY_DISCUSSION_LENGHT = 30; //30 // none
+    public const int DAY_ACCUSE_LENGHT = 20; //20 // accuse icon
+    public const int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20 // none
+    public const int DAY_VOTE_LENGHT = 20; //20 // guilty, not guilty
     public const int ROLE_PANEL_DURATION = 3;
     public const int GAME_START = 3;
 
@@ -147,15 +147,15 @@ public class GameManager : MonoBehaviourPunCallbacks
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
-                if (player.IsMasterClient)
-                {
-                    roleCustomProps.Add("ROLE", "MAFIA");
-                }
-                else
-                {
-                    roleCustomProps.Add("ROLE", "DETECTIVE");
-                }
-                // roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+                // if (player.IsMasterClient)
+                // {
+                //     roleCustomProps.Add("ROLE", "MAFIA");
+                // }
+                // else
+                // {
+                //     roleCustomProps.Add("ROLE", "DETECTIVE");
+                // }
+                roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
                 roleCustomProps.Add("OUTSIDER_COUNT", 0);
@@ -243,6 +243,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         if ((byte)GameManager.GAME_PHASE.NIGHT == (byte)phase)
         {
             dayCount += 1;
+
+            if (dayCount == 1)
+            {
+                PV.RPC(nameof(RPC_setAliveCount), RpcTarget.All, aliveCount);
+            }
 
             Instance.PV.RPC(nameof(RPC_setDayCount), RpcTarget.All, dayCount);
             event_code = GameManager.EVENT_CODE.NIGHT_START;
