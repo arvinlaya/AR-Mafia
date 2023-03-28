@@ -112,6 +112,9 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        //REMOVE AFTER DEBUGGING
+        startGameButtonPublic.SetActive(true);
+
         if (!PhotonNetwork.IsConnected)
         {
             Debug.Log("Connecting to Master");

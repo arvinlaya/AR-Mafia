@@ -94,6 +94,11 @@ public class PlayerController : MonoBehaviourPunCallbacks
                 }
             }
         }
+
+        if (PV.IsMine)
+        {
+
+        }
     }
 
     PhotonView OnClick()
@@ -358,6 +363,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
             gameObject.GetComponentInChildren<Outline>().enabled = true;
             isOutlined = true;
         }
+
+        TooltipManager.Instance.setHoveredData("Player", PV.Owner.NickName);
     }
 
     private void OnMouseExit()
@@ -372,6 +379,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
             gameObject.GetComponentInChildren<Outline>().enabled = false;
             isOutlined = false;
         }
+
+        TooltipManager.Instance.clearHoveredData();
     }
 
     [PunRPC]

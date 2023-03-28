@@ -120,6 +120,8 @@ public class HouseController : MonoBehaviour
             gameObject.GetComponent<Outline>().enabled = true;
             isOutlined = true;
         }
+
+        TooltipManager.Instance.setHoveredData("House", $"{PV.Owner.NickName}'s House");
     }
     private void OnMouseExit()
     {
@@ -128,6 +130,8 @@ public class HouseController : MonoBehaviour
             gameObject.GetComponent<Outline>().enabled = false;
             isOutlined = false;
         }
+
+        TooltipManager.Instance.clearHoveredData();
     }
     private void changePhase()
     {
