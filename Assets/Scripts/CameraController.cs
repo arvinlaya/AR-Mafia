@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    private Vector3 cameraPosition;
+    private Camera camera;
     private float xRotation = 0f;
     private float yRotation = 0f;
     private float sensitivity = 200f;
-
+    private Vector3 cameraPosition;
+    private Vector2 turn;
     [Header("Camera Settings")]
     public float cameraSpeed;
     public bool gameStart;
@@ -26,8 +27,8 @@ public class CameraController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        cameraPosition = this.transform.position;
         gameStart = false;
+        camera = GetComponent<Camera>();
     }
 
     // Update is called once per frame
@@ -35,50 +36,47 @@ public class CameraController : MonoBehaviour
     {
         if (gameStart)
         {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
+            else
+            {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+
             if (!Input.GetKey(KeyCode.LeftShift))
             {
-                float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensitivity;
-                float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensitivity;
-
-                yRotation += mouseX;
-                xRotation -= mouseY;
-
-                transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+                turn.x += Input.GetAxis("Mouse X");
+                turn.y += Input.GetAxis("Mouse Y");
+                transform.localRotation = Quaternion.Euler(-turn.y, turn.x, 0);
             }
 
+            float playerVerticalInput = Input.GetAxis("Vertical") * cameraSpeed;
+            float playerHorizontalInput = Input.GetAxis("Horizontal") * cameraSpeed;
 
-            if (Input.GetKey(KeyCode.W))
-            {
-                Debug.Log("MOVING");
-                cameraPosition.z += cameraSpeed / 30;
-            }
+            Vector3 forward = camera.transform.forward;
+            Vector3 right = camera.transform.right;
 
-            if (Input.GetKey(KeyCode.S))
-            {
-                cameraPosition.z -= cameraSpeed / 30;
-            }
+            Vector3 forwardRelativeVerticalInput = playerVerticalInput * forward;
+            Vector3 forwardRelativeHorizontalInput = playerHorizontalInput * right;
 
-            if (Input.GetKey(KeyCode.A))
-            {
-                cameraPosition.x -= cameraSpeed / 30;
-            }
+            this.transform.position += forwardRelativeVerticalInput + forwardRelativeHorizontalInput;
 
-            if (Input.GetKey(KeyCode.D))
-            {
-                cameraPosition.x += cameraSpeed / 30;
-            }
-
+            cameraPosition.y = 0;
             if (Input.GetKey(KeyCode.Space))
             {
-                cameraPosition.y += cameraSpeed / 40;
+                cameraPosition.y += cameraSpeed;
             }
 
             if (Input.GetKey(KeyCode.LeftControl))
             {
-                cameraPosition.y -= cameraSpeed / 40;
+                cameraPosition.y -= cameraSpeed;
             }
 
-            this.transform.position = cameraPosition;
+            this.transform.position += cameraPosition;
         }
 
     }
