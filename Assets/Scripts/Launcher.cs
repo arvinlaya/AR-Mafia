@@ -33,7 +33,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     //Max player
     //Mali yung description, ito yung "# of players before you can START the game from the Room
-    private const int _maxPlayer = 2;
+    private const int _maxPlayer = 4;
 
     //START GAME
 
