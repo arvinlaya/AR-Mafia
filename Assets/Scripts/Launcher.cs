@@ -27,7 +27,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     private bool isPrivate = false;
     //[SerializeField] TMP_InputField privateRoomNameInputField;
     [SerializeField] Transform playerListContentPrivate;
-    private const int joinPrivateCodeLength = 3;
+    private const int joinPrivateCodeLength = 5;
 
     //PlayerList
 
