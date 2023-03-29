@@ -270,7 +270,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             MenuManager.Instance.OpenMenu("room");
             Debug.Log(PhotonNetwork.CurrentRoom.Name + "OnJoinedRoom() (Public)");
-            roomNameText.text = "Room: " + PhotonNetwork.CurrentRoom.Name;
+            roomNameText.text = PhotonNetwork.CurrentRoom.Name;
             publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
 
             if (PhotonNetwork.LocalPlayer != PhotonNetwork.MasterClient)

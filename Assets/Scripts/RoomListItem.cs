@@ -19,7 +19,7 @@ public class RoomListItem : MonoBehaviour
     public void SetUp(RoomInfo _info)
     {
         info = _info;
-        text.text = "Room " + _info.Name;
+        text.text = _info.Name;
         player_Count.text = _info.PlayerCount + "/8";
     }
 
