@@ -32,7 +32,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     //PlayerList
 
     //Max player
-    private const int _maxPlayer = 8;
+    //Mali yung description, ito yung "# of players before you can START the game from the Room
+    private const int _maxPlayer = 2;
 
     //START GAME
 
@@ -177,7 +178,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             ignModal.gameObject.SetActive(false);
 
-            string nickname = ignInputField.text.ToUpper();
+            string nickname = ignInputField.text;
 
             //show in the middle ign display after setting
             ignInputField_notModal.text = nickname;
