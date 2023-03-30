@@ -252,8 +252,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             Instance.PV.RPC(nameof(RPC_setDayCount), RpcTarget.All, dayCount);
             event_code = GameManager.EVENT_CODE.NIGHT_START;
 
-            // game_winner = checkWinCondition();
-            game_winner = GameManager.GAME_WINNER.ONGOING;
+            game_winner = checkWinCondition();
+            // game_winner = GameManager.GAME_WINNER.ONGOING;
 
             if (game_winner == GameManager.GAME_WINNER.VILLAGER)
             {
@@ -417,7 +417,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     private void RefreshTimer_R(object data)
     {
         currentTime = (int)data;
-        CooldownManager.Instance.doorCooldownCheck(currentTime);
+        if (CooldownManager.Instance.getIsDoorCooldown())
+        {
+            CooldownManager.Instance.doorCooldownCheck(currentTime);
+        }
         RefreshTimerUI();
 
         if (currentTime == 5)
