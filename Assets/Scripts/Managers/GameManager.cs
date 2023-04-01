@@ -325,8 +325,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
 
         InitializeTimer((byte)phase);
-
-        CameraController.Instance.gameStart = true;
     }
 
     private void InitializeTimer(byte phase)

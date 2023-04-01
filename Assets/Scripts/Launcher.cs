@@ -27,13 +27,13 @@ public class Launcher : MonoBehaviourPunCallbacks
     private bool isPrivate = false;
     //[SerializeField] TMP_InputField privateRoomNameInputField;
     [SerializeField] Transform playerListContentPrivate;
-    private const int joinPrivateCodeLength = 3;
+    private const int joinPrivateCodeLength = 5;
 
     //PlayerList
 
     //Max player
-    private const int _maxPlayer = 8;
-
+    //Mali yung description, ito yung "# of players before you can START the game from the Room
+    private const int _maxPlayer = 5;
     //START GAME
 
     //change to "Host can start" when min is met
@@ -177,7 +177,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             ignModal.gameObject.SetActive(false);
 
-            string nickname = ignInputField.text.ToUpper();
+            string nickname = ignInputField.text;
 
             //show in the middle ign display after setting
             ignInputField_notModal.text = nickname;
@@ -269,7 +269,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             MenuManager.Instance.OpenMenu("room");
             Debug.Log(PhotonNetwork.CurrentRoom.Name + "OnJoinedRoom() (Public)");
-            roomNameText.text = "Room: " + PhotonNetwork.CurrentRoom.Name;
+            roomNameText.text = PhotonNetwork.CurrentRoom.Name;
             publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
 
             if (PhotonNetwork.LocalPlayer != PhotonNetwork.MasterClient)
