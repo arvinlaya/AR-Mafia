@@ -14,7 +14,6 @@ public class LogManager : MonoBehaviour
     [SerializeField] public GameObject log;
     [SerializeField] public GameObject scrollView;
     [SerializeField] public GameObject scrollBar;
-
     void Awake()
     {
         if (Instance)

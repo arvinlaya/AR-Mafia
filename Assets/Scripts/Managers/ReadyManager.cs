@@ -34,33 +34,27 @@ public class ReadyManager : MonoBehaviour
 
     public void setReady(bool state)
     {
-        if (state == true)
-        {
-            PV.RPC(nameof(RPC_setReady), RpcTarget.MasterClient);
-        }
+        PV.RPC(nameof(RPC_setReady), RpcTarget.MasterClient, state);
     }
 
     [PunRPC]
-    public void RPC_setReady()
+    public void RPC_setReady(bool state)
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            currentReady += 1;
+            currentReady += state ? 1 : -1;
 
             if (currentReady == requiredReady)
             {
-                setIsAllReady(true);
+                PV.RPC(nameof(RPC_setIsAllReady), RpcTarget.All, true);
             }
         }
     }
 
     public void resetReady()
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            currentReady = 0;
-            setIsAllReady(false);
-        }
+        currentReady = 0;
+        isAllReady = false;
     }
 
     public bool getIsAllReady()
@@ -68,7 +62,8 @@ public class ReadyManager : MonoBehaviour
         return isAllReady;
     }
 
-    private void setIsAllReady(bool state)
+    [PunRPC]
+    private void RPC_setIsAllReady(bool state)
     {
         isAllReady = state;
     }

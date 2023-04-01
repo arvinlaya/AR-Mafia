@@ -43,11 +43,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public const int NIGHT_LENGHT = 40; //40 //murder, open door
-    public const int DAY_DISCUSSION_LENGHT = 30; //30 // none
-    public const int DAY_ACCUSE_LENGHT = 20; //20 // accuse icon
-    public const int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20 // none
-    public const int DAY_VOTE_LENGHT = 20; //20 // guilty, not guilty
+    public const int NIGHT_LENGHT = 5; //40 //murder, open door
+    public const int DAY_DISCUSSION_LENGHT = 5; //30 // none
+    public const int DAY_ACCUSE_LENGHT = 5; //20 // accuse icon
+    public const int DAY_ACCUSE_DEFENSE_LENGHT = 5; //20 // none
+    public const int DAY_VOTE_LENGHT = 5; //20 // guilty, not guilty
     public const int ROLE_PANEL_DURATION = 3;
     public const int GAME_START = 3;
 
@@ -65,7 +65,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     private bool firstNight;
     private int dayCount;
     private int aliveCount;
-
     void Awake()
     {
 
@@ -247,7 +246,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 PV.RPC(nameof(RPC_setAliveCount), RpcTarget.All, aliveCount);
             }
 
-            Instance.PV.RPC(nameof(RPC_setDayCount), RpcTarget.All, dayCount);
+            Instance.PV.RPC(nameof(RPC_setDayCount), RpcTarget.All, dayCount, (byte)phase);
             event_code = GameManager.EVENT_CODE.NIGHT_START;
 
             // game_winner = checkWinCondition();
@@ -301,8 +300,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer).disableControls(false);
         }
 
-        ReadyManager.Instance.setReady(true);
-
         if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.NIGHT)
         {
             DayCycleManager.Instance.setDayState(DayCycleManager.DAY_STATE.NIGHT);
@@ -318,16 +315,17 @@ public class GameManager : MonoBehaviourPunCallbacks
             DayCycleManager.Instance.setDayState(DayCycleManager.DAY_STATE.DAY);
         }
 
+        ReadyManager.Instance.setReady(true);
         yield return new WaitUntil(() => ReadyManager.Instance.getIsAllReady());
-
-
+        yield return StartCoroutine(UIManager.Instance.setGamePhase((byte)phase));
 
         InitializeTimer((byte)phase);
+
+        ReadyManager.Instance.resetReady();
     }
 
     private void InitializeTimer(byte phase)
     {
-        UIManager.Instance.setGamePhase(phase);
 
         if (phase == (byte)GameManager.GAME_PHASE.NIGHT)
         {
@@ -541,20 +539,29 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void startGame()
     {
-        Instance.PV = GetComponent<PhotonView>();
-
         if (PhotonNetwork.IsMasterClient)
         {
-            SetPhase_S(GameManager.GAME_PHASE.NIGHT);
+            SetPhase_S(phase: GameManager.GAME_PHASE.NIGHT);
         }
     }
     private IEnumerator nightStartSequence(EventData photonEvent)
     {
-
+        if (firstNight)
+        {
+            if (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString().Trim() == "MAFIA")
+            {
+                yield return StartCoroutine(PromptManager.Instance.revealPreRoleMafia());
+            }
+            else
+            {
+                yield return StartCoroutine(PromptManager.Instance.revealPreRoleVillager());
+            }
+        }
         resetOutsiderCount();
 
         PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer).disableControls(true);
 
+        StartCoroutine(PromptManager.Instance.promptRoleMessage((string)PhotonNetwork.LocalPlayer.CustomProperties["ROLE"], getMafiaCount()));
         yield return new WaitForSeconds(1f);
 
         int guiltyVotes = VoteManager.Instance.getGuiltyVotes();
@@ -612,30 +619,40 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         yield return new WaitForSeconds(2f);
 
+        List<Player> targetedPlayers = new List<Player>();
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             bool isDead = (bool)player.CustomProperties["IS_DEAD"];
             bool isSaved = (bool)player.CustomProperties["IS_SAVED"];
 
-            if (isDead == true && isSaved == false)
+            if (isDead == true)
             {
-                yield return StartCoroutine(PlayerManager.getPlayerController(player).dieSequence());
-                yield return StartCoroutine(PromptManager.Instance.promptWithDelay(player.NickName + " was poisoned after they had a conversation with the mafia last night.", 5f));
-                aliveList.Remove(player);
-                if (PhotonNetwork.IsMasterClient)
-                {
-                    PV.RPC(nameof(RPC_setAliveCount), RpcTarget.All, aliveList.Count);
-                }
+                targetedPlayers.Add(player);
             }
-            else if (isDead == true && isSaved == true)
-            {
-                yield return StartCoroutine(PromptManager.Instance.promptWithDelay("The <color=\"blue\">doctor</color> successfully saved the <color=\"red\">mafia's target</color>", 5f));
-                player.SetCustomProperties(new Hashtable() { { "IS_SAVED", false } });
-                player.SetCustomProperties(new Hashtable() { { "IS_DEAD", false } });
-            }
-            else if (isDead == false && isSaved == true)
+            else if (isSaved == true)
             {
                 player.SetCustomProperties(new Hashtable() { { "IS_SAVED", false } });
+            }
+        }
+
+        if (targetedPlayers.Count != 1)
+        {
+            yield return StartCoroutine(PromptManager.Instance.alertPromptWithDelay("The mafia(s) got disorganized and the murder attempt failed.", 5f));
+        }
+        else if ((bool)targetedPlayers[0].CustomProperties["IS_SAVED"] == true)
+        {
+            yield return StartCoroutine(PromptManager.Instance.alertPromptWithDelay("The <color=\"blue\">doctor</color> successfully saved the <color=\"red\">mafia's target</color>", 5f));
+            targetedPlayers[0].SetCustomProperties(new Hashtable() { { "IS_SAVED", false } });
+            targetedPlayers[0].SetCustomProperties(new Hashtable() { { "IS_DEAD", false } });
+        }
+        else
+        {
+            yield return StartCoroutine(PlayerManager.getPlayerController(targetedPlayers[0]).dieSequence());
+            yield return StartCoroutine(PromptManager.Instance.alertPromptWithDelay(targetedPlayers[0].NickName + " was poisoned after they had a conversation with the mafia last night.", 5f));
+            aliveList.Remove(targetedPlayers[0]);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                PV.RPC(nameof(RPC_setAliveCount), RpcTarget.All, aliveList.Count);
             }
         }
 
@@ -670,12 +687,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer).disableControls(true);
 
         yield return new WaitForSeconds(1f);
-
-        Dictionary<Player, int> playerAccuseVotes = VoteManager.Instance.getPlayerAccuseVotes();
-        if (playerAccuseVotes.Count > 0)
-        {
-            yield return StartCoroutine(PromptManager.Instance.promptAccuseVotes(playerAccuseVotes, 5f));
-        }
 
         openAllDoors();
 
@@ -717,22 +728,9 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private GameManager.GAME_WINNER checkWinCondition()
     {
-        int mafiaCount = 0;
+        int mafiaCount = getMafiaCount();
         int villagerCount = 0;
         string role;
-        foreach (Player player in aliveList)
-        {
-            role = (string)player.CustomProperties["ROLE"];
-
-            if (role.Trim() == "MAFIA")
-            {
-                mafiaCount++;
-            }
-            else
-            {
-                villagerCount++;
-            }
-        }
 
         if (mafiaCount <= 0)
         {
@@ -812,14 +810,29 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void RPC_setDayCount(int dayCount)
+    private void RPC_setDayCount(int dayCount, byte phase)
     {
-        UIManager.Instance.setDayCount(dayCount);
+        UIManager.Instance.setDayCount(dayCount, phase);
     }
 
     [PunRPC]
     private void RPC_setAliveCount(int aliveCount)
     {
         UIManager.Instance.setAliveCount(aliveCount);
+    }
+
+    private int getMafiaCount()
+    {
+        int mafiaCount = 0;
+
+        foreach (Player player in aliveList)
+        {
+            if (player.CustomProperties["ROLE"].ToString().Trim() == "MAFIA")
+            {
+                mafiaCount++;
+            }
+        }
+
+        return mafiaCount;
     }
 }

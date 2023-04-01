@@ -15,5 +15,8 @@ class Doctor : Role
     {
         target.SetCustomProperties(new Hashtable() { { "IS_SAVED", true } });
         LogManager.Instance.addDoctorAction(PhotonNetwork.LocalPlayer.NickName, target.NickName);
+
+        HouseController targetHouse = PlayerManager.getPlayerHouseController(target);
+        PromptManager.Instance.callActionReveal("DOCTOR", target.NickName, targetHouse.gameObject.transform);
     }
 }

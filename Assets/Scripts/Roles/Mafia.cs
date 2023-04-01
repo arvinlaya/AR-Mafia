@@ -16,5 +16,8 @@ class Mafia : Role
     {
         target.SetCustomProperties(new Hashtable() { { "IS_DEAD", true } });
         LogManager.Instance.addMafiaAction(PhotonNetwork.LocalPlayer.NickName, target.NickName);
+
+        HouseController targetHouse = PlayerManager.getPlayerHouseController(target);
+        PromptManager.Instance.callActionReveal("MAFIA", target.NickName, targetHouse.gameObject.transform);
     }
 }

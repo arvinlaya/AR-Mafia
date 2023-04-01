@@ -35,9 +35,17 @@ public class UIManager : MonoBehaviour
         maxPlayerCount = PhotonNetwork.PlayerList.Length;
     }
 
-    public void setDayCount(int count)
+    public void setDayCount(int count, byte phase)
     {
-        this.dayCount.GetComponent<TMP_Text>().SetText($"DAY {count}");
+        if (phase == (byte)GameManager.GAME_PHASE.NIGHT)
+        {
+            this.dayCount.GetComponent<TMP_Text>().SetText($"NIGHT {count}");
+        }
+        else
+        {
+            this.dayCount.GetComponent<TMP_Text>().SetText($"DAY {count}");
+        }
+
     }
 
     public void setAliveCount(int count)
@@ -45,7 +53,7 @@ public class UIManager : MonoBehaviour
         this.aliveCounter.GetComponent<TMP_Text>().SetText($"{count}/{maxPlayerCount}");
     }
 
-    public void setGamePhase(byte phase)
+    public IEnumerator setGamePhase(byte phase)
     {
         TMP_Text text = this.gamePhase.GetComponent<TMP_Text>();
 
@@ -71,6 +79,8 @@ public class UIManager : MonoBehaviour
                 text.SetText("VOTING");
                 break;
         }
+
+        yield return null;
     }
 
     public void setTime(string time)
