@@ -9,6 +9,10 @@ public class PromptManager : MonoBehaviour
 {
     public static PromptManager Instance;
     private bool promptOn;
+    [SerializeField]
+    private TMP_Text promptHeader;
+    [SerializeField]
+    private CanvasGroup promptHeaderCanvasGroup;
     private GameObject prompt;
     void Awake()
     {
@@ -28,31 +32,20 @@ public class PromptManager : MonoBehaviour
         }
     }
 
-    public IEnumerator promptTemporary(string message, float duration)
+    public IEnumerator promptWithDelay(string message, float delay)
     {
-        resetPrompt();
+        promptHeaderCanvasGroup.alpha = 1;
+        this.promptHeader.SetText(message);
 
-        prompt = Instantiate(ReferenceManager.Instance.prompt, new Vector3(0f, 6f, 0f), Quaternion.identity);
-        promptOn = true;
-        prompt.GetComponent<TextMeshPro>().text = message;
-
-        yield return new WaitForSeconds(duration);
-
-        Destroy(prompt);
-        prompt = null;
-
-        promptOn = false;
+        yield return new WaitForSeconds(delay);
+        promptHeaderCanvasGroup.alpha = 0;
     }
-
-    public IEnumerator promptStay(string message)
+    public IEnumerator promptNoDelay(string message)
     {
-        resetPrompt();
+        promptHeaderCanvasGroup.alpha = 1;
+        this.promptHeader.SetText(message);
 
-        prompt = Instantiate(ReferenceManager.Instance.prompt, new Vector3(0f, 6f, 0f), Quaternion.identity);
-        promptOn = true;
-        prompt.GetComponent<TextMeshPro>().text = message;
-
-        yield return new WaitForSeconds(2f);
+        yield return null;
     }
 
     public IEnumerator promptAccuseVotes(Dictionary<Player, int> playerAccuseVotes, float duration)

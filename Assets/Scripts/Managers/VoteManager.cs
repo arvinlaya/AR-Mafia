@@ -5,6 +5,8 @@ using Photon.Realtime;
 using Photon.Pun;
 using System.Linq;
 using ExitGames.Client.Photon;
+using TMPro;
+
 public class VoteManager : MonoBehaviour
 {
     public bool hasAccuseVoted;
@@ -15,6 +17,10 @@ public class VoteManager : MonoBehaviour
     int innocentVotes;
     private VoteManager.VOTE_CASTED vote_casted;
     private string playerAccused;
+    [SerializeField]
+    public GameObject eliminationVotePrompt;
+    [SerializeField]
+    public GameObject accuseVotePrompt;
     public enum VOTE_CASTED : byte
     {
         NONE,
@@ -179,20 +185,22 @@ public class VoteManager : MonoBehaviour
     public void openAccuseVotePrompt(string playerName)
     {
         playerAccused = playerName;
-        ReferenceManager.Instance.accuseVotePrompt.SetActive(true);
+        accuseVotePrompt.SetActive(true);
+        accuseVotePrompt.GetComponentInChildren<TMP_Text>().SetText($"Accuse {playerName} as Mafia?");
     }
     public void closeAccuseVotePrompt()
     {
-        ReferenceManager.Instance.accuseVotePrompt.SetActive(false);
+        accuseVotePrompt.SetActive(false);
     }
     public void openEliminationVotePrompt()
     {
-        ReferenceManager.Instance.eliminationVotePrompt.SetActive(true);
+        eliminationVotePrompt.SetActive(true);
+        eliminationVotePrompt.GetComponentInChildren<TMP_Text>().SetText($"Accuse {playerAccused} as Mafia?");
     }
 
     public void closeEliminationVotePrompt()
     {
-        ReferenceManager.Instance.eliminationVotePrompt.SetActive(false);
+        eliminationVotePrompt.SetActive(false);
     }
 
     public Dictionary<Player, int> getPlayerAccuseVotes()

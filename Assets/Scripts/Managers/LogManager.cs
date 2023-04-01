@@ -14,8 +14,6 @@ public class LogManager : MonoBehaviour
     [SerializeField] public GameObject log;
     [SerializeField] public GameObject scrollView;
     [SerializeField] public GameObject scrollBar;
-    [SerializeField] public TMP_Text aliveCount;
-    [SerializeField] public TMP_Text dayCount;
 
     void Awake()
     {
@@ -120,18 +118,6 @@ public class LogManager : MonoBehaviour
     public void scrollToBottom()
     {
         scrollBar.GetComponent<Scrollbar>().value = 0;
-    }
-
-    public void updateAliveCount(int aliveCount)
-    {
-        string message = $"Remaining Players: {aliveCount}";
-        this.aliveCount.SetText(message);
-    }
-
-    public void updateDayCount(int dayCount)
-    {
-        string message = $"Day {dayCount}";
-        this.dayCount.SetText(message);
     }
 
 }

@@ -54,7 +54,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     public GAME_PHASE GAME_STATE = GAME_PHASE.NIGHT;
     PhotonView PV;
     Role[] roles;
-    TMP_Text uiTimer;
     public event Action OnPhaseChange;
     int openDoorCastTime;
     int abilityCastTime;
@@ -83,7 +82,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         ReadyManager.Instance.setRequiredReady(PhotonNetwork.PlayerList.Count());
         CooldownManager.Instance.setDoorCooldown(false);
         CooldownManager.Instance.setSkillCooldown(false);
-        Instance.uiTimer = ReferenceManager.Instance.UITimer;
         Instance.PV = Instance.gameObject.GetComponent<PhotonView>();
         aliveList = new List<Player>();
         firstNight = true;
@@ -252,8 +250,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             Instance.PV.RPC(nameof(RPC_setDayCount), RpcTarget.All, dayCount);
             event_code = GameManager.EVENT_CODE.NIGHT_START;
 
-            game_winner = checkWinCondition();
-            // game_winner = GameManager.GAME_WINNER.ONGOING;
+            // game_winner = checkWinCondition();
+            game_winner = GameManager.GAME_WINNER.ONGOING;
 
             if (game_winner == GameManager.GAME_WINNER.VILLAGER)
             {
@@ -329,6 +327,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void InitializeTimer(byte phase)
     {
+        UIManager.Instance.setGamePhase(phase);
+
         if (phase == (byte)GameManager.GAME_PHASE.NIGHT)
         {
             CooldownManager.Instance.setDoorCooldown(false);
@@ -366,6 +366,11 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         currentTime -= 1;
 
+        if (PhotonNetwork.IsMasterClient)
+        {
+            RefreshTimer_S(currentTime);
+        }
+
         if (currentTime <= 0)
         {
             timerCoroutine = null;
@@ -396,17 +401,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            if (PhotonNetwork.IsMasterClient)
-            {
-                RefreshTimer_S(currentTime);
-            }
             timerCoroutine = StartCoroutine(Timer());
-
         }
-    }
-    private void RefreshTimerUI()
-    {
-        uiTimer.text = currentTime.ToString("00");
     }
     private void RefreshTimer_S(object data)
     {
@@ -421,7 +417,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             CooldownManager.Instance.doorCooldownCheck(currentTime);
         }
-        RefreshTimerUI();
+        UIManager.Instance.setTime(currentTime.ToString("00"));
 
         if (currentTime == 5)
         {
@@ -510,28 +506,37 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void activateDisplayRole(string role)
     {
+        int players = aliveCount <= 5 ? 5 : aliveCount;
+        int indexOffset = 4;
+
         switch (role)
         {
             case "VILLAGER":
-                ReferenceManager.Instance.rolePanels[0].SetActive(true);
+                ReferenceManager.Instance.villagerPanels[0].SetActive(true);
+                ReferenceManager.Instance.villagerPanels[players - indexOffset].SetActive(true);
                 break;
 
             case "DOCTOR":
-                ReferenceManager.Instance.rolePanels[1].SetActive(true);
+                ReferenceManager.Instance.doctorPanels[0].SetActive(true);
+                ReferenceManager.Instance.doctorPanels[players - indexOffset].SetActive(true);
                 break;
 
             case "MAFIA":
-                ReferenceManager.Instance.rolePanels[2].SetActive(true);
+                ReferenceManager.Instance.mafiaPanels[0].SetActive(true);
+                ReferenceManager.Instance.mafiaPanels[players - indexOffset].SetActive(true);
                 break;
 
             case "DETECTIVE":
-                ReferenceManager.Instance.rolePanels[3].SetActive(true);
+                ReferenceManager.Instance.detectivePanels[0].SetActive(true);
+                ReferenceManager.Instance.detectivePanels[players - indexOffset].SetActive(true);
                 break;
         }
     }
     private void removeDisplayRole()
     {
         Destroy(ReferenceManager.Instance.panelParent);
+
+        ReferenceManager.Instance.hideableUI.alpha = 1;
     }
 
     private void startGame()
@@ -566,11 +571,11 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 yield return StartCoroutine(PlayerManager.getPlayerController(highestAccusedPlayer).guiltySequence());
                 yield return new WaitForSeconds(2f);
-                yield return StartCoroutine(PromptManager.Instance.promptTemporary("The village agreed that " + highestAccusedPlayer.NickName + " is the murderer.", 5f));
+                yield return StartCoroutine(PromptManager.Instance.promptWithDelay("The village agreed that " + highestAccusedPlayer.NickName + " is the murderer.", 5f));
             }
             else
             {
-                yield return StartCoroutine(PromptManager.Instance.promptTemporary("The village agreed that " + highestAccusedPlayer.NickName + " is innocent.", 5f));
+                yield return StartCoroutine(PromptManager.Instance.promptWithDelay("The village agreed that " + highestAccusedPlayer.NickName + " is innocent.", 5f));
                 yield return StartCoroutine(PlayerManager.getPlayerController(highestAccusedPlayer).goBackToHouseSequence());
             }
         }
@@ -615,8 +620,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (isDead == true && isSaved == false)
             {
                 yield return StartCoroutine(PlayerManager.getPlayerController(player).dieSequence());
-                yield return StartCoroutine(PromptManager.Instance.promptTemporary(player.NickName + " was poisoned after they had a conversation with the mafia last night.", 5f));
-                yield return StartCoroutine(PromptManager.Instance.promptTemporary("The mafia lurked in the shadows and passed a night without killing a villager.", 5f));
+                yield return StartCoroutine(PromptManager.Instance.promptWithDelay(player.NickName + " was poisoned after they had a conversation with the mafia last night.", 5f));
                 aliveList.Remove(player);
                 if (PhotonNetwork.IsMasterClient)
                 {
@@ -625,7 +629,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
             else if (isDead == true && isSaved == true)
             {
-                yield return StartCoroutine(PromptManager.Instance.promptTemporary("The <color=\"blue\">doctor</color> successfully saved the <color=\"red\">mafia's target</color>", 5f));
+                yield return StartCoroutine(PromptManager.Instance.promptWithDelay("The <color=\"blue\">doctor</color> successfully saved the <color=\"red\">mafia's target</color>", 5f));
                 player.SetCustomProperties(new Hashtable() { { "IS_SAVED", false } });
                 player.SetCustomProperties(new Hashtable() { { "IS_DEAD", false } });
             }
@@ -635,7 +639,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-        yield return StartCoroutine(PromptManager.Instance.promptStay("The village woke up and will start discussing about the event that occured last night."));
+        yield return StartCoroutine(PromptManager.Instance.promptNoDelay("Want to claim a role? Accuse someone? Confess? <b>Do that now!<b>"));
 
         yield return StartCoroutine(SetPhase_R((object)photonEvent.CustomData));
 
@@ -653,7 +657,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         yield return new WaitForSeconds(2f);
 
-        yield return StartCoroutine(PromptManager.Instance.promptStay("The village will now start voting who they think is the mafia.\n\nMinimum votes required: 2"));
+        yield return StartCoroutine(PromptManager.Instance.promptNoDelay("Now it is time to nominate someone!\n<b>Select a player and cast your vote.<b>\n<b><color=\"red\">Minimum votes required: 2</color>"));
 
         yield return StartCoroutine(SetPhase_R((object)photonEvent.CustomData));
 
@@ -682,16 +686,16 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             highestAccusedPlayer = highestAccusedPlayerDict.ElementAt(0).Key;
             yield return StartCoroutine(PlayerManager.getPlayerController(highestAccusedPlayer).accusedSequence());
-            yield return StartCoroutine(PromptManager.Instance.promptTemporary(highestAccusedPlayer.NickName + " is accused as the murderer in the village.", 5f));
-            yield return StartCoroutine(PromptManager.Instance.promptStay(highestAccusedPlayer.NickName + " will now have to convince the villager that he/she is innocent."));
+            yield return StartCoroutine(PromptManager.Instance.promptWithDelay(highestAccusedPlayer.NickName + " is accused as the murderer in the village.", 5f));
+            yield return StartCoroutine(PromptManager.Instance.promptNoDelay(highestAccusedPlayer.NickName + " has been called to the stand.\n<b>How do you plea " + highestAccusedPlayer.NickName + "?"));
             yield return StartCoroutine(SetPhase_R((object)photonEvent.CustomData));
 
             yield return new WaitForSeconds(2f);
         }
         else
         {
-            yield return StartCoroutine(PromptManager.Instance.promptTemporary("The village did not agreed upon who they think is the mafia.", 5f));
-            yield return StartCoroutine(PromptManager.Instance.promptStay("The village will proceed to sleep another night."));
+            yield return StartCoroutine(PromptManager.Instance.promptWithDelay("The village did not agreed upon who they think is the mafia.", 5f));
+            yield return StartCoroutine(PromptManager.Instance.promptNoDelay("The village will proceed to sleep another night."));
             if (PhotonNetwork.IsMasterClient)
             {
                 SetPhase_S(GameManager.GAME_PHASE.NIGHT);
@@ -705,7 +709,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         yield return new WaitForSeconds(1f);
 
-        yield return StartCoroutine(PromptManager.Instance.promptTemporary("The village will now make a decision if " + highestAccusedPlayer + " is guilty of the charges", 5f));
+        yield return StartCoroutine(PromptManager.Instance.promptWithDelay("The village will now make a decision if " + highestAccusedPlayer + " is guilty of the charges", 5f));
+        yield return StartCoroutine(PromptManager.Instance.promptWithDelay("It is judgement time! " + highestAccusedPlayer.NickName + "has been accused.\n<b>Press " + highestAccusedPlayer.NickName + " to cast your vote</b>", 5f));
 
         yield return StartCoroutine(SetPhase_R((object)photonEvent.CustomData));
     }
@@ -809,12 +814,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_setDayCount(int dayCount)
     {
-        LogManager.Instance.updateDayCount(dayCount);
+        UIManager.Instance.setDayCount(dayCount);
     }
 
     [PunRPC]
     private void RPC_setAliveCount(int aliveCount)
     {
-        LogManager.Instance.updateAliveCount(aliveCount);
+        UIManager.Instance.setAliveCount(aliveCount);
     }
 }
