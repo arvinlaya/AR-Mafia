@@ -214,7 +214,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             ignModal.gameObject.SetActive(false);
 
-            string nickname = updatedName.ToUpper();
+            string nickname = updatedName;
 
             //show in the middle ign display after setting
             updatedName = nickname;
