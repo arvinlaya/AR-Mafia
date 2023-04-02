@@ -36,7 +36,6 @@ public class ReferenceManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        DontDestroyOnLoad(gameObject);
         Instance = this;
     }
 

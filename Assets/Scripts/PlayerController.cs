@@ -140,6 +140,17 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_OnSetRole(string role, string targetName)
     {
+        if (PV.IsMine)
+        {
+            int childrenCount = transform.childCount;
+
+            for (int x = childrenCount - 1; x >= 0; x--)
+            {
+                DestroyImmediate(transform.GetChild(x).gameObject);
+            }
+        }
+
+
         object[] data = { (FindObjectsOfType<PlayerController>().FirstOrDefault(x => x.PV.Owner.NickName == targetName)).GetComponent<PhotonView>().ViewID };
 
         GameObject model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Base"), transform.position, Quaternion.identity, 0, data);

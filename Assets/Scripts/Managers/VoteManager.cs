@@ -17,8 +17,7 @@ public class VoteManager : MonoBehaviour
     int innocentVotes;
     private VoteManager.VOTE_CASTED vote_casted;
     private string playerAccused;
-    private List<Player> guiltyVoter;
-    private List<Player> innocentVoter;
+    private Dictionary<Player, string> playerVote;
     [SerializeField] public GameObject eliminationVotePrompt;
     [SerializeField] public GameObject eliminationVoteResults;
     [SerializeField] public TMP_Text eliminationHeader;
@@ -39,7 +38,6 @@ public class VoteManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        DontDestroyOnLoad(gameObject);
         Instance = this;
     }
     void Start()
@@ -48,8 +46,7 @@ public class VoteManager : MonoBehaviour
         hasAccuseVoted = false;
         hasEliminationVoted = false;
         vote_casted = VOTE_CASTED.NONE;
-        guiltyVoter = new List<Player>();
-        innocentVoter = new List<Player>();
+        playerVote = new Dictionary<Player, string>();
     }
 
     public void castAccuseVote_S()
@@ -59,13 +56,14 @@ public class VoteManager : MonoBehaviour
             return;
         }
         hasAccuseVoted = true;
-        closeAccuseVotePrompt();
         PhotonNetwork.RaiseEvent((byte)GameManager.EVENT_CODE.CAST_ACCUSE_VOTE, playerAccused,
                                     new RaiseEventOptions
                                     {
                                         Receivers = ReceiverGroup.All
                                     },
                                     new SendOptions { Reliability = true });
+
+        closeAccuseVotePrompt();
     }
     public void castAccuseVote_R(string playerName)
     {
@@ -86,7 +84,7 @@ public class VoteManager : MonoBehaviour
 
     public void castEliminationVote_S(string newVoteCastedString)
     {
-        closeEliminationVotePrompt();
+        string sourceName = PhotonNetwork.LocalPlayer.NickName;
         newVoteCastedString = newVoteCastedString.Trim();
         VOTE_CASTED newVoteCasted = VOTE_CASTED.NONE;
         VOTE_CASTED previousVoteCasted = vote_casted;
@@ -105,7 +103,7 @@ public class VoteManager : MonoBehaviour
         }
 
         vote_casted = newVoteCasted;
-        object[] content = new object[] { previousVoteCasted, newVoteCasted };
+        object[] content = new object[] { previousVoteCasted, newVoteCasted, sourceName };
 
         if (previousVoteCasted == newVoteCasted)
         {
@@ -118,32 +116,47 @@ public class VoteManager : MonoBehaviour
                                         Receivers = ReceiverGroup.All
                                     },
                                     new SendOptions { Reliability = true });
+
+        closeEliminationVotePrompt();
     }
 
     // TODO: LIST PLAYER VOTES IN ELIMINATION RESULT
-    public void castEliminationVote_R(VOTE_CASTED previousVoteCasted, VOTE_CASTED newVoteCasted)
+    public void castEliminationVote_R(VOTE_CASTED previousVoteCasted, VOTE_CASTED newVoteCasted, string sourceName)
     {
+        Player source = null;
+        foreach (Player player in GameManager.Instance.getAliveList())
+        {
+            if (sourceName == player.NickName)
+            {
+                source = player;
+                break;
+            }
+        }
 
         if (previousVoteCasted == VOTE_CASTED.NONE)
         {
             if (newVoteCasted == VOTE_CASTED.GUILTY)
             {
                 guiltyVotes += 1;
+                playerVote[source] = "GUILTY";
             }
             else if (newVoteCasted == VOTE_CASTED.INNOCENT)
             {
                 innocentVotes += 1;
+                playerVote[source] = "INNOCENT";
             }
         }
         else if (newVoteCasted == VOTE_CASTED.GUILTY)
         {
             guiltyVotes += 1;
             innocentVotes -= 1;
+            playerVote[source] = "GUILTY";
         }
         else if (newVoteCasted == VOTE_CASTED.INNOCENT)
         {
             innocentVotes += 1;
             guiltyVotes -= 1;
+            playerVote[source] = "INNOCENT";
         }
     }
 
@@ -188,6 +201,7 @@ public class VoteManager : MonoBehaviour
         guiltyVotes = 0;
         innocentVotes = 0;
         vote_casted = VOTE_CASTED.NONE;
+        playerVote.Clear();
     }
 
     public void openAccuseVotePrompt(string playerName)
@@ -224,5 +238,10 @@ public class VoteManager : MonoBehaviour
     public int getInnocentVotes()
     {
         return innocentVotes;
+    }
+
+    public Dictionary<Player, string> getPlayerVote()
+    {
+        return this.playerVote;
     }
 }

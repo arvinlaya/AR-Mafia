@@ -111,17 +111,37 @@ public class PromptManager : MonoBehaviour
         alertPrompt.SetActive(false);
     }
 
-    public IEnumerator promptEliminationVotes(string playerName, int guiltyVotes, int innocentVotes, float duration)
+    public IEnumerator promptEliminationVotes(string playerName, float duration)
     {
-        VoteManager.Instance.eliminationHeader.SetText($"{playerName} vote result:");
-        VoteManager.Instance.eliminationInnocentBody.SetText(innocentVotes.ToString());
-        VoteManager.Instance.eliminationGuiltyBody.SetText(guiltyVotes.ToString());
+        VoteManager.Instance.eliminationVoteResults.SetActive(true);
+
+        VoteManager.Instance.eliminationGuiltyBody.SetText("");
+        VoteManager.Instance.eliminationInnocentBody.SetText("");
+        VoteManager.Instance.eliminationHeader.SetText($"Who found {playerName}:");
+
+        string guiltyMessage = "";
+        string innocentMessage = "";
+        foreach (KeyValuePair<Player, string> entry in VoteManager.Instance.getPlayerVote())
+        {
+            if (entry.Value.Trim() == "GUILTY")
+            {
+                guiltyMessage += $"\n{entry.Key.NickName}";
+            }
+            else
+            {
+                innocentMessage += $"\n{entry.Key.NickName}";
+
+            }
+        }
+        VoteManager.Instance.eliminationGuiltyBody.SetText(guiltyMessage);
+        VoteManager.Instance.eliminationInnocentBody.SetText(innocentMessage);
 
         ReferenceManager.Instance.hideableCanvas.alpha = 1;
 
         yield return new WaitForSeconds(duration);
 
         ReferenceManager.Instance.hideableCanvas.alpha = 0;
+        VoteManager.Instance.eliminationVoteResults.SetActive(false);
 
     }
 

@@ -100,29 +100,18 @@ public class GameManager : MonoBehaviourPunCallbacks
     public override void OnEnable()
     {
         base.OnEnable();
-        PhotonNetwork.NetworkingClient.EventReceived -= OnEvent;
-        PhotonNetwork.NetworkingClient.EventReceived += OnEvent;
+        PhotonNetwork.NetworkingClient.EventReceived -= Instance.OnEvent;
+        PhotonNetwork.NetworkingClient.EventReceived += Instance.OnEvent;
         if (PhotonNetwork.IsMasterClient)
         {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            Debug.Log("ADDED");
+            SceneManager.sceneLoaded += Instance.OnSceneLoad;
         }
     }
 
-    public override void OnDisable()
+    public void OnSceneLoad(Scene scene, LoadSceneMode loadSceneMode)
     {
-        base.OnDisable();
-        PhotonNetwork.NetworkingClient.EventReceived -= OnEvent;
-
-        if (PhotonNetwork.IsMasterClient)
-        {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-        }
-    }
-
-    void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
-    {
-        if (PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient && scene.name == "Game")
         {
             // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
             // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
@@ -158,9 +147,9 @@ public class GameManager : MonoBehaviourPunCallbacks
                 roleCustomProps.Add("OUTSIDER_COUNT", 0);
                 player.SetCustomProperties(roleCustomProps);
                 index++;
+                Debug.Log("ROLE SETROLE SETROLE SETROLE SETROLE SETROLE SETROLE SETROLE SETROLE SET");
             }
         }
-
     }
 
     void generateRoles(int playerCount, out Role[] rolesArray)
@@ -422,7 +411,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             SoundManager.Instance.playGameClip(SoundManager.TIME_ENDING, 0);
         }
     }
-    private void OnEvent(EventData photonEvent)
+    public void OnEvent(EventData photonEvent)
     {
         byte eventCode = photonEvent.Code;
 
@@ -446,7 +435,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         else if (eventCode == (byte)GameManager.EVENT_CODE.CAST_ELIMINATION_VOTE)
         {
             object[] data = (object[])photonEvent.CustomData;
-            VoteManager.Instance.castEliminationVote_R((VoteManager.VOTE_CASTED)data[0], (VoteManager.VOTE_CASTED)data[1]);
+            VoteManager.Instance.castEliminationVote_R((VoteManager.VOTE_CASTED)data[0], (VoteManager.VOTE_CASTED)data[1], (string)data[2]);
         }
         else
         {
@@ -571,7 +560,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             if (guiltyVotes > 0 || innocentVotes > 0)
             {
-                yield return StartCoroutine(PromptManager.Instance.promptEliminationVotes(highestAccusedPlayer.NickName, VoteManager.Instance.getGuiltyVotes(), VoteManager.Instance.getInnocentVotes(), 5f));
+                yield return StartCoroutine(PromptManager.Instance.promptNoDelay($"Vote results for {highestAccusedPlayer.NickName}:"));
+                yield return StartCoroutine(PromptManager.Instance.promptEliminationVotes(highestAccusedPlayer.NickName, 5f));
             }
 
             if (VoteManager.Instance.isGuilty())
@@ -834,5 +824,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
 
         return mafiaCount;
+    }
+
+    public List<Player> getAliveList()
+    {
+        return this.aliveList;
     }
 }

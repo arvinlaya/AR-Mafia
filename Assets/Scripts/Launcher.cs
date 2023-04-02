@@ -67,11 +67,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     [SerializeField] GameObject wasKickedPromt;
 
-    [SerializeField] TMP_Text pre_5_text;
-    [SerializeField] TMP_Text pre_6_text;
-    [SerializeField] TMP_Text pre_7_text;
-    [SerializeField] TMP_Text pre_8_text;
-
     private bool leftNotKicked = true;
 
     private bool gameStarted = false;
@@ -101,11 +96,11 @@ public class Launcher : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
-
         }
 
-        //NOTE: REMOVED waiter, yung sa ingame nalang gagamitin
-        //StartCoroutine(waiter());
+        //NOTE: Wala ng ikot, "loadingMenu" na dinaanan
+        //counrdown
+        // StartCoroutine(waiter());
     }
 
     void Awake()
@@ -426,41 +421,41 @@ public class Launcher : MonoBehaviourPunCallbacks
             startGameButtonPublic.SetActive(PhotonNetwork.IsMasterClient);
     }
 
-    // ! OMIT this, sa ingame nalang gagamitin
-    IEnumerator waiter()
-    {
+    // IEnumerator waiter()
+    // {
 
-        //if (PV.IsMine)
-        int pregameNum = 5;
-        int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
-        if (playerCount > 5 && playerCount !> 8) 
-        {
-            pregameNum = PhotonNetwork.CurrentRoom.PlayerCount;
-        } else
-        {
-            pregameNum = 5;
-        }
+    //     //if (PV.IsMine)
+    //     int pregameNum = 5;
+    //     int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
+    //     if (playerCount > 5 && playerCount! > 8)
+    //     {
+    //         pregameNum = PhotonNetwork.CurrentRoom.PlayerCount;
+    //     }
+    //     else
+    //     {
+    //         pregameNum = 5;
+    //     }
 
-        MenuManager.Instance.OpenMenu("pre-"+ pregameNum.ToString()); //... While testing, ganito muna... "laging sa 5 players..."
+    //     MenuManager.Instance.OpenMenu("pre-" + pregameNum.ToString()); //... While testing, ganito muna... "laging sa 5 players..."
 
-        //yield return new WaitForSeconds(5);
+    //     //yield return new WaitForSeconds(5);
 
-        if (PhotonNetwork.IsMasterClient)
-        {
+    //     if (PhotonNetwork.IsMasterClient)
+    //     {
 
-            byte time_start = 0;
-            for (int i = 5; i > time_start; i--)
-            {
-                pre_5_text.text = "Game begins in " + i + "...";
-                pre_6_text.text = "Game begins in " + i + "...";
-                pre_7_text.text = "Game begins in " + i + "...";
-                pre_8_text.text = "Game begins in " + i + "...";
-                yield return new WaitForSeconds(1.0f);
-            }
+    //         byte time_start = 0;
+    //         for (int i = 5; i > time_start; i--)
+    //         {
+    //             pre_5_text.text = "Game begins in " + i + "...";
+    //             pre_6_text.text = "Game begins in " + i + "...";
+    //             pre_7_text.text = "Game begins in " + i + "...";
+    //             pre_8_text.text = "Game begins in " + i + "...";
+    //             yield return new WaitForSeconds(1.0f);
+    //         }
 
-            PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
-        }
-    }
+    //         PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
+    //     }
+    // }
 
     public void StartGame()
     {
