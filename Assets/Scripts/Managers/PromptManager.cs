@@ -111,29 +111,18 @@ public class PromptManager : MonoBehaviour
         alertPrompt.SetActive(false);
     }
 
-    public IEnumerator promptEliminationVotes(int guiltyVotes, int innocentVotes, float duration)
+    public IEnumerator promptEliminationVotes(string playerName, int guiltyVotes, int innocentVotes, float duration)
     {
-        resetPrompt();
-
-        ReferenceManager.Instance.resultPrompt.SetActive(true);
-        ResultPanel.Instance.resetPrompt();
-
-        ResultPanel.Instance.setHeader("VOTE RESULTS");
-        ResultPanel.Instance.setBody("GUILTY", "INNOCENT");
-        ResultPanel.Instance.setBody($"\n{guiltyVotes}", $"{innocentVotes}");
+        VoteManager.Instance.eliminationHeader.SetText($"{playerName} vote result:");
+        VoteManager.Instance.eliminationInnocentBody.SetText(innocentVotes.ToString());
+        VoteManager.Instance.eliminationGuiltyBody.SetText(guiltyVotes.ToString());
 
         ReferenceManager.Instance.hideableCanvas.alpha = 1;
-        ReferenceManager.Instance.resultPrompt.SetActive(true);
 
         yield return new WaitForSeconds(duration);
 
         ReferenceManager.Instance.hideableCanvas.alpha = 0;
-        ResultPanel.Instance.resetPrompt();
 
-        ReferenceManager.Instance.resultPrompt.SetActive(false);
-
-        prompt = null;
-        promptOn = false;
     }
 
     public IEnumerator roleReveal(string role, Transform houseLocation)
@@ -194,14 +183,5 @@ public class PromptManager : MonoBehaviour
     public void callActionReveal(string role, string targetName, Transform houseLocation)
     {
         StartCoroutine(actionReveal(role, targetName, houseLocation));
-    }
-
-    public void resetPrompt()
-    {
-        if (promptOn == true)
-        {
-            Destroy(prompt);
-        }
-        promptOn = false;
     }
 }

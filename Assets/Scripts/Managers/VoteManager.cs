@@ -17,10 +17,14 @@ public class VoteManager : MonoBehaviour
     int innocentVotes;
     private VoteManager.VOTE_CASTED vote_casted;
     private string playerAccused;
-    [SerializeField]
-    public GameObject eliminationVotePrompt;
-    [SerializeField]
-    public GameObject accuseVotePrompt;
+    private List<Player> guiltyVoter;
+    private List<Player> innocentVoter;
+    [SerializeField] public GameObject eliminationVotePrompt;
+    [SerializeField] public GameObject eliminationVoteResults;
+    [SerializeField] public TMP_Text eliminationHeader;
+    [SerializeField] public TMP_Text eliminationGuiltyBody;
+    [SerializeField] public TMP_Text eliminationInnocentBody;
+    [SerializeField] public GameObject accuseVotePrompt;
     public enum VOTE_CASTED : byte
     {
         NONE,
@@ -44,6 +48,8 @@ public class VoteManager : MonoBehaviour
         hasAccuseVoted = false;
         hasEliminationVoted = false;
         vote_casted = VOTE_CASTED.NONE;
+        guiltyVoter = new List<Player>();
+        innocentVoter = new List<Player>();
     }
 
     public void castAccuseVote_S()
@@ -113,6 +119,8 @@ public class VoteManager : MonoBehaviour
                                     },
                                     new SendOptions { Reliability = true });
     }
+
+    // TODO: LIST PLAYER VOTES IN ELIMINATION RESULT
     public void castEliminationVote_R(VOTE_CASTED previousVoteCasted, VOTE_CASTED newVoteCasted)
     {
 

@@ -567,13 +567,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         int guiltyVotes = VoteManager.Instance.getGuiltyVotes();
         int innocentVotes = VoteManager.Instance.getInnocentVotes();
 
-        if (guiltyVotes > 0 || innocentVotes > 0)
-        {
-            yield return StartCoroutine(PromptManager.Instance.promptEliminationVotes(VoteManager.Instance.getGuiltyVotes(), VoteManager.Instance.getInnocentVotes(), 5f));
-        }
-
         if (highestAccusedPlayer != null)
         {
+            if (guiltyVotes > 0 || innocentVotes > 0)
+            {
+                yield return StartCoroutine(PromptManager.Instance.promptEliminationVotes(highestAccusedPlayer.NickName, VoteManager.Instance.getGuiltyVotes(), VoteManager.Instance.getInnocentVotes(), 5f));
+            }
+
             if (VoteManager.Instance.isGuilty())
             {
                 yield return StartCoroutine(PlayerManager.getPlayerController(highestAccusedPlayer).guiltySequence());
