@@ -98,15 +98,14 @@ public class Launcher : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_StartGame()
     {
-        //if (PhotonNetwork.IsMasterClient)
-        //{
-        //    PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
 
-        //}
+        }
 
-        //NOTE: Wala ng ikot, "loadingMenu" na dinaanan
-        //counrdown
-        StartCoroutine(waiter());
+        //NOTE: REMOVED waiter, yung sa ingame nalang gagamitin
+        //StartCoroutine(waiter());
     }
 
     void Awake()
@@ -427,6 +426,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             startGameButtonPublic.SetActive(PhotonNetwork.IsMasterClient);
     }
 
+    // ! OMIT this, sa ingame nalang gagamitin
     IEnumerator waiter()
     {
 
