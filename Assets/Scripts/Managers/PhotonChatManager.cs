@@ -93,7 +93,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         chatClient.Subscribe(new string[] { myChannelName });
 
         //TODO Gawing "PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("ROLE")" pag 'di na pang demo
-        if (PhotonNetwork.LocalPlayer.NickName.Length > 3) isMafia = true;
+        if (PhotonNetwork.LocalPlayer.NickName.Contains("mf")) isMafia = true;
 
         chatPanel.SetActive(true);
         //if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("ROLE"))
@@ -116,7 +116,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         //if (
         //    PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString() == "MAFIA"
         //    &&
-        //    messages[0].ToString().Contains("(MAFIA)")
+        //    messages[0].toString().Contains("(MAFIA)")
         //    )
         if (
             isMafia

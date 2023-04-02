@@ -68,6 +68,9 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] GameObject wasKickedPromt;
 
     [SerializeField] TMP_Text pre_5_text;
+    [SerializeField] TMP_Text pre_6_text;
+    [SerializeField] TMP_Text pre_7_text;
+    [SerializeField] TMP_Text pre_8_text;
 
     private bool leftNotKicked = true;
 
@@ -95,14 +98,15 @@ public class Launcher : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_StartGame()
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
+        //if (PhotonNetwork.IsMasterClient)
+        //{
+        //    PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
 
-        }
+        //}
 
         //NOTE: Wala ng ikot, "loadingMenu" na dinaanan
-        // StartCoroutine(waiter());
+        //counrdown
+        StartCoroutine(waiter());
     }
 
     void Awake()
@@ -426,18 +430,34 @@ public class Launcher : MonoBehaviourPunCallbacks
     IEnumerator waiter()
     {
 
-        MenuManager.Instance.OpenMenu("pre-5"); //... While testing, ganito muna... "laging sa 5 players..."
-
-        byte time_start = 0;
-        for (int i = 5; i > time_start; i--)
+        //if (PV.IsMine)
+        int pregameNum = 5;
+        int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
+        if (playerCount > 5 && playerCount !> 8) 
         {
-            pre_5_text.text = "Game begins in " + i + "...";
-            yield return new WaitForSeconds(1.0f);
+            pregameNum = PhotonNetwork.CurrentRoom.PlayerCount;
+        } else
+        {
+            pregameNum = 5;
         }
+
+        MenuManager.Instance.OpenMenu("pre-"+ pregameNum.ToString()); //... While testing, ganito muna... "laging sa 5 players..."
+
         //yield return new WaitForSeconds(5);
 
         if (PhotonNetwork.IsMasterClient)
         {
+
+            byte time_start = 0;
+            for (int i = 5; i > time_start; i--)
+            {
+                pre_5_text.text = "Game begins in " + i + "...";
+                pre_6_text.text = "Game begins in " + i + "...";
+                pre_7_text.text = "Game begins in " + i + "...";
+                pre_8_text.text = "Game begins in " + i + "...";
+                yield return new WaitForSeconds(1.0f);
+            }
+
             PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
         }
     }
