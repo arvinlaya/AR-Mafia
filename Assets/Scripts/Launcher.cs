@@ -73,6 +73,10 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     private PhotonView PV;
 
+    //RECONNECTION
+    //ROOM OPTIONS
+    RoomOptions roomOptions = new RoomOptions();
+
     // can be use to improve code in the future
 
     //[PunRPC]
@@ -248,8 +252,11 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void CreateRoom()
     {
+        roomOptions.PlayerTtl = -1;
+        roomOptions.EmptyRoomTtl = 120000; //2 minutes
+
         isPrivate = false;
-        PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"));
+        PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"), roomOptions: roomOptions);
         MenuManager.Instance.OpenMenu("loading");
     }
 
@@ -520,6 +527,9 @@ public class Launcher : MonoBehaviourPunCallbacks
         roomOptions.CustomRoomProperties = new Hashtable() { { "isPrivate", true }, { "password", password } };
         roomOptions.CustomRoomPropertiesForLobby = new string[] { "isPrivate", "password" };
         roomOptions.MaxPlayers = 4;
+
+        roomOptions.PlayerTtl = -1;
+        roomOptions.EmptyRoomTtl = 120000; //2 minutes
 
         PhotonNetwork.CreateRoom(roomName, roomOptions);
 
