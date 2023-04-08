@@ -135,6 +135,8 @@ public class HouseController : MonoBehaviour
     }
     private void changePhase()
     {
+        hideButtonBoth();
+
         if (GameManager.Instance.GAME_STATE != GameManager.GAME_PHASE.NIGHT)
         {
             if (isHidden == false)

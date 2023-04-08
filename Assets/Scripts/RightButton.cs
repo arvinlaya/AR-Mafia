@@ -25,6 +25,8 @@ public class RightButton : MonoBehaviour
         GameManager.Instance.OnPhaseChange += ChangePhase;
         renderer = GetComponent<Renderer>();
         renderer.enabled = true;
+
+        gameObject.SetActive(false);
     }
 
     void ChangePhase()
@@ -99,43 +101,61 @@ public class RightButton : MonoBehaviour
 
     void Skill(string ROLE, Player target)
     {
-        if (CooldownManager.Instance.getIsSkillCooldown() == false)
+
+        if (target != ownerController.isInsideOf)
         {
-            switch (ROLE)
-            {
-                case "VILLAGER":
-                    LogManager.Instance.villagerSkillLog();
-                    break;
-
-                case "DOCTOR":
-                    new Doctor().skill(target);
-                    StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.DOCTOR_SKILL, 0));
-                    CooldownManager.Instance.setSkillCooldown(true);
-                    break;
-
-                case "MAFIA":
-                    new Mafia().skill(target);
-                    StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.MAFIA_SKILL, 0));
-                    CooldownManager.Instance.setSkillCooldown(true);
-                    break;
-
-                case "DETECTIVE":
-                    new Detective().skill(target);
-                    StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.DETECTIVE_SKILL, 0));
-                    CooldownManager.Instance.setSkillCooldown(true);
-                    break;
-
-                default:
-                    Debug.Log("ROLE NOT FOUND...");
-                    break;
-            }
+            LogManager.Instance.invalidAbilityUse(target.NickName);
         }
         else
         {
-            LogManager.Instance.skillCooldown();
+
+            if (CooldownManager.Instance.getIsSkillCooldown() == false)
+            {
+                switch (ROLE)
+                {
+                    case "VILLAGER":
+                        LogManager.Instance.villagerSkillLog();
+                        break;
+
+                    case "DOCTOR":
+                        PlayerController sourcePlayerController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
+                        if (sourcePlayerController.previousSaved != target)
+                        {
+                            new Doctor().skill(target);
+                            StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.DOCTOR_SKILL, 0));
+                            CooldownManager.Instance.setSkillCooldown(true);
+                            sourcePlayerController.previousSaved = target;
+                            sourcePlayerController.nightSaveInterval = 0;
+                        }
+                        else
+                        {
+                            LogManager.Instance.invalidDoctorAbilityUse(target.NickName);
+                        }
+                        break;
+
+                    case "MAFIA":
+                        new Mafia().skill(target);
+                        StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.MAFIA_SKILL, 0));
+                        CooldownManager.Instance.setSkillCooldown(true);
+                        break;
+
+                    case "DETECTIVE":
+                        new Detective().skill(target);
+                        StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.DETECTIVE_SKILL, 0));
+                        CooldownManager.Instance.setSkillCooldown(true);
+                        break;
+
+                    default:
+                        Debug.Log("ROLE NOT FOUND...");
+                        break;
+                }
+            }
+            else
+            {
+                LogManager.Instance.skillCooldown();
+            }
+
         }
-
-
     }
 
     void Vote()

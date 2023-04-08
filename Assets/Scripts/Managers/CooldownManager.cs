@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
 
 public class CooldownManager : MonoBehaviour
 {
     private int doorCastTime;
     private bool isDoorCooldown;
     private bool isSkillCooldown;
+    private PhotonView PV;
     public static CooldownManager Instance;
 
     public static int DOOR_COOLDOWN = 15; //15
@@ -21,6 +24,7 @@ public class CooldownManager : MonoBehaviour
             return;
         }
         Instance = this;
+        PV = gameObject.GetComponent<PhotonView>();
     }
 
     public bool getIsDoorCooldown()

@@ -27,7 +27,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public Animator animator;
     public PhotonAnimatorView animationSync;
     public PhotonTransformView transformSync;
-
+    public Player isInsideOf;
+    public Player previousSaved;
+    public int nightSaveInterval;
     void Awake()
     {
         isSet = false;
@@ -40,7 +42,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
         isOutlined = false;
         playerHouse = PlayerManager.getPlayerHouseController(PV.Owner);
         transformSync = GetComponent<PhotonTransformView>();
-
+        isInsideOf = null;
+        previousSaved = PhotonNetwork.LocalPlayer;
+        nightSaveInterval = 0;
+        disabledControls = true;
     }
 
     void Update()

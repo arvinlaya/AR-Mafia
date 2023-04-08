@@ -23,6 +23,8 @@ public class LeftButton : MonoBehaviour
         GameManager.Instance.OnPhaseChange += ChangePhase;
         renderer = GetComponent<Renderer>();
         renderer.enabled = true;
+
+        gameObject.SetActive(false);
     }
 
     void ChangePhase()
@@ -118,6 +120,8 @@ public class LeftButton : MonoBehaviour
             PlayerController callerController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
             PlayerController ownerController = PlayerManager.getPlayerController(owner);
             callerController.enterHouseSequence(house.PV.ViewID, ownerController.PV.ViewID);
+
+            PlayerManager.getPlayerController(owner).isInsideOf = house.PV.Owner;
         }
         else
         {

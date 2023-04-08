@@ -125,6 +125,26 @@ public class LogManager : MonoBehaviour
         scrollToBottom();
     }
 
+    public void invalidAbilityUse(string target)
+    {
+        string message = $"You must be inside of {target}'s house to use your ability.";
+        GameObject logItem = Instantiate(log, content.transform);
+
+        logItem.GetComponent<TMP_Text>().SetText(message);
+
+        scrollToBottom();
+    }
+
+    public void invalidDoctorAbilityUse(string target)
+    {
+        string message = $"You can't save {target} two nights in a row.";
+        GameObject logItem = Instantiate(log, content.transform);
+
+        logItem.GetComponent<TMP_Text>().SetText(message);
+
+        scrollToBottom();
+    }
+
     public void scrollToBottom()
     {
         scrollBar.GetComponent<Scrollbar>().value = 0;
