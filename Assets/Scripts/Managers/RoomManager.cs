@@ -30,26 +30,24 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
         SceneManager.sceneLoaded += OnSceneLoaded;
+        Debug.Log("ENABLED ONSCENELOADED IN ROOMMANAGER");
     }
 
     public override void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        Debug.Log("DISABLED ONSCENELOADED IN ROOMMANAGER");
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
-        if (PhotonNetwork.IsMasterClient && Instance.isSet == false)
+        if (PhotonNetwork.IsMasterClient)
         {
-
             Instance.PV = GetComponent<PhotonView>();
             if (scene.buildIndex == 1)
             {
-                Instance.isSet = true;
-                foreach (Player player in PhotonNetwork.PlayerList)
-                {
-                    Instance.PV.RPC(nameof(RPC_instantantiatePlayerManager), player);
-                }
+                Debug.Log("CALLED ONSCENELOADED BY MASTERCLIENT");
+                Instance.PV.RPC(nameof(RPC_instantantiatePlayerManager), RpcTarget.All);
             }
         }
 

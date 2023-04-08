@@ -13,8 +13,6 @@ public class SpawnManager : MonoBehaviour
     int playerCount = 5;
     public static SpawnManager Instance;
     int index;
-
-    public bool isSet;
     PhotonView PV;
     [SerializeField] Transform[] PlayerSpawn5;
     [SerializeField] Transform[] PlayerSpawn6;
@@ -33,7 +31,6 @@ public class SpawnManager : MonoBehaviour
             return;
         }
         Instance = this;
-        Instance.isSet = false;
         playerSpawn = new Dictionary<Player, Vector3>();
     }
     // Start is called before the first frame update
@@ -44,24 +41,18 @@ public class SpawnManager : MonoBehaviour
 
     public void SpawnPlayersAndHouses()
     {
-        if (Instance.isSet == false)
+        if (PhotonNetwork.IsMasterClient)
         {
-            if (PhotonNetwork.IsMasterClient)
-            {
-                PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Directional Light"), Vector3.zero, Quaternion.identity);
-            }
-            index = 0;
-            foreach (Player player in PhotonNetwork.PlayerList)
-            {
-                PV.RPC(nameof(RPC_InstantiatePlayer), player, index);
-                PV.RPC(nameof(RPC_InstantiatePlayerSpawnPoints), RpcTarget.All, player.NickName, index);
-
-                index++;
-            }
-            Instance.isSet = true;
+            PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Directional Light"), Vector3.zero, Quaternion.identity);
         }
+        index = 0;
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            PV.RPC(nameof(RPC_InstantiatePlayer), player, index);
+            PV.RPC(nameof(RPC_InstantiatePlayerSpawnPoints), RpcTarget.All, player.NickName, index);
 
-
+            index++;
+        }
     }
 
     Transform[] GetSpawnPoints(int playerCount)

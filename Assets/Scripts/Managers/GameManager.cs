@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public const int NIGHT_LENGHT = 1000; //40 //murder, open door
+    public const int NIGHT_LENGHT = 5; //40 //murder, open door
     public const int DAY_DISCUSSION_LENGHT = 5; //30 // none
     public const int DAY_ACCUSE_LENGHT = 5; //20 // accuse icon
     public const int DAY_ACCUSE_DEFENSE_LENGHT = 5; //20 // none
