@@ -8,7 +8,9 @@ using Photon.Pun;
 public class BurgerManager : MonoBehaviour
 {
     public static BurgerManager Instance;
+    [SerializeField] private GameObject rulesPanel;
     private Animator burgerAnimator;
+    private Animator rulesAnimator;
 
     void Awake()
     {
@@ -19,6 +21,7 @@ public class BurgerManager : MonoBehaviour
         }
         Instance = this;
         burgerAnimator = GetComponent<Animator>();
+        rulesAnimator = rulesPanel.gameObject.GetComponent<Animator>();
     }
     public void openBurgerPanel()
     {
@@ -32,12 +35,20 @@ public class BurgerManager : MonoBehaviour
 
     public void myRole()
     {
-
     }
 
-    public void rules()
+    public void closeMyRole()
     {
+    }
 
+    public void openRules()
+    {
+        rulesAnimator.SetBool("isOpen", true);
+    }
+
+    public void closeRules()
+    {
+        rulesAnimator.SetBool("isOpen", false);
     }
     public void exit()
     {

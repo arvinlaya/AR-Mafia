@@ -228,14 +228,13 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if ((byte)GameManager.GAME_PHASE.NIGHT == (byte)phase)
         {
-            dayCount += 1;
+            Instance.PV.RPC(nameof(RPC_syncDayCount), RpcTarget.All, ++dayCount);
 
             if (dayCount == 1)
             {
                 PV.RPC(nameof(RPC_setAliveCount), RpcTarget.All, aliveCount);
             }
 
-            Instance.PV.RPC(nameof(RPC_setDayCount), RpcTarget.All, dayCount, (byte)phase);
             event_code = GameManager.EVENT_CODE.NIGHT_START;
 
             // game_winner = checkWinCondition();
@@ -305,10 +304,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
 
         ReadyManager.Instance.setReady(true);
+
         yield return new WaitUntil(() => ReadyManager.Instance.getIsAllReady());
         yield return StartCoroutine(UIManager.Instance.setGamePhase((byte)phase));
 
         InitializeTimer((byte)phase);
+
+        UIManager.Instance.setDayCount(dayCount, (byte)phase);
 
         ReadyManager.Instance.resetReady();
     }
@@ -800,9 +802,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void RPC_setDayCount(int dayCount, byte phase)
+    private void RPC_syncDayCount(int dayCount)
     {
-        UIManager.Instance.setDayCount(dayCount, phase);
+        this.dayCount = dayCount;
     }
 
     [PunRPC]
