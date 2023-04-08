@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public const int NIGHT_LENGHT = 5; //40 //murder, open door
+    public const int NIGHT_LENGHT = 1000; //40 //murder, open door
     public const int DAY_DISCUSSION_LENGHT = 5; //30 // none
     public const int DAY_ACCUSE_LENGHT = 5; //20 // accuse icon
     public const int DAY_ACCUSE_DEFENSE_LENGHT = 5; //20 // none
@@ -133,21 +133,20 @@ public class GameManager : MonoBehaviourPunCallbacks
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
-                // if (player.IsMasterClient)
-                // {
-                //     roleCustomProps.Add("ROLE", "MAFIA");
-                // }
-                // else
-                // {
-                //     roleCustomProps.Add("ROLE", "DETECTIVE");
-                // }
-                roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+                if (player.IsMasterClient)
+                {
+                    roleCustomProps.Add("ROLE", "DETECTIVE");
+                }
+                else
+                {
+                    roleCustomProps.Add("ROLE", "VILLAGER");
+                }
+                // roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
                 roleCustomProps.Add("OUTSIDER_COUNT", 0);
                 player.SetCustomProperties(roleCustomProps);
                 index++;
-                Debug.Log("ROLE SETROLE SETROLE SETROLE SETROLE SETROLE SETROLE SETROLE SETROLE SET");
             }
         }
     }

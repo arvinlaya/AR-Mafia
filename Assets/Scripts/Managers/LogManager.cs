@@ -104,6 +104,17 @@ public class LogManager : MonoBehaviour
 
         scrollToBottom();
     }
+
+    public void villagerSkillLog()
+    {
+        string message = $"You don't have a unique ability.";
+        GameObject logItem = Instantiate(log, content.transform);
+
+        logItem.GetComponent<TMP_Text>().SetText(message);
+
+        scrollToBottom();
+    }
+
     public void openDoorCooldown(int remaining)
     {
         string message = $"You must wait <color=\"yellow\">{remaining}</color> seconds to open another door";

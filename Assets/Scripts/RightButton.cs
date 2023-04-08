@@ -101,25 +101,28 @@ public class RightButton : MonoBehaviour
     {
         if (CooldownManager.Instance.getIsSkillCooldown() == false)
         {
-            switch (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"])
+            switch (ROLE)
             {
                 case "VILLAGER":
-                    new Villager().skill(target);
+                    LogManager.Instance.villagerSkillLog();
                     break;
 
                 case "DOCTOR":
                     new Doctor().skill(target);
                     StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.DOCTOR_SKILL, 0));
+                    CooldownManager.Instance.setSkillCooldown(true);
                     break;
 
                 case "MAFIA":
                     new Mafia().skill(target);
                     StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.MAFIA_SKILL, 0));
+                    CooldownManager.Instance.setSkillCooldown(true);
                     break;
 
                 case "DETECTIVE":
                     new Detective().skill(target);
                     StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.DETECTIVE_SKILL, 0));
+                    CooldownManager.Instance.setSkillCooldown(true);
                     break;
 
                 default:
@@ -132,7 +135,6 @@ public class RightButton : MonoBehaviour
             LogManager.Instance.skillCooldown();
         }
 
-        CooldownManager.Instance.setSkillCooldown(true);
 
     }
 
