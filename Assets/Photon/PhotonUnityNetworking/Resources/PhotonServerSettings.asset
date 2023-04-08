@@ -16,7 +16,7 @@ MonoBehaviour:
     AppIdRealtime: 3fd02748-f586-4b68-9ff4-9936cba24ff7
     AppIdFusion: 
     AppIdChat: c6a44251-95b1-4b02-bbfa-32fc5425691b
-    AppIdVoice: 
+    AppIdVoice: eb8171ea-db62-4e6a-8c7c-96b5353f31de
     AppVersion: 
     UseNameServer: 1
     FixedRegion: 
@@ -34,29 +34,25 @@ MonoBehaviour:
   RunInBackground: 1
   StartInOfflineMode: 0
   RpcList:
+  - CantHearYou
+  - ChangeColour
   - ClickRpc
   - DestroyRpc
-  - DestroySpaceship
-  - Fire
-  - RespawnSpaceship
-  - RPC_InstantiatePlayer
-  - RPC_OnSetRole
-  - RPC_instantantiatePlayerManager
-  - RPC_doorEvent
-  - RPC_ShowPreGameMenu
-  - RPC_StartGame
-  - RPC_meWasKicked
-  - RPC_enterHouseSequence
-  - RPC_InstantiatePlayerSpawnPoints
-  - RPC_castAccuseVote
-  - RPC_animationFinished
-  - RPC_setReady
+  - HeresWhy
   - RPC_addMafiaAction
+  - RPC_animationFinished
+  - RPC_enterHouseSequence
+  - RPC_instantantiatePlayerManager
+  - RPC_InstantiatePlayer
+  - RPC_InstantiatePlayerSpawnPoints
+  - RPC_meWasKicked
+  - RPC_OnSetRole
   - RPC_openDoorAction
   - RPC_setAliveCount
-  - RPC_setDayCount
   - RPC_setIsAllReady
+  - RPC_setReady
+  - RPC_StartGame
   - RPC_syncDayCount
   DisableAutoOpenWizard: 1
   ShowSettings: 1
-  DevRegionSetOnce: 1
+  DevRegionSetOnce: 0
