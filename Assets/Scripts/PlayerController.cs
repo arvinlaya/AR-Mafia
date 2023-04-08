@@ -72,9 +72,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
                     {
                         Debug.Log(!hitPV.IsMine);
                         Debug.Log(hitPV.GetComponent<Transform>().tag);
-                        // if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
-                        // {
-                        if (hitPV.GetComponent<Transform>().tag == "Player")
+                        if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
                         {
                             VoteManager.Instance.openAccuseVotePrompt(hitPV.Owner.NickName);
                         }
