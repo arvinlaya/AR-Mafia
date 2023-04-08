@@ -340,12 +340,12 @@ Canvas:
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
-  m_OverrideSorting: 0
+  m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 20000
   m_TargetDisplay: 0
 --- !u!114 &9049507
 MonoBehaviour:
@@ -2542,7 +2542,7 @@ GameObject:
   - component: {fileID: 88896880}
   - component: {fileID: 88896883}
   m_Layer: 2
-  m_Name: Scroll View
+  m_Name: Log View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8720,7 +8720,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71d2cf38816ca1a479550c13149b47e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSet: 0
   PlayerSpawn5:
   - {fileID: 1595980438}
   - {fileID: 610283805}
@@ -13043,12 +13042,12 @@ Canvas:
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
-  m_OverrideSorting: 0
+  m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 20000
   m_TargetDisplay: 0
 --- !u!114 &678384893
 MonoBehaviour:
@@ -15183,8 +15182,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1810210666}
   m_HandleRect: {fileID: 1810210664}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.99033844
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -19408,7 +19407,7 @@ MonoBehaviour:
   - {fileID: 8281500119426396739, guid: 26428844bbeb1b7489582369fe259fbd, type: 3}
   - {fileID: 2404576234227558094, guid: 38fc38d648f30974ea6aa0a7f6abf3f6, type: 3}
   - {fileID: 3637055444842549800, guid: de7a14612690eb64b8d8650224a91fae, type: 3}
-  - {fileID: 2404576234227558094, guid: 38fc38d648f30974ea6aa0a7f6abf3f6, type: 3}
+  - {fileID: 6296791816675146405, guid: 84635c42c81f0424384ca750e8f48604, type: 3}
   victoryVillagerPrompt: {fileID: 0}
   victoryMafiaPrompt: {fileID: 0}
   resultPrompt: {fileID: 0}
@@ -40755,7 +40754,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 600}
+  m_AnchoredPosition: {x: 0, y: 599.9766}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2129579207

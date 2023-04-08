@@ -72,7 +72,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
                     {
                         Debug.Log(!hitPV.IsMine);
                         Debug.Log(hitPV.GetComponent<Transform>().tag);
-                        if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
+                        // if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
+                        // {
+                        if (hitPV.GetComponent<Transform>().tag == "Player")
                         {
                             VoteManager.Instance.openAccuseVotePrompt(hitPV.Owner.NickName);
                         }
@@ -155,7 +157,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         GameObject model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Base"), transform.position, Quaternion.identity, 0, data);
         GameManager.Instance.activateDisplayRole(role);
-
     }
     public void resetPlayerState()
     {
