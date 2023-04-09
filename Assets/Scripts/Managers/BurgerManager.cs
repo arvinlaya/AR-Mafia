@@ -58,6 +58,7 @@ public class BurgerManager : MonoBehaviour
         {
             Debug.Log("REMOVED");
             SceneManager.sceneLoaded -= GameManager.Instance.OnSceneLoad;
+            PhotonNetwork.NetworkingClient.EventReceived -= GameManager.Instance.OnEvent;
         }
 
         Destroy(RoomManager.Instance.gameObject);

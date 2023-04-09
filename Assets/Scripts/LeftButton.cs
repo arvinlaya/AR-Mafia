@@ -119,6 +119,7 @@ public class LeftButton : MonoBehaviour
 
             PlayerController callerController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
             PlayerController ownerController = PlayerManager.getPlayerController(owner);
+
             callerController.enterHouseSequence(house.PV.ViewID, ownerController.PV.ViewID);
 
             PlayerManager.getPlayerController(owner).isInsideOf = house.PV.Owner;

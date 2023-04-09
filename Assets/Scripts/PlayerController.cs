@@ -208,28 +208,31 @@ public class PlayerController : MonoBehaviourPunCallbacks
         HouseController houseController = housePV.GetComponent<HouseController>();
         PlayerController ownerController = ownerPV.GetComponent<PlayerController>();
         Vector3 tempScale = gameObject.transform.localScale;
-        Debug.Log("OUTSIDER COUNT: " + housePV.Owner.CustomProperties["OUTSIDER_COUNT"]);
 
-        if (PV.IsMine)
-        {
-            CustomPropertyWrapper.incrementProperty(housePV.Owner, "OUTSIDER_COUNT", 1);
-        }
+        houseController.outsiderCount += 1;
         if (!PV.IsMine)
         {
             gameObject.transform.localScale = new Vector3(0, 0, 0);
         }
 
-        transform.position = houseController.houseFront.position;
-        yield return StartCoroutine(nameof(moveTo), houseController.ownerFront);
+        if (disabledControls == false)
+        {
+            transform.position = houseController.houseFront.position;
+            yield return StartCoroutine(nameof(moveTo), houseController.ownerFront);
+        }
 
-        gameObject.transform.localScale = tempScale;
+        if (disabledControls == false)
+        {
+            gameObject.transform.localScale = tempScale;
+            yield return StartCoroutine(greetAnimation(ownerController));
+        }
 
-        yield return StartCoroutine(greetAnimation(ownerController));
-
-        Transform outsiderTargetLocation = houseController.outsiderLocation[(int)housePV.Owner.CustomProperties["OUTSIDER_COUNT"] - 1];
-        yield return StartCoroutine(nameof(moveTo), outsiderTargetLocation);
-
-        yield return StartCoroutine(talkAnimation(ownerController));
+        if (disabledControls == false)
+        {
+            Transform outsiderTargetLocation = houseController.outsiderLocation[houseController.outsiderCount - 1];
+            yield return StartCoroutine(nameof(moveTo), outsiderTargetLocation);
+            yield return StartCoroutine(talkAnimation(ownerController));
+        }
     }
 
     public IEnumerator goBackToHouseSequence()

@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public const int NIGHT_LENGHT = 5; //40 //murder, open door
+    public const int NIGHT_LENGHT = 40; //40 //murder, open door
     public const int DAY_DISCUSSION_LENGHT = 2; //30 // none
     public const int DAY_ACCUSE_LENGHT = 2; //20 // accuse icon
     public const int DAY_ACCUSE_DEFENSE_LENGHT = 2; //20 // none
@@ -92,8 +92,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         aliveCount = aliveList.Count;
 
-        Invoke("removeDisplayRole", ROLE_PANEL_DURATION);
-        Invoke("startGame", GAME_START);
+        // Invoke("startGame", GAME_START);
 
     }
 
@@ -106,6 +105,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             Debug.Log("ADDED");
+            SceneManager.sceneLoaded -= Instance.OnSceneLoad;
             SceneManager.sceneLoaded += Instance.OnSceneLoad;
         }
     }
@@ -134,18 +134,17 @@ public class GameManager : MonoBehaviourPunCallbacks
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
-                if (player.IsMasterClient)
-                {
-                    roleCustomProps.Add("ROLE", "DOCTOR");
-                }
-                else
-                {
-                    roleCustomProps.Add("ROLE", "VILLAGER");
-                }
-                // roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+                // if (player.IsMasterClient)
+                // {
+                //     roleCustomProps.Add("ROLE", "DOCTOR");
+                // }
+                // else
+                // {
+                //     roleCustomProps.Add("ROLE", "VILLAGER");
+                // }
+                roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
-                roleCustomProps.Add("OUTSIDER_COUNT", 0);
                 player.SetCustomProperties(roleCustomProps);
                 index++;
             }
@@ -535,18 +534,14 @@ public class GameManager : MonoBehaviourPunCallbacks
                 break;
         }
     }
-    private void removeDisplayRole()
-    {
-        Destroy(ReferenceManager.Instance.panelParent);
 
+    public void startGame()
+    {
         ReferenceManager.Instance.hideableUI.alpha = 1;
-    }
 
-    private void startGame()
-    {
         if (PhotonNetwork.IsMasterClient)
         {
-            SetPhase_S(phase: GameManager.GAME_PHASE.NIGHT);
+            SetPhase_S(GameManager.GAME_PHASE.NIGHT);
         }
     }
     private IEnumerator nightStartSequence(EventData photonEvent)
@@ -811,7 +806,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         foreach (Player player in aliveList)
         {
-            CustomPropertyWrapper.setPropertyInt(player, "OUTSIDER_COUNT", 0);
+            PlayerManager.getPlayerHouseController(player).outsiderCount = 0;
         }
     }
 

@@ -29,6 +29,8 @@ public class HouseController : MonoBehaviour
     private bool isOutlined;
     private bool isHidden;
     private float fadeSpeed = .05f;
+
+    public int outsiderCount;
     void Awake()
     {
         gameObject.tag = "House";
@@ -39,6 +41,7 @@ public class HouseController : MonoBehaviour
         doorRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
         isOutlined = false;
         isHidden = false;
+        outsiderCount = 0;
     }
     // Start is called before the first frame update
     void Start()
