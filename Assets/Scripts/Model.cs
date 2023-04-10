@@ -16,9 +16,8 @@ public class Model : MonoBehaviour, IPunInstantiateMagicCallback
     {
         Debug.Log(PhotonNetwork.LocalPlayer.CustomProperties["ROLE"] + " <----- ROLE IN MODEL");
 
-        PhotonView parentPV = PhotonView.Find((int)info.photonView.InstantiationData[0]);
-
-        PlayerController parentController = parentPV.GetComponent<PlayerController>();
+        // PhotonView parentPV = PhotonView.Find((int)info.photonView.InstantiationData[0]);
+        PlayerController parentController = PlayerManager.getPlayerController(info.Sender);
 
         gameObject.transform.SetParent(parentController.transform);
         gameObject.transform.position = parentController.transform.position;

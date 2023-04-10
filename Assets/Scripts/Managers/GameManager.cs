@@ -542,7 +542,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             SetPhase_S(GameManager.GAME_PHASE.NIGHT);
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable() { { "IS_INSTANTIATED", true } });
         }
+
+
     }
     private IEnumerator nightStartSequence(EventData photonEvent)
     {
