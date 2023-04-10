@@ -384,6 +384,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     //ONLY called when list of rooms change, not specific rooms
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
+        Debug.Log("ROOM CREATED");
+
         foreach (Transform trans in roomListContent)
         {
             Destroy(trans.gameObject);
