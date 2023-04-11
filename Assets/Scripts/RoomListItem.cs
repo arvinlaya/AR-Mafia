@@ -48,7 +48,7 @@ public class RoomListItem : MonoBehaviour
     public void OnClickEnterPrivate()
     {
         string correctKey = (string)info.CustomProperties["password"];
-        string userInput = privateCodeInputField.text;
+        string userInput = privateCodeInputField.text.ToLower();
 
         Debug.Log("RoomListItem Enter Private: ");
         Debug.Log("Match?: " + correctKey + "," + userInput);

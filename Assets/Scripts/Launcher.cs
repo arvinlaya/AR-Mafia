@@ -478,6 +478,12 @@ public class Launcher : MonoBehaviourPunCallbacks
     //     }
     // }
 
+    public void ManualRefreshRoomList()
+{
+
+        //Create invisible rooms?
+}
+
     public void StartGame()
     {
         if (PhotonNetwork.IsMasterClient)
@@ -490,7 +496,8 @@ public class Launcher : MonoBehaviourPunCallbacks
             //PhotonNetwork.LoadLevel(1);//1 = build settings index
         }
 
-        PhotonNetwork.CurrentRoom.IsOpen = false;
+        PhotonNetwork.CurrentRoom.IsVisible = false;
+        //PhotonNetwork.GetRoomList();
 
     }
 
