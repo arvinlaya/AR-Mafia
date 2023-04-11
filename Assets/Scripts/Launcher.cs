@@ -139,16 +139,15 @@ public class Launcher : MonoBehaviourPunCallbacks
         Debug.Log("Connected to Master");
         PhotonNetwork.JoinLobby();
         PhotonNetwork.AutomaticallySyncScene = true;
+
     }
 
     public override void OnJoinedLobby()
     {
         MenuManager.Instance.OpenMenu("title");
         Debug.Log("Joined Lobby");
-        Debug.Log("nickname: " + PhotonNetwork.NickName);
 
         //PLAYERPREF
-
         if (PlayerPrefs.HasKey("Nickname"))
         {
             string nickname = PhotonNetwork.NickName;
@@ -156,6 +155,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             iconIgn.gameObject.SetActive(false);
             nickname = PlayerPrefs.GetString("Nickname"); //GET the saved nickname
             ignInputField_notModal.text = nickname;
+            //PhotonNetwork.NickName = nickname;
             PhotonNetwork.NickName = nickname + (new System.Random().Next(1, 100));
         }
         else
@@ -163,8 +163,8 @@ public class Launcher : MonoBehaviourPunCallbacks
             ignModal.gameObject.SetActive(true);
         }
 
+        Debug.Log("nickname: " + PhotonNetwork.NickName);
 
-        //PhotonNetwork.NickName = "P#" + Random.Range(0, 100).ToString("000");
     }
     public void OnClickClearPlayerPref()
     {
@@ -252,8 +252,9 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void CreateRoom()
     {
-        roomOptions.PlayerTtl = -1;
-        roomOptions.EmptyRoomTtl = 1; //2 minutes
+        Debug.LogError("Ducks");
+        roomOptions.PlayerTtl = 30000; // 30 secs
+        roomOptions.EmptyRoomTtl = 1; // 1ms
 
         isPrivate = false;
         PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"), roomOptions: roomOptions);
@@ -359,7 +360,8 @@ public class Launcher : MonoBehaviourPunCallbacks
         leftNotKicked = true;
         IsMaxPlayer(false);//not max player, someone left...
         PhotonNetwork.CurrentRoom.IsOpen = true;//has slot
-        PhotonNetwork.LeaveRoom();
+        PhotonNetwork.DestroyPlayerObjects(PhotonNetwork.LocalPlayer);
+        PhotonNetwork.LeaveRoom(false);
         MenuManager.Instance.OpenMenu("loading");
     }
 
@@ -381,10 +383,20 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     }
 
+    IEnumerator RefreshRoomList()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(2);
+            //PhotonNetwork.GetRoomList();
+        }
+    }
     //ONLY called when list of rooms change, not specific rooms
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        Debug.Log("ROOM CREATED");
+        StartCoroutine(RefreshRoomList());
+
+        Debug.LogError("New Room Created");
 
         foreach (Transform trans in roomListContent)
         {
@@ -478,7 +490,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             //PhotonNetwork.LoadLevel(1);//1 = build settings index
         }
 
-            PhotonNetwork.CurrentRoom.IsOpen = false;
+        PhotonNetwork.CurrentRoom.IsOpen = false;
 
     }
 
@@ -535,8 +547,8 @@ public class Launcher : MonoBehaviourPunCallbacks
         roomOptions.CustomRoomPropertiesForLobby = new string[] { "isPrivate", "password" };
         roomOptions.MaxPlayers = 4;
 
-        roomOptions.PlayerTtl = -1;
-        roomOptions.EmptyRoomTtl = 1; //2 minutes
+        roomOptions.PlayerTtl = 30000; // 30 secs
+        roomOptions.EmptyRoomTtl = 1; // 1ms
 
         PhotonNetwork.CreateRoom(roomName, roomOptions);
 

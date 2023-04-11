@@ -67,6 +67,7 @@ public class BurgerManager : MonoBehaviour
 
     IEnumerator DisconnectAndLoad() // change content of this function
     {
+        //TODO: PhotonNetwork.LeaveRoom(false);
         PhotonNetwork.Disconnect();
         while (PhotonNetwork.IsConnected)
         {
