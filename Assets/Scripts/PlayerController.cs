@@ -207,6 +207,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         PhotonView ownerPV = PhotonView.Find(ownerControllerID);
         HouseController houseController = housePV.GetComponent<HouseController>();
         PlayerController ownerController = ownerPV.GetComponent<PlayerController>();
+        PlayerController localController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
         Vector3 tempScale = gameObject.transform.localScale;
 
         houseController.outsiderCount += 1;
@@ -215,19 +216,15 @@ public class PlayerController : MonoBehaviourPunCallbacks
             gameObject.transform.localScale = new Vector3(0, 0, 0);
         }
 
-        if (disabledControls == false)
-        {
-            transform.position = houseController.houseFront.position;
-            yield return StartCoroutine(nameof(moveTo), houseController.ownerFront);
-        }
+        transform.position = houseController.houseFront.position;
+        yield return StartCoroutine(nameof(moveTo), houseController.ownerFront);
 
-        if (disabledControls == false)
-        {
-            gameObject.transform.localScale = tempScale;
-            yield return StartCoroutine(greetAnimation(ownerController));
-        }
 
-        if (disabledControls == false)
+        gameObject.transform.localScale = tempScale;
+        yield return StartCoroutine(greetAnimation(ownerController));
+
+
+        if (localController.disabledControls == false)
         {
             Transform outsiderTargetLocation = houseController.outsiderLocation[houseController.outsiderCount - 1];
             yield return StartCoroutine(nameof(moveTo), outsiderTargetLocation);
@@ -371,7 +368,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
     }
     private void OnMouseEnter()
     {
-        Debug.Log("Player enter");
         if (isOutlined == false)
         {
             Color tempColor = playerHouse.houseRenderer.material.color;
@@ -387,7 +383,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     private void OnMouseExit()
     {
-        Debug.Log("Player exit");
         if (isOutlined == true)
         {
             Color tempColor = playerHouse.houseRenderer.material.color;

@@ -17,9 +17,9 @@ MonoBehaviour:
     AppIdFusion: 
     AppIdChat: c6a44251-95b1-4b02-bbfa-32fc5425691b
     AppIdVoice: eb8171ea-db62-4e6a-8c7c-96b5353f31de
-    AppVersion: 
+    AppVersion: 1.0
     UseNameServer: 1
-    FixedRegion: 
+    FixedRegion: asia
     Server: 
     Port: 0
     ProxyServer: 
@@ -55,4 +55,4 @@ MonoBehaviour:
   - RPC_syncDayCount
   DisableAutoOpenWizard: 1
   ShowSettings: 1
-  DevRegionSetOnce: 0
+  DevRegionSetOnce: 1

@@ -1,3 +1,4 @@
+//bali wala palang silbi 'to?
 // * This handles Room search/filter scripts
 using System.Collections;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ public class RoomListManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        PhotonNetwork.AutomaticallySyncScene = true;
+        //PhotonNetwork.AutomaticallySyncScene = true;
     }
 
     public void CreateRoom(string roomName)
@@ -35,7 +36,7 @@ public class RoomListManager : MonoBehaviourPunCallbacks
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        this.roomList = roomList;
+        //this.roomList = roomList;
         //UpdateRoomListUI();
     }
 

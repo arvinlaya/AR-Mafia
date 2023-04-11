@@ -52,21 +52,22 @@ public class BurgerManager : MonoBehaviour
     }
     public void exit()
     {
-        PhotonNetwork.NetworkingClient.EventReceived -= GameManager.Instance.OnEvent;
+        PhotonNetwork.NetworkingClient.EventReceived -= GameManager.Instance.OnEvent; // important
 
-        if (PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient) // important
         {
             Debug.Log("REMOVED");
-            SceneManager.sceneLoaded -= GameManager.Instance.OnSceneLoad;
-            PhotonNetwork.NetworkingClient.EventReceived -= GameManager.Instance.OnEvent;
+            SceneManager.sceneLoaded -= GameManager.Instance.OnSceneLoad; //important
+            PhotonNetwork.NetworkingClient.EventReceived -= GameManager.Instance.OnEvent; //important
         }
 
-        Destroy(RoomManager.Instance.gameObject);
-        StartCoroutine(DisconnectAndLoad());
+        Destroy(RoomManager.Instance.gameObject); // important
+        StartCoroutine(DisconnectAndLoad()); // important
     }
 
-    IEnumerator DisconnectAndLoad()
+    IEnumerator DisconnectAndLoad() // change content of this function
     {
+        //TODO: PhotonNetwork.LeaveRoom(false);
         PhotonNetwork.Disconnect();
         while (PhotonNetwork.IsConnected)
         {
