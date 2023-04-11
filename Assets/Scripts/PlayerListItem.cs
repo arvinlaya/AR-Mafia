@@ -17,12 +17,13 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
 
     public RoomInfo info; //LOCAL ROOM INFO
 
-    public void SetUp(Player _player)
+    public void SetUp(Player _player, int pos)
     {
         player = _player;
         playerIGN.text = _player.NickName;
         kickPlayerIGN.text = _player.NickName;
-        playerPosition.text =  _player.ActorNumber.ToString();
+        //TODO Instead of using actor number, use sorted List of Players
+        playerPosition.text = pos.ToString();
 
         // room master name = this player item card
         if (PhotonNetwork.MasterClient.NickName == _player.NickName)
