@@ -253,7 +253,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     public void CreateRoom()
     {
         roomOptions.PlayerTtl = -1;
-        roomOptions.EmptyRoomTtl = 120000; //2 minutes
+        roomOptions.EmptyRoomTtl = 1; //2 minutes
 
         isPrivate = false;
         PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"), roomOptions: roomOptions);
@@ -531,7 +531,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         roomOptions.MaxPlayers = 4;
 
         roomOptions.PlayerTtl = -1;
-        roomOptions.EmptyRoomTtl = 120000; //2 minutes
+        roomOptions.EmptyRoomTtl = 1; //2 minutes
 
         PhotonNetwork.CreateRoom(roomName, roomOptions);
 
