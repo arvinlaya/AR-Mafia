@@ -13,6 +13,7 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
     [SerializeField] GameObject hostLabel;
     [SerializeField] GameObject kickButton;
     Player player;//LOCAL PLAYER INFO
+    [SerializeField] TMP_Text kickPlayerIGN;
 
     public RoomInfo info; //LOCAL ROOM INFO
 
@@ -20,6 +21,7 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
     {
         player = _player;
         playerIGN.text = _player.NickName;
+        kickPlayerIGN.text = _player.NickName;
         playerPosition.text =  _player.ActorNumber.ToString();
 
         // room master name = this player item card
