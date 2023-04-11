@@ -477,6 +477,9 @@ public class Launcher : MonoBehaviourPunCallbacks
             }
             //PhotonNetwork.LoadLevel(1);//1 = build settings index
         }
+
+            PhotonNetwork.CurrentRoom.IsOpen = false;
+
     }
 
     void OnStartGame()
@@ -504,6 +507,8 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             IsMaxPlayer(isMax);
             // pag max na, hide room 
+
+
             PhotonNetwork.CurrentRoom.IsOpen = !isMax;
         }
     }
