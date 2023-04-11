@@ -22,7 +22,7 @@ public class RoleReveal : MonoBehaviour, IOnEventCallback
     {
         readyCount = 0;
         requiredReady = PhotonNetwork.CurrentRoom.PlayerCount;
-        time = 1;
+        time = 5;
     }
     void Start()
     {

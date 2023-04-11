@@ -888,7 +888,7 @@ namespace Photon.Pun
 
             if (PhotonNetwork.CurrentRoom.CustomProperties["IS_INSTANTIATED"] == null)
             {
-                instance = GameObject.Instantiate(res, position, rotation) as GameObject;
+            instance = GameObject.Instantiate(res, position, rotation) as GameObject;
             }
 
             if (wasActive) res.SetActive(true);

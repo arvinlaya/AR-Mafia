@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public const int NIGHT_LENGHT = 40; //40 //murder, open door
+    public const int NIGHT_LENGHT = 10; //40 //murder, open door
     public const int DAY_DISCUSSION_LENGHT = 2; //30 // none
     public const int DAY_ACCUSE_LENGHT = 2; //20 // accuse icon
     public const int DAY_ACCUSE_DEFENSE_LENGHT = 2; //20 // none
@@ -93,8 +93,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         aliveCount = aliveList.Count;
 
         // Invoke("startGame", GAME_START);
-
     }
+
+
 
     // Start is called before the first frame update
     public override void OnEnable()
