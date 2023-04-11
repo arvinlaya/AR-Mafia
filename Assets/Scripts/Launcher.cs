@@ -269,6 +269,11 @@ public class Launcher : MonoBehaviourPunCallbacks
         // PhotonNetwork.CurrentRoom.SetCustomProperties(hashRoomOwner);
         // Debug.Log("setting Room Owner HASH\n" + (int)PhotonNetwork.CurrentRoom.CustomProperties["RoomOwner"]);
         // }
+        SpawnPlayersInList();
+    }
+
+    private void SpawnPlayersInList()
+    {
 
         //PUBLIC GAME
         if (!isPrivate)
@@ -315,7 +320,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             for (int i = 0; i < players.Count(); i++)
             {
-                Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i]);
+                Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i], i+1);
             }
         }
         else
@@ -328,7 +333,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             for (int i = 0; i < players.Count(); i++)
             {
-                Instantiate(PlayerListItemPrefab, playerListContentPrivate).GetComponent<PlayerListItem>().SetUp(players[i]);
+                Instantiate(PlayerListItemPrefab, playerListContentPrivate).GetComponent<PlayerListItem>().SetUp(players[i], i+1);
             }
         }
 
@@ -379,6 +384,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
         publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
+        SpawnPlayersInList();
         IsMaxPlayer(false);
 
     }
@@ -509,17 +515,9 @@ public class Launcher : MonoBehaviourPunCallbacks
     //sa MasterClient lang may trigger yung function na 'to
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        if (!isPrivate)
-        {
-            publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
-            Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
-        }
-        else
-        {
-            privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
-            Instantiate(PlayerListItemPrefab, playerListContentPrivate).GetComponent<PlayerListItem>().SetUp(newPlayer);
-        }
-        //Debug.Log("PLAYER COUNT: " + PhotonNetwork.CurrentRoom.PlayerCount + "/" + _minPlayerToStart);
+
+        SpawnPlayersInList();
+
         ////STARTING GAME
         bool isMax = PhotonNetwork.CurrentRoom.PlayerCount == _maxPlayer;
         if (isMax)
