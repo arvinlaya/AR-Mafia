@@ -92,6 +92,8 @@ public class PromptManager : MonoBehaviour
 
         yield return new WaitForSeconds(delay);
         promptHeaderCanvasGroup.alpha = 0;
+        this.promptHeader.SetText("");
+
     }
     public IEnumerator promptNoDelay(string message)
     {

@@ -43,13 +43,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public const int NIGHT_LENGHT = 10; //40 //murder, open door
-    public const int DAY_DISCUSSION_LENGHT = 2; //30 // none
-    public const int DAY_ACCUSE_LENGHT = 2; //20 // accuse icon
-    public const int DAY_ACCUSE_DEFENSE_LENGHT = 2; //20 // none
-    public const int DAY_VOTE_LENGHT = 2; //20 // guilty, not guilty
-    public const int ROLE_PANEL_DURATION = 3;
-    public const int GAME_START = 3;
+    public const int NIGHT_LENGHT = 40; //40 //murder, open door
+    public const int DAY_DISCUSSION_LENGHT = 30; //30 // none
+    public const int DAY_ACCUSE_LENGHT = 20; //20 // accuse icon
+    public const int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20 // none
+    public const int DAY_VOTE_LENGHT = 20; //20 // guilty, not guilty
 
     public GAME_PHASE GAME_STATE = GAME_PHASE.NIGHT;
     PhotonView PV;
@@ -579,7 +577,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (guiltyVotes > 0 || innocentVotes > 0)
             {
                 yield return StartCoroutine(PromptManager.Instance.promptNoDelay($"Vote results for {highestAccusedPlayer.NickName}:"));
-                yield return StartCoroutine(PromptManager.Instance.promptEliminationVotes(highestAccusedPlayer.NickName, 5f));
+                yield return StartCoroutine(PromptManager.Instance.promptEliminationVotes(highestAccusedPlayer.NickName, 7f));
             }
 
             if (VoteManager.Instance.isGuilty())
