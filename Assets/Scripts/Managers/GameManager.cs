@@ -105,7 +105,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         PhotonNetwork.NetworkingClient.EventReceived += Instance.OnEvent;
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("ADDED");
             SceneManager.sceneLoaded -= Instance.OnSceneLoad;
             SceneManager.sceneLoaded += Instance.OnSceneLoad;
         }
@@ -320,6 +319,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         ReadyManager.Instance.setReady(true);
 
         yield return new WaitUntil(() => ReadyManager.Instance.getIsAllReady());
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.CustomProperties["IS_INSTANTIATED"] == null)
+        {
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable() { { "IS_INSTANTIATED", true } });
+        }
+
         yield return StartCoroutine(UIManager.Instance.setGamePhase((byte)phase));
 
         InitializeTimer((byte)phase);
@@ -543,7 +547,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             SetPhase_S(GameManager.GAME_PHASE.NIGHT);
-            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable() { { "IS_INSTANTIATED", true } });
         }
 
 
@@ -771,7 +774,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void setAnimationSyncState(Player player, GameManager.GAME_PHASE phase)
     {
-        Debug.Log("SETTING ANIMATION SYNC STATE");
         if (phase == GameManager.GAME_PHASE.NIGHT)
         {
             PlayerManager.getPlayerController(player).setMovementSync(false);

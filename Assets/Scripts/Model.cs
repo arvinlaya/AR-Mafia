@@ -14,14 +14,12 @@ public class Model : MonoBehaviour, IPunInstantiateMagicCallback
     }
     public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
-        Debug.Log(PhotonNetwork.LocalPlayer.CustomProperties["ROLE"] + " <----- ROLE IN MODEL");
-
         // PhotonView parentPV = PhotonView.Find((int)info.photonView.InstantiationData[0]);
+        // PlayerController parentController = PlayerManager.getPlayerController(parentPV.Owner);
         PlayerController parentController = PlayerManager.getPlayerController(info.Sender);
 
         gameObject.transform.SetParent(parentController.transform);
         gameObject.transform.position = parentController.transform.position;
-        parentController.animator = gameObject.GetComponent<Animator>();
 
         GameObject newModel = null;
         if (PV.IsMine)
@@ -56,6 +54,7 @@ public class Model : MonoBehaviour, IPunInstantiateMagicCallback
         }
         else
         {
+            parentController.animator = gameObject.GetComponent<Animator>();
             parentController.animationSync = GetComponentInChildren<PhotonAnimatorView>();
         }
 

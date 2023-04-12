@@ -132,34 +132,26 @@ public class PlayerController : MonoBehaviourPunCallbacks
     }
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
-        base.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
-        if (PhotonNetwork.IsMasterClient)
+        // base.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
+
+        if (changedProps["ROLE"] != null)
         {
-            if (changedProps["ROLE"] != null)
-            {
-                PV.RPC("RPC_OnSetRole", targetPlayer, changedProps["ROLE"], targetPlayer.NickName);
-            }
+            PV.RPC("RPC_OnSetRole", targetPlayer, changedProps["ROLE"], targetPlayer.NickName);
         }
+
     }
 
     [PunRPC]
     void RPC_OnSetRole(string role, string targetName)
     {
-        if (PV.IsMine)
-        {
-            int childrenCount = transform.childCount;
 
-            for (int x = childrenCount - 1; x >= 0; x--)
-            {
-                DestroyImmediate(transform.GetChild(x).gameObject);
-            }
-        }
+        Debug.Log("INSTANTIATED OBJECT TO: " + PV.Owner.NickName);
+        PlayerController playerController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
+        object[] data = { playerController.photonView.ViewID };
 
-
-        object[] data = { (FindObjectsOfType<PlayerController>().FirstOrDefault(x => x.PV.Owner.NickName == targetName)).GetComponent<PhotonView>().ViewID };
-
-        GameObject model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Base"), transform.position, Quaternion.identity, 0, data);
+        GameObject model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Base"), playerController.transform.position, Quaternion.identity, 0, data);
         GameManager.Instance.activateDisplayRole(role);
+
     }
     public void resetPlayerState()
     {

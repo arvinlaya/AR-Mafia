@@ -26,8 +26,8 @@ public class PlayerManager : MonoBehaviour
     {
         foreach (PlayerController controller in GameObject.FindObjectsOfType<PlayerController>())
         {
-            Debug.Log((player.UserId == controller.PV.Owner.UserId) + " " + player.NickName + ":" + controller.PV.Owner.NickName);
-            if (player.UserId == controller.PV.Owner.UserId)
+            if (player.NickName == controller.PV.Owner.NickName)
+            // if (player == controller.PV.Owner)
             {
                 return controller;
             }
