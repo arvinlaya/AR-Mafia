@@ -53,6 +53,7 @@ public class VoteManager : MonoBehaviour
     {
         if (hasAccuseVoted == true)
         {
+            closeAccuseVotePrompt();
             return;
         }
         hasAccuseVoted = true;
@@ -99,6 +100,7 @@ public class VoteManager : MonoBehaviour
 
         if (vote_casted == newVoteCasted)
         {
+            closeEliminationVotePrompt();
             return;
         }
 
@@ -107,6 +109,7 @@ public class VoteManager : MonoBehaviour
 
         if (previousVoteCasted == newVoteCasted)
         {
+            closeEliminationVotePrompt();
             return;
         }
 

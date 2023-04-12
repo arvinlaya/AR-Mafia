@@ -49,7 +49,6 @@ public class LeftButton : MonoBehaviour
 
             case GameManager.GAME_PHASE.DAY_VOTE:
                 transform.position = ownerController.transform.position;
-                transform.localPosition += offset;
                 renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[6];
                 break;
         }

@@ -657,7 +657,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             yield return StartCoroutine(PlayerManager.getPlayerController(targetedPlayers[0]).dieSequence());
             yield return StartCoroutine(PromptManager.Instance.alertPromptWithDelay(targetedPlayers[0].NickName + " was poisoned after they had a conversation with the mafia last night.", 5f));
-            aliveList.Remove(targetedPlayers[0]);
             if (PhotonNetwork.IsMasterClient)
             {
                 PV.RPC(nameof(RPC_setAliveCount), RpcTarget.All, aliveList.Count);
