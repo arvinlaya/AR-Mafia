@@ -595,4 +595,9 @@ public class Launcher : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.IsOpen = true;//has slot
     }
 
+    public void OnClickQuitGame()
+    {
+        Application.Quit();
+    }
+
 }
