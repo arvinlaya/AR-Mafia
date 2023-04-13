@@ -13,7 +13,9 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
     [SerializeField] GameObject hostLabel;
     [SerializeField] GameObject kickButton;
     Player player;//LOCAL PLAYER INFO
-    [SerializeField] TMP_Text kickPlayerIGN;
+
+    //for KICK Modal
+    [SerializeField] GameObject kickModalPrefab;
 
     public RoomInfo info; //LOCAL ROOM INFO
 
@@ -21,7 +23,6 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
     {
         player = _player;
         playerIGN.text = _player.NickName;
-        kickPlayerIGN.text = _player.NickName;
         //TODO Instead of using actor number, use sorted List of Players
         playerPosition.text = pos.ToString();
 
@@ -31,7 +32,7 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
             hostLabel.SetActive(true);
             kickButton.SetActive(false);
         }
-        else if(player.NickName != PhotonNetwork.MasterClient.NickName) // This player is not the room master
+        else if (player.NickName != PhotonNetwork.MasterClient.NickName) // This player is not the room master
         {
             if (PhotonNetwork.IsMasterClient)
             {
@@ -59,8 +60,16 @@ public class PlayerListItem : MonoBehaviourPunCallbacks
         Destroy(gameObject);
     }
 
-    public void OnClickKickButton()
+    public void OnClickKickPlayer()
     {
-        Launcher.Instance.KickPlayer(player);
+        //Instantiate(kickModalPrefab, spawnPOINT). kick script . method
+
+        //search for the Canvas
+        GameObject canvasObject = GameObject.Find("Canvas");
+        Transform actualCanvas = canvasObject.transform;
+
+        //spawn item
+        Instantiate(kickModalPrefab, actualCanvas).GetComponent<KickPlayerScript>().SetPlayerInfoForKicking(player);
     }
+
 }
