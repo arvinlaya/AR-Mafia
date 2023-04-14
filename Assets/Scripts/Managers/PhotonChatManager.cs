@@ -24,7 +24,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
     [SerializeField] string privateReceiver = "";
     [SerializeField] TMP_InputField chatField;
     //[SerializeField] TMP_Text chatDisplay;
-    [SerializeField] TMP_Text chatDisplayItemPrefab2;
+    [SerializeField] GameObject chatDisplayItemPrefab2;
 
     [SerializeField] GameObject firstChatMessageForMafia;
 
@@ -51,7 +51,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         {
             if (currentChat.Contains("/m"))
             {
-                chatClient.PublishMessage("MafiaCH", currentChat.Replace("/m", "(MAFIA)\n"));
+                chatClient.PublishMessage("MafiaCH", currentChat.Replace("/m", "(MAFIA)"));
             }
             else
             {
