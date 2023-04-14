@@ -5,8 +5,9 @@ using UnityEngine;
 
 public class ChatDisplayItem : MonoBehaviour
 {
-    //TODO: Yung Avatar?
     [SerializeField] TMP_Text text;
+    [SerializeField] TMP_Text senderIGN;
+    [SerializeField] GameObject bubble;
 
     public void SetUp(string channelName, string[] senders, object[] messages)
     {
