@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5968039776807808415}
   - component: {fileID: 5968039776807808414}
   - component: {fileID: 5968039776807808412}
+  - component: {fileID: 6430970477701670884}
   m_Layer: 0
   m_Name: MessageSentBubble
   m_TagString: Untagged
@@ -105,6 +106,21 @@ MonoBehaviour:
   m_ChildScaleWidth: 1
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &6430970477701670884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5968039776807808400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 861c6624b53c77e48b0d93ffacf190e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: {fileID: 5968039778228128827}
+  senderIGN: {fileID: 5968039777893161755}
+  chatBubble: {fileID: 5968039776807808400}
 --- !u!1 &5968039777893161757
 GameObject:
   m_ObjectHideFlags: 0
