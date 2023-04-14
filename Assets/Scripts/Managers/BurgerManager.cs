@@ -9,8 +9,11 @@ public class BurgerManager : MonoBehaviour
 {
     public static BurgerManager Instance;
     [SerializeField] private GameObject rulesPanel;
+    [SerializeField] private GameObject myRolePanel;
     private Animator burgerAnimator;
     private Animator rulesAnimator;
+    private Animator myRoleAnimator;
+    private bool isActivated;
 
     void Awake()
     {
@@ -20,8 +23,32 @@ public class BurgerManager : MonoBehaviour
             return;
         }
         Instance = this;
+        isActivated = false;
         burgerAnimator = GetComponent<Animator>();
         rulesAnimator = rulesPanel.gameObject.GetComponent<Animator>();
+        myRoleAnimator = myRolePanel.gameObject.GetComponent<Animator>();
+    }
+
+    void Start()
+    {
+        switch ((string)PhotonNetwork.LocalPlayer.CustomProperties["ROLE"])
+        {
+            case "VILLAGER":
+                ReferenceManager.Instance.myRoleVillager.SetActive(true);
+                break;
+
+            case "DOCTOR":
+                ReferenceManager.Instance.myRoleDoctor.SetActive(true);
+                break;
+
+            case "MAFIA":
+                ReferenceManager.Instance.myRoleMafia.SetActive(true);
+                break;
+
+            case "DETECTIVE":
+                ReferenceManager.Instance.myRoleDetective.SetActive(true);
+                break;
+        }
     }
     public void openBurgerPanel()
     {
@@ -35,10 +62,34 @@ public class BurgerManager : MonoBehaviour
 
     public void myRole()
     {
+        if (!isActivated)
+        {
+            switch ((string)PhotonNetwork.LocalPlayer.CustomProperties["ROLE"])
+            {
+                case "VILLAGER":
+                    ReferenceManager.Instance.myRoleVillager.SetActive(true);
+                    break;
+
+                case "DOCTOR":
+                    ReferenceManager.Instance.myRoleDoctor.SetActive(true);
+                    break;
+
+                case "MAFIA":
+                    ReferenceManager.Instance.myRoleMafia.SetActive(true);
+                    break;
+
+                case "DETECTIVE":
+                    ReferenceManager.Instance.myRoleDetective.SetActive(true);
+                    break;
+            }
+            isActivated = true;
+        }
+        myRoleAnimator.SetBool("isOpen", true);
     }
 
     public void closeMyRole()
     {
+        myRoleAnimator.SetBool("isOpen", false);
     }
 
     public void openRules()

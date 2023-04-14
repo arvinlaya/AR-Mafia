@@ -15,6 +15,10 @@ public class ReferenceManager : MonoBehaviour
     [SerializeField] public GameObject[] doctorPanels;
     [SerializeField] public GameObject[] mafiaPanels;
     [SerializeField] public GameObject[] detectivePanels;
+    [SerializeField] public GameObject myRoleVillager;
+    [SerializeField] public GameObject myRoleDoctor;
+    [SerializeField] public GameObject myRoleMafia;
+    [SerializeField] public GameObject myRoleDetective;
     [SerializeField] public GameObject prompt;
     [SerializeField] public GameObject camera;
     [SerializeField] public Material[] ButtonMaterials;
