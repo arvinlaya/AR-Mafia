@@ -43,11 +43,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public const int NIGHT_LENGHT = 40; //40 //murder, open door
-    public const int DAY_DISCUSSION_LENGHT = 30; //30 // none
-    public const int DAY_ACCUSE_LENGHT = 20; //20 // accuse icon
-    public const int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20 // none
-    public const int DAY_VOTE_LENGHT = 20; //20 // guilty, not guilty
+    public const int NIGHT_LENGHT = 5; //40 //murder, open door
+    public const int DAY_DISCUSSION_LENGHT = 5; //30 // none
+    public const int DAY_ACCUSE_LENGHT = 5; //20 // accuse icon
+    public const int DAY_ACCUSE_DEFENSE_LENGHT = 5; //20 // none
+    public const int DAY_VOTE_LENGHT = 5; //20 // guilty, not guilty
 
     public GAME_PHASE GAME_STATE = GAME_PHASE.NIGHT;
     PhotonView PV;

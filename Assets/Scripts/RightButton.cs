@@ -48,12 +48,6 @@ public class RightButton : MonoBehaviour
             case GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE:
                 renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
                 break;
-
-            case GameManager.GAME_PHASE.DAY_VOTE:
-                transform.position = ownerController.transform.position;
-                transform.localPosition += offset;
-                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[5];
-                break;
         }
     }
 
