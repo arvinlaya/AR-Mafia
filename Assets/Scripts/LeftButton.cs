@@ -46,11 +46,6 @@ public class LeftButton : MonoBehaviour
             case GameManager.GAME_PHASE.DAY_ACCUSE_DEFENSE:
                 renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[7];
                 break;
-
-            case GameManager.GAME_PHASE.DAY_VOTE:
-                transform.position = ownerController.transform.position;
-                renderer.sharedMaterial = ReferenceManager.Instance.ButtonMaterials[6];
-                break;
         }
     }
 
