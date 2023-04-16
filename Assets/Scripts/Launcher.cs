@@ -71,6 +71,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] GameObject wasKickedPromt;
 
     private bool leftNotKicked = true;
+    public string propertyName_BanList = "BANLIST";
 
     private bool gameStarted = false;
 
@@ -80,6 +81,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     //ROOM OPTIONS
     RoomOptions roomOptions = new RoomOptions();
 
+    List<string> banlist = new List<string>();
 
     // can be use to improve code in the future
 
@@ -157,8 +159,8 @@ public class Launcher : MonoBehaviourPunCallbacks
             iconIgn.gameObject.SetActive(false);
             nickname = PlayerPrefs.GetString("Nickname"); //GET the saved nickname
             ignInputField_notModal.text = nickname;
-            //PhotonNetwork.NickName = nickname;
-            PhotonNetwork.NickName = nickname + (new System.Random().Next(1, 100));
+            PhotonNetwork.NickName = nickname;
+            //PhotonNetwork.NickName = nickname + (new System.Random().Next(1, 100));
         }
         else
         {
@@ -308,7 +310,8 @@ public class Launcher : MonoBehaviourPunCallbacks
         if (PhotonNetwork.LocalPlayer != PhotonNetwork.MasterClient && PhotonNetwork.CurrentRoom.PlayerCount == _minimumPlayer)
         {
             waitingForPlayersTextPublic.text = "GET READY";
-        } else
+        }
+        else
         {
             waitingForPlayersTextPublic.text = "Need at least " + _minimumPlayer + " player";
         }
@@ -564,8 +567,22 @@ public class Launcher : MonoBehaviourPunCallbacks
         wasKickedPromt.gameObject.SetActive(true);
     }
 
+    //KICK AND BAN
     public void KickPlayer(Player foreignPlayer)
     {
+        //add kick marker to this player
+        Debug.LogError("trying to kick:" + foreignPlayer.NickName);
+
+        Hashtable roomCustomProps = PhotonNetwork.CurrentRoom.CustomProperties;
+        banlist.Add(foreignPlayer.NickName);
+
+        string myStringData = string.Join(",", banlist.ToArray());
+        roomCustomProps.Add(propertyName_BanList, myStringData);
+
+        PhotonNetwork.CurrentRoom.SetCustomProperties(roomCustomProps);
+
+        Debug.LogError(roomCustomProps[propertyName_BanList]);
+
         PV = GetComponent<PhotonView>();
         if (PV.IsMine)
         {

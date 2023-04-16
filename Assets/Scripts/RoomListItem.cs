@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using System.Linq;
 
 public class RoomListItem : MonoBehaviour
 {
@@ -25,18 +26,49 @@ public class RoomListItem : MonoBehaviour
 
     public void OnClick()
     {
-        if (!info.IsOpen)
-            promtFull.gameObject.SetActive(true);
-        else if (info.CustomProperties.ContainsKey("isPrivate")) //is a PR
-        {
-            string correctKey = (string)info.CustomProperties["password"];
-            Debug.Log("Custom Prop INSIDE ONCLICK: " + correctKey);
-            privateCodeModal.SetActive(true);
-        }
-        else //Public
-            Launcher.Instance.JoinRoom(info);
-    }
+        bool isBanned = false;
+        string banListString = Launcher.Instance.propertyName_BanList;
 
+        if (info.CustomProperties.ContainsKey(banListString))
+        {
+            Debug.LogError("has banlist");
+
+            string strFromCustomProp = (string)info.CustomProperties[banListString];
+
+           List<string> myStringsList = strFromCustomProp.Split(',').ToList();
+
+            foreach (string bannedP in myStringsList)
+            {
+                if (bannedP == PhotonNetwork.LocalPlayer.NickName)
+                {
+                    Debug.LogError("banned");
+                    isBanned = true;
+                }
+            }
+        }
+
+        if (isBanned)
+        {
+            promtFull.SetActive(true);
+        }
+        else
+        {
+            if (!info.IsOpen)
+                Debug.LogWarning("Dating prompt full, pero no need sa full anymore");
+            else if (info.CustomProperties.ContainsKey("isPrivate")) //is a PR
+            {
+                string correctKey = (string)info.CustomProperties["password"];
+                Debug.Log("Custom Prop INSIDE ONCLICK: " + correctKey);
+                privateCodeModal.SetActive(true);
+            }
+            else //Public
+                Launcher.Instance.JoinRoom(info);
+        }
+
+        //reset value
+        isBanned = false;
+
+    }
 
     public void OnClickOkayPrompt()
     {
