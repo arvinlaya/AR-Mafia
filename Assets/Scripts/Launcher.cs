@@ -76,6 +76,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     //RECONNECTION
     //ROOM OPTIONS
     RoomOptions roomOptions = new RoomOptions();
+   
 
     // can be use to improve code in the future
 
@@ -116,6 +117,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         //REMOVE AFTER DEBUGGING
         startGameButtonPublic.SetActive(true);
+        startGameButtonPrivate.SetActive(true);
 
         if (!PhotonNetwork.IsConnected)
         {
@@ -253,8 +255,9 @@ public class Launcher : MonoBehaviourPunCallbacks
     public void CreateRoom()
     {
         Debug.LogError("Ducks");
-        roomOptions.PlayerTtl = 30000; // 30 secs
+        roomOptions.PlayerTtl = 5000; // 30 secs
         roomOptions.EmptyRoomTtl = 1; // 1ms
+        roomOptions.MaxPlayers = 8;
 
         isPrivate = false;
         PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"), roomOptions: roomOptions);
@@ -337,8 +340,40 @@ public class Launcher : MonoBehaviourPunCallbacks
             }
         }
 
-        //startGameButton.SetActive(PhotonNetwork.IsMasterClient);
+        if (PhotonNetwork.CurrentRoom.PlayerCount>=5)
+        {
+            bool isMax = true;
+
+        if (isMax && PhotonNetwork.IsMasterClient)
+        {
+            waitingPlayerCardPublic.SetActive(false);
+            waitingPlayerCardPrivate.SetActive(false);
+
+            startGameButtonPublic.SetActive(isMax);
+            startGameButtonPrivate.SetActive(isMax);
+        }
+        else if (isMax)
+        {
+            waitingPlayerCardPublic.SetActive(true);
+            waitingPlayerCardPrivate.SetActive(true);
+        }
+        else
+        {
+            waitingPlayerCardPublic.SetActive(true);
+            waitingPlayerCardPrivate.SetActive(true);
+            startGameButtonPublic.SetActive(false);
+            startGameButtonPrivate.SetActive(false);
+        }
+        }
+
         Debug.Log("Number of players in the room: " + PhotonNetwork.CurrentRoom.PlayerCount.ToString());
+    }
+
+    //Show Start button only when reached max players
+    private void IsMaxPlayer(bool isMax)
+    {
+
+
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
@@ -346,18 +381,6 @@ public class Launcher : MonoBehaviourPunCallbacks
         errorText.text = "Room Creation Failed: " + message;
         Debug.LogError("Room Creation Failed: " + message);
         MenuManager.Instance.OpenMenu("error");
-    }
-
-    //Show Start button only when reached max players
-    private void IsMaxPlayer(bool isMax)
-    {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            startGameButtonPublic.SetActive(isMax);
-            startGameButtonPrivate.SetActive(isMax);
-            waitingPlayerCardPublic.SetActive(!isMax);
-            waitingPlayerCardPrivate.SetActive(!isMax);
-        }
     }
 
     public void LeaveRoom()
@@ -550,9 +573,9 @@ public class Launcher : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.CustomRoomProperties = new Hashtable() { { "isPrivate", true }, { "password", password } };
         roomOptions.CustomRoomPropertiesForLobby = new string[] { "isPrivate", "password" };
-        roomOptions.MaxPlayers = 4;
+        roomOptions.MaxPlayers = 8;
 
-        roomOptions.PlayerTtl = 30000; // 30 secs
+        roomOptions.PlayerTtl = 5000; // 30 secs
         roomOptions.EmptyRoomTtl = 1; // 1ms
 
         PhotonNetwork.CreateRoom(roomName, roomOptions);

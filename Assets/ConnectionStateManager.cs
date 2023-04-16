@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using System.Threading.Tasks;
 
 public class ConnectionStateManager : MonoBehaviourPunCallbacks
 {
 
     [SerializeField] GameObject reconModal;
+    public int countdownSeconds = 10;
 
     // Start is called before the first frame update
     void Start()
@@ -103,8 +105,24 @@ public class ConnectionStateManager : MonoBehaviourPunCallbacks
         else
         {
             reconModal.SetActive(true);
-            // Another player has left the room
-            Debug.LogError("Player has left the room");
+        }
+    }
+
+    private async void StartPlayerTimeOutCountdown()
+    {
+        await CountdownAsync(countdownSeconds);
+        // Code to execute after countdown is finished
+        Debug.Log("Countdown finished!");
+        reconModal.SetActive(false);
+    }
+
+    private async Task CountdownAsync(int seconds)
+    {
+        while (seconds > 0)
+        {
+            Debug.Log(seconds);
+            await Task.Delay(1000);
+            seconds--;
         }
     }
 
