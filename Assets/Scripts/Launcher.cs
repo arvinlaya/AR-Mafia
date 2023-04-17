@@ -34,6 +34,9 @@ public class Launcher : MonoBehaviourPunCallbacks
     //Max player
     //Mali yung description, ito yung "# of players before you can START the game from the Room
     private const int _maxPlayer = 5;
+
+    //Ito yung kailangan na players before mag start, at least ganito karami: 
+    private const int _minimumPlayer = 2;
     //START GAME
 
     //change to "Host can start" when min is met
@@ -77,6 +80,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     //ROOM OPTIONS
     RoomOptions roomOptions = new RoomOptions();
 
+
     // can be use to improve code in the future
 
     //[PunRPC]
@@ -114,8 +118,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        //REMOVE AFTER DEBUGGING
-        startGameButtonPublic.SetActive(true);
 
         if (!PhotonNetwork.IsConnected)
         {
@@ -253,8 +255,9 @@ public class Launcher : MonoBehaviourPunCallbacks
     public void CreateRoom()
     {
         Debug.LogError("Ducks");
-        roomOptions.PlayerTtl = 30000; // 30 secs
+        roomOptions.PlayerTtl = 5000; // 5 secs
         roomOptions.EmptyRoomTtl = 1; // 1ms
+        roomOptions.MaxPlayers = 8;
 
         isPrivate = false;
         PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"), roomOptions: roomOptions);
@@ -281,13 +284,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             MenuManager.Instance.OpenMenu("room");
             Debug.Log(PhotonNetwork.CurrentRoom.Name + "OnJoinedRoom() (Public)");
             roomNameText.text = PhotonNetwork.CurrentRoom.Name;
-            publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
-
-            if (PhotonNetwork.LocalPlayer != PhotonNetwork.MasterClient)
-            {
-                Debug.Log("agay dito yung pagka join ko");
-                waitingForPlayersTextPublic.text = "GET READY";
-            }
+            publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/" + _maxPlayer;
 
             string roomMasterName = PhotonNetwork.CurrentRoom.GetPlayer(PhotonNetwork.CurrentRoom.MasterClientId).NickName;
             hostNamePublic.text = roomMasterName;
@@ -302,10 +299,18 @@ public class Launcher : MonoBehaviourPunCallbacks
             roomNameText_private.text = PhotonNetwork.CurrentRoom.Name;
             //TODO Room code Pho
             privateGameCode.text = (string)PhotonNetwork.CurrentRoom.CustomProperties["password"];
-            privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
+            privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/" + _maxPlayer;
 
             string roomMasterName = PhotonNetwork.CurrentRoom.GetPlayer(PhotonNetwork.CurrentRoom.MasterClientId).NickName;
             hostNamePrivate.text = roomMasterName;
+        }
+
+        if (PhotonNetwork.LocalPlayer != PhotonNetwork.MasterClient && PhotonNetwork.CurrentRoom.PlayerCount == _minimumPlayer)
+        {
+            waitingForPlayersTextPublic.text = "GET READY";
+        } else
+        {
+            waitingForPlayersTextPublic.text = "Need at least " + _minimumPlayer + " player";
         }
 
         // For Player List
@@ -320,7 +325,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             for (int i = 0; i < players.Count(); i++)
             {
-                Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i], i+1);
+                Instantiate(PlayerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i], i + 1);
             }
         }
         else
@@ -333,12 +338,45 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             for (int i = 0; i < players.Count(); i++)
             {
-                Instantiate(PlayerListItemPrefab, playerListContentPrivate).GetComponent<PlayerListItem>().SetUp(players[i], i+1);
+                Instantiate(PlayerListItemPrefab, playerListContentPrivate).GetComponent<PlayerListItem>().SetUp(players[i], i + 1);
             }
         }
 
-        //startGameButton.SetActive(PhotonNetwork.IsMasterClient);
+        //TODO: chane to 5, after debugging
+        if (PhotonNetwork.CurrentRoom.PlayerCount >= 2)
+        {
+            bool isMax = true;
+
+            if (isMax && PhotonNetwork.IsMasterClient)
+            {
+                waitingPlayerCardPublic.SetActive(false);
+                waitingPlayerCardPrivate.SetActive(false);
+
+                startGameButtonPublic.SetActive(isMax);
+                startGameButtonPrivate.SetActive(isMax);
+            }
+            else if (isMax)
+            {
+                waitingPlayerCardPublic.SetActive(true);
+                waitingPlayerCardPrivate.SetActive(true);
+            }
+            else
+            {
+                waitingPlayerCardPublic.SetActive(true);
+                waitingPlayerCardPrivate.SetActive(true);
+                startGameButtonPublic.SetActive(false);
+                startGameButtonPrivate.SetActive(false);
+            }
+        }
+
         Debug.Log("Number of players in the room: " + PhotonNetwork.CurrentRoom.PlayerCount.ToString());
+    }
+
+    //Show Start button only when reached max players
+    private void IsMaxPlayer(bool isMax)
+    {
+
+
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
@@ -346,18 +384,6 @@ public class Launcher : MonoBehaviourPunCallbacks
         errorText.text = "Room Creation Failed: " + message;
         Debug.LogError("Room Creation Failed: " + message);
         MenuManager.Instance.OpenMenu("error");
-    }
-
-    //Show Start button only when reached max players
-    private void IsMaxPlayer(bool isMax)
-    {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            startGameButtonPublic.SetActive(isMax);
-            startGameButtonPrivate.SetActive(isMax);
-            waitingPlayerCardPublic.SetActive(!isMax);
-            waitingPlayerCardPrivate.SetActive(!isMax);
-        }
     }
 
     public void LeaveRoom()
@@ -382,8 +408,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     }
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
-        publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/8";
+        privateGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/" + _maxPlayer;
+        publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/" + _maxPlayer;
         SpawnPlayersInList();
         IsMaxPlayer(false);
 
@@ -397,6 +423,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             //PhotonNetwork.GetRoomList();
         }
     }
+
     //ONLY called when list of rooms change, not specific rooms
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
@@ -448,48 +475,6 @@ public class Launcher : MonoBehaviourPunCallbacks
             startGameButtonPublic.SetActive(PhotonNetwork.IsMasterClient);
     }
 
-    // IEnumerator waiter()
-    // {
-
-    //     //if (PV.IsMine)
-    //     int pregameNum = 5;
-    //     int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
-    //     if (playerCount > 5 && playerCount! > 8)
-    //     {
-    //         pregameNum = PhotonNetwork.CurrentRoom.PlayerCount;
-    //     }
-    //     else
-    //     {
-    //         pregameNum = 5;
-    //     }
-
-    //     MenuManager.Instance.OpenMenu("pre-" + pregameNum.ToString()); //... While testing, ganito muna... "laging sa 5 players..."
-
-    //     //yield return new WaitForSeconds(5);
-
-    //     if (PhotonNetwork.IsMasterClient)
-    //     {
-
-    //         byte time_start = 0;
-    //         for (int i = 5; i > time_start; i--)
-    //         {
-    //             pre_5_text.text = "Game begins in " + i + "...";
-    //             pre_6_text.text = "Game begins in " + i + "...";
-    //             pre_7_text.text = "Game begins in " + i + "...";
-    //             pre_8_text.text = "Game begins in " + i + "...";
-    //             yield return new WaitForSeconds(1.0f);
-    //         }
-
-    //         PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
-    //     }
-    // }
-
-    public void ManualRefreshRoomList()
-{
-
-        //Create invisible rooms?
-}
-
     public void StartGame()
     {
         if (PhotonNetwork.IsMasterClient)
@@ -515,19 +500,22 @@ public class Launcher : MonoBehaviourPunCallbacks
     //sa MasterClient lang may trigger yung function na 'to
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-
-        SpawnPlayersInList();
-
         ////STARTING GAME
         bool isMax = PhotonNetwork.CurrentRoom.PlayerCount == _maxPlayer;
         if (isMax)
         {
             IsMaxPlayer(isMax);
             // pag max na, hide room 
-
-
             PhotonNetwork.CurrentRoom.IsOpen = !isMax;
         }
+        else
+        {
+            IsMaxPlayer(false);
+            // pag max na, hide room 
+            PhotonNetwork.CurrentRoom.IsOpen = false;
+        }
+
+        SpawnPlayersInList();
     }
 
     // PRIVATE ROOM Functions
@@ -550,9 +538,9 @@ public class Launcher : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.CustomRoomProperties = new Hashtable() { { "isPrivate", true }, { "password", password } };
         roomOptions.CustomRoomPropertiesForLobby = new string[] { "isPrivate", "password" };
-        roomOptions.MaxPlayers = 4;
+        roomOptions.MaxPlayers = 8;
 
-        roomOptions.PlayerTtl = 30000; // 30 secs
+        roomOptions.PlayerTtl = 5000; // 5 secs
         roomOptions.EmptyRoomTtl = 1; // 1ms
 
         PhotonNetwork.CreateRoom(roomName, roomOptions);
