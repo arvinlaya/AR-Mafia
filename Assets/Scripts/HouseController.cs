@@ -28,7 +28,6 @@ public class HouseController : MonoBehaviour
     public SkinnedMeshRenderer doorRenderer;
     private bool isOutlined;
     private bool isHidden;
-    private float fadeSpeed = .05f;
 
     public int outsiderCount;
     void Awake()
