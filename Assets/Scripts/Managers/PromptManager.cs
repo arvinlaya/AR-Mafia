@@ -14,6 +14,8 @@ public class PromptManager : MonoBehaviour
     [SerializeField] private GameObject alertPrompt;
     [SerializeField] private GameObject preRoleVillager;
     [SerializeField] private GameObject preRoleMafia;
+    [SerializeField] private GameObject preRoleDoctor;
+    [SerializeField] private GameObject preRoleDetective;
     private GameObject prompt;
     void Awake()
     {
@@ -33,21 +35,43 @@ public class PromptManager : MonoBehaviour
         }
     }
 
-    public IEnumerator revealPreRoleVillager()
+    public IEnumerator revealPreRolePanel(string role)
     {
-        preRoleVillager.SetActive(true);
+        switch (role)
+        {
+            case "VILLAGER":
+                preRoleVillager.SetActive(true);
 
-        yield return new WaitForSeconds(7f);
+                yield return new WaitForSeconds(7f);
 
-        preRoleVillager.SetActive(false);
-    }
-    public IEnumerator revealPreRoleMafia()
-    {
-        preRoleMafia.SetActive(true);
+                preRoleVillager.SetActive(false);
+                break;
 
-        yield return new WaitForSeconds(7f);
+            case "DOCTOR":
+                preRoleDoctor.SetActive(true);
 
-        preRoleMafia.SetActive(false);
+                yield return new WaitForSeconds(7f);
+
+                preRoleDoctor.SetActive(false);
+                break;
+
+            case "DETECTIVE":
+                preRoleDetective.SetActive(true);
+
+                yield return new WaitForSeconds(7f);
+
+                preRoleDetective.SetActive(false);
+                break;
+
+            case "MAFIA":
+                preRoleMafia.SetActive(true);
+
+                yield return new WaitForSeconds(7f);
+
+                preRoleMafia.SetActive(false);
+                break;
+        }
+
     }
     public IEnumerator promptRoleMessage(string role, int mafiaCount)
     {

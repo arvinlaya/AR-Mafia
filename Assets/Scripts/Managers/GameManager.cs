@@ -553,14 +553,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (firstNight)
         {
-            if (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString().Trim() == "MAFIA")
-            {
-                yield return StartCoroutine(PromptManager.Instance.revealPreRoleMafia());
-            }
-            else
-            {
-                yield return StartCoroutine(PromptManager.Instance.revealPreRoleVillager());
-            }
+            string role = PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString().Trim();
+
+            yield return StartCoroutine(PromptManager.Instance.revealPreRolePanel(role));
         }
         resetOutsiderCount();
 
