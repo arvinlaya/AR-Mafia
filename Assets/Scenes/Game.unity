@@ -661,8 +661,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 757732383}
   m_HandleRect: {fileID: 757732382}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.20582289
+  m_Value: 1.0000001
+  m_Size: 0.20555735
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -11832,7 +11832,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 139.99995, y: 401.5}
+  m_AnchoredPosition: {x: 139.99994, y: 401.5}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &581012151
@@ -13427,7 +13427,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -574, y: 0.00003660885}
+  m_AnchoredPosition: {x: -574, y: -0.0005344707}
   m_SizeDelta: {x: 1148, y: 9892}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &671559648
@@ -15794,7 +15794,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1810210666}
   m_HandleRect: {fileID: 1810210664}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -19042,7 +19042,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.19607843}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.78431374}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -23340,19 +23340,19 @@ MonoBehaviour:
     Your purpose is guess
     who will be murdered by the mafia and save them.</align>
 
-    
 
-    <b>side:
-    Villager
 
-    goal: help the village win</b>
+    <b>side: Villager
 
-    
+    goal:
+    help the village win</b>
+
+
 
     note!
 
-    You cannot
-    save the same person two nights in a row.</size>'
+    You cannot save the same person two
+    nights in a row.</size>'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -34430,7 +34430,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1731280504
 RectTransform:
   m_ObjectHideFlags: 0
@@ -41264,7 +41264,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 82.97}
+  m_AnchoredPosition: {x: 0, y: 82.96997}
   m_SizeDelta: {x: 198.63, y: 303.3}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &2035458266
@@ -43234,7 +43234,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 599.9995}
+  m_AnchoredPosition: {x: 0, y: 599.9998}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2129579207
