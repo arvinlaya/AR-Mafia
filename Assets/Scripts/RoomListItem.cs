@@ -20,7 +20,7 @@ public class RoomListItem : MonoBehaviour
     {
         info = _info;
         text.text = _info.Name;
-        player_Count.text = _info.PlayerCount + "/8";
+        player_Count.text = _info.PlayerCount + "/"+ Launcher.Instance.getMaxPlayer();
     }
 
     public void OnClick()
