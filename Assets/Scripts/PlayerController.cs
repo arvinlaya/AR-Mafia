@@ -189,6 +189,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     public void enterHouseSequence(int houseControllerID, int ownerControllerID)
     {
+
         PV.RPC(nameof(RPC_enterHouseSequence), RpcTarget.All, houseControllerID, ownerControllerID);
     }
 
@@ -196,13 +197,13 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public IEnumerator RPC_enterHouseSequence(int houseControllerID, int ownerControllerID)
     {
         PhotonView housePV = PhotonView.Find(houseControllerID);
-        PhotonView ownerPV = PhotonView.Find(ownerControllerID);
         HouseController houseController = housePV.GetComponent<HouseController>();
+        houseController.outsiderCount += 1;
+        PhotonView ownerPV = PhotonView.Find(ownerControllerID);
         PlayerController ownerController = ownerPV.GetComponent<PlayerController>();
         PlayerController localController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
         Vector3 tempScale = gameObject.transform.localScale;
 
-        houseController.outsiderCount += 1;
         if (!PV.IsMine)
         {
             gameObject.transform.localScale = new Vector3(0, 0, 0);
