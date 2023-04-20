@@ -35,7 +35,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     //Mali yung description, ito yung "# of p+ Launcher.Instance._layers before you can START the game from the Room
     private const int maxPlayer = 8;
     //Ito yung kailangan na players before mag start, at least ganito karami: 
-    private const int minimumPlayer = 5;
+    private const int minimumPlayer = 2;
     //START GAME
 
     //change to "Host can start" when min is met
