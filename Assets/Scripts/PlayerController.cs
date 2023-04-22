@@ -122,7 +122,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         if (isMovingTo)
         {
+            transform.LookAt(new Vector3(moveTarget.position.x, transform.position.y, moveTarget.position.z));
             move();
+        }
+        else
+        {
+            transform.LookAt(new Vector3(Camera.main.transform.position.x, transform.position.y, Camera.main.transform.position.z));
         }
     }
 
