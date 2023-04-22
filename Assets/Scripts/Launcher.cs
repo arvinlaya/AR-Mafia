@@ -479,7 +479,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.LoadLevel(2);//1 = build settings index, actual game...
+            PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
         }
 
 
