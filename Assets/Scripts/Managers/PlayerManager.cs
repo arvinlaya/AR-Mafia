@@ -18,7 +18,7 @@ public class PlayerManager : MonoBehaviour
     {
         if (PV.IsMine && PhotonNetwork.IsMasterClient)
         {
-            SpawnManager.Instance.SpawnPlayersAndHouses();
+            // SpawnManager.Instance.SpawnPlayersAndHouses();
         }
     }
 

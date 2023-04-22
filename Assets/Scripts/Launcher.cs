@@ -97,19 +97,6 @@ public class Launcher : MonoBehaviourPunCallbacks
     //    }
     //}
 
-    [PunRPC]
-    void RPC_StartGame()
-    {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            PhotonNetwork.LoadLevel(1);//1 = build settings index, actual game...
-        }
-
-        //NOTE: Wala ng ikot, "loadingMenu" na dinaanan
-        //counrdown
-        // StartCoroutine(waiter());
-    }
-
     void Awake()
     {
         Instance = this;
@@ -317,8 +304,9 @@ public class Launcher : MonoBehaviourPunCallbacks
         if (PhotonNetwork.LocalPlayer != PhotonNetwork.MasterClient && PhotonNetwork.CurrentRoom.PlayerCount == minimumPlayer)
         {
             waitingForPlayersTextPublic.text = "GET READY";
-             waitingForPlayersTextPrivate.text = "GET READY";
-        } else
+            waitingForPlayersTextPrivate.text = "GET READY";
+        }
+        else
         {
             waitingForPlayersTextPublic.text = "Need at least " + minimumPlayer + " player";
             waitingForPlayersTextPrivate.text = "Need at least " + minimumPlayer + " player";
@@ -356,7 +344,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         int currentNoPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
 
         // x is >= 5
-        if ( currentNoPlayers >= minimumPlayer)
+        if (currentNoPlayers >= minimumPlayer)
         {
             bool minimumMet = currentNoPlayers >= minimumPlayer;
 
@@ -491,13 +479,9 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            PV = GetComponent<PhotonView>();
-            if (PV.IsMine)
-            {
-                PV.RPC(nameof(RPC_StartGame), RpcTarget.All);
-            }
-            //PhotonNetwork.LoadLevel(1);//1 = build settings index
+            PhotonNetwork.LoadLevel(2);//1 = build settings index, actual game...
         }
+
 
         PhotonNetwork.CurrentRoom.IsVisible = false;
         //PhotonNetwork.GetRoomList();

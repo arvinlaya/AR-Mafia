@@ -26,13 +26,13 @@ public class RoleReveal : MonoBehaviour, IOnEventCallback
     }
     void Start()
     {
-        PhotonNetwork.RaiseEvent(
-            SET_READY,
-            null,
-            new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient },
-            new SendOptions { Reliability = true });
+        // PhotonNetwork.RaiseEvent(
+        //     SET_READY,
+        //     null,
+        //     new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient },
+        //     new SendOptions { Reliability = true });
 
-        StartCoroutine(nameof(startTimer));
+        // StartCoroutine(nameof(startTimer));
     }
 
     void OnEnable()
