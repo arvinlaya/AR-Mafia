@@ -53,6 +53,8 @@ public class SpawnManager : MonoBehaviour
 
             index++;
         }
+
+        GameManager.Instance.startGenerateRoles();
     }
 
     Transform[] GetSpawnPoints(int playerCount)
@@ -80,10 +82,10 @@ public class SpawnManager : MonoBehaviour
     void RPC_InstantiatePlayer(int index)
     {
         Vector3 housePos = spawnPoints[index].position;
-        GameObject house = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerHouse"), housePos, Quaternion.identity);
+        GameObject house = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerHouse"), spawnPoints[index].position, Quaternion.identity);
         Vector3 playerPos = house.GetComponent<HouseController>().ownerLocation.position;
 
-        PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), playerPos, Quaternion.identity);
+        PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), position: playerPos, Quaternion.identity);
     }
 
     [PunRPC]
@@ -94,6 +96,7 @@ public class SpawnManager : MonoBehaviour
             if (player.NickName == playerNickname)
             {
                 playerSpawn.Add(player, spawnPoints[index].position);
+                ReferenceManager.Instance.panelParent.SetActive(true);
             }
         }
     }

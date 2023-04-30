@@ -49,6 +49,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public const int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20 // none
     public const int DAY_VOTE_LENGHT = 20; //20 // guilty, not guilty
 
+    public RoleReveal localRoleReveal;
     public GAME_PHASE GAME_STATE = GAME_PHASE.NIGHT;
     PhotonView PV;
     Role[] roles;
@@ -101,16 +102,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         base.OnEnable();
         PhotonNetwork.NetworkingClient.EventReceived -= Instance.OnEvent;
         PhotonNetwork.NetworkingClient.EventReceived += Instance.OnEvent;
-        if (PhotonNetwork.IsMasterClient)
-        {
-            SceneManager.sceneLoaded -= Instance.OnSceneLoad;
-            SceneManager.sceneLoaded += Instance.OnSceneLoad;
-        }
     }
 
-    public void OnSceneLoad(Scene scene, LoadSceneMode loadSceneMode)
+    public void startGenerateRoles()
     {
-        if (PhotonNetwork.IsMasterClient && scene.name == "Game")
+        if (PhotonNetwork.IsMasterClient)
         {
             // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
             // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING

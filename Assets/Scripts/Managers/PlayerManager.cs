@@ -6,6 +6,7 @@ using Photon.Realtime;
 using ExitGames.Client.Photon;
 public class PlayerManager : MonoBehaviour
 {
+    private bool started;
     PhotonView PV;
 
     void Awake()
@@ -16,9 +17,17 @@ public class PlayerManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (PV.IsMine && PhotonNetwork.IsMasterClient)
+        started = false;
+    }
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            // SpawnManager.Instance.SpawnPlayersAndHouses();
+            if (PhotonNetwork.IsMasterClient && PV.IsMine && !started)
+            {
+                started = true;
+                SpawnManager.Instance.SpawnPlayersAndHouses();
+            }
         }
     }
 

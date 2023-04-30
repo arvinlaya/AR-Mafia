@@ -11,28 +11,32 @@ public class RoleReveal : MonoBehaviour, IOnEventCallback
     private const byte UPDATE_TIMER = 20;
     private const byte COUNTDOWN_FINISH = 21;
     private const byte SET_READY = 22;
-
+    private bool isReady;
     private int readyCount;
     private int requiredReady;
     private int time;
+    private CanvasGroup canvasGroup;
+    private PreGameModel model;
     [SerializeField] private TMP_Text countdownText;
     [SerializeField] private GameObject parent;
 
     void Awake()
     {
+        isReady = false;
         readyCount = 0;
         requiredReady = PhotonNetwork.CurrentRoom.PlayerCount;
         time = 5;
+        canvasGroup = GetComponentInParent<CanvasGroup>();
+        model = GetComponentInChildren<PreGameModel>();
+        model.gameObject.SetActive(false);
+
+        GameManager.Instance.localRoleReveal = this;
     }
     void Start()
     {
-        // PhotonNetwork.RaiseEvent(
-        //     SET_READY,
-        //     null,
-        //     new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient },
-        //     new SendOptions { Reliability = true });
+        setReady();
+        StartCoroutine(nameof(startTimer));
 
-        // StartCoroutine(nameof(startTimer));
     }
 
     void OnEnable()
@@ -100,10 +104,10 @@ public class RoleReveal : MonoBehaviour, IOnEventCallback
             if (time <= 0)
             {
                 PhotonNetwork.RaiseEvent(
-            COUNTDOWN_FINISH,
-            data,
-            new RaiseEventOptions { Receivers = ReceiverGroup.All },
-            new SendOptions { Reliability = true });
+                COUNTDOWN_FINISH,
+                data,
+                new RaiseEventOptions { Receivers = ReceiverGroup.All },
+                new SendOptions { Reliability = true });
             }
             else
             {
@@ -118,5 +122,23 @@ public class RoleReveal : MonoBehaviour, IOnEventCallback
         {
             readyCount += 1;
         }
+    }
+
+    public void setReady()
+    {
+        if (isReady == false)
+        {
+            canvasGroup.alpha = 1;
+            model.gameObject.SetActive(true);
+
+            PhotonNetwork.RaiseEvent(
+                       SET_READY,
+                       null,
+                       new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient },
+                       new SendOptions { Reliability = true });
+
+            isReady = true;
+        }
+
     }
 }

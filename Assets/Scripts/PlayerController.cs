@@ -143,7 +143,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             PV.RPC("RPC_OnSetRole", targetPlayer, changedProps["ROLE"], targetPlayer.NickName);
         }
-
     }
 
     [PunRPC]
@@ -156,7 +155,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         GameObject model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Base"), playerController.transform.position, Quaternion.identity, 0, data);
         GameManager.Instance.activateDisplayRole(role);
-
+        Debug.Log("CALLED");
     }
     public void resetPlayerState()
     {

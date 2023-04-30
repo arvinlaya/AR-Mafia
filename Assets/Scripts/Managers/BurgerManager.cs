@@ -108,7 +108,6 @@ public class BurgerManager : MonoBehaviour
         if (PhotonNetwork.IsMasterClient) // important
         {
             Debug.Log("REMOVED");
-            SceneManager.sceneLoaded -= GameManager.Instance.OnSceneLoad; //important
             PhotonNetwork.NetworkingClient.EventReceived -= GameManager.Instance.OnEvent; //important
         }
 
