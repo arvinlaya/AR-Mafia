@@ -11,6 +11,11 @@ public class Model : MonoBehaviour, IPunInstantiateMagicCallback
     void Awake()
     {
         PV = gameObject.GetComponent<PhotonView>();
+        PlayerController parentController = PlayerManager.getPlayerController(PV.Owner);
+        if (!PV.IsMine)
+        {
+            parentController.isModelInstantiated = true;
+        }
     }
     public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
@@ -22,6 +27,7 @@ public class Model : MonoBehaviour, IPunInstantiateMagicCallback
         gameObject.transform.position = parentController.transform.position;
 
         GameObject newModel = null;
+        Debug.Log("ON PHOTON INSTANTIATE CALLED");
         if (PV.IsMine)
         {
             Destroy(gameObject);
@@ -51,11 +57,13 @@ public class Model : MonoBehaviour, IPunInstantiateMagicCallback
             parentController.animationSync = newModel.GetComponent<PhotonAnimatorView>();
             newModel.transform.SetParent(parentController.transform, true);
             newModel.transform.position = parentController.transform.position;
+            parentController.isModelInstantiated = true;
         }
         else
         {
             parentController.animator = gameObject.GetComponent<Animator>();
             parentController.animationSync = GetComponentInChildren<PhotonAnimatorView>();
+            gameObject.transform.Rotate(0, 180, 0);
         }
 
 

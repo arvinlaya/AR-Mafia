@@ -6,10 +6,7 @@ using UnityEngine.XR.ARSubsystems;
 
 public class RaycastScript : MonoBehaviour
 {
-    [SerializeField] GameObject spawnPoint5;
-    [SerializeField] GameObject spawnPoint6;
-    [SerializeField] GameObject spawnPoint7;
-    [SerializeField] GameObject spawnPoint8;
+    [SerializeField] GameObject spawnManager;
     public GameObject spawnPrefab;
     [SerializeField] ARAnchorManager aRAnchorManager;
     GameObject spawnedObject;
@@ -31,8 +28,8 @@ public class RaycastScript : MonoBehaviour
             if (arrayManager.Raycast(Input.GetTouch(0).position, hits, TrackableType.PlaneWithinPolygon))
             {
                 var hitpose = hits[0].pose;
-                ARAnchor anchor = aRAnchorManager.AddAnchor(hits[0].pose);
-                spawnPoint5.transform.SetParent(anchor.transform);
+                spawnManager.transform.position = hitpose.position;
+                SpawnManager.Instance.SpawnPlayersAndHouses();
             }
         }
     }

@@ -54,7 +54,10 @@ public class SpawnManager : MonoBehaviour
             index++;
         }
 
-        GameManager.Instance.startGenerateRoles();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            GameManager.Instance.startGenerateRoles();
+        }
     }
 
     Transform[] GetSpawnPoints(int playerCount)
@@ -95,7 +98,7 @@ public class SpawnManager : MonoBehaviour
         {
             if (player.NickName == playerNickname)
             {
-                playerSpawn.Add(player, spawnPoints[index].position);
+                playerSpawn.Add(player, value: spawnPoints[index].position);
                 ReferenceManager.Instance.panelParent.SetActive(true);
             }
         }

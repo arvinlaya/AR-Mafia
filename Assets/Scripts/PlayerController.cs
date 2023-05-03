@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public Player isInsideOf;
     public Player previousSaved;
     public int nightSaveInterval;
+    public bool isModelInstantiated;
     void Awake()
     {
         isSet = false;
@@ -46,6 +47,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         previousSaved = PhotonNetwork.LocalPlayer;
         nightSaveInterval = 0;
         disabledControls = true;
+        isModelInstantiated = false;
     }
 
     void Update()
@@ -99,11 +101,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
                 }
             }
         }
-
-        if (PV.IsMine)
-        {
-
-        }
     }
 
     PhotonView OnClick()
@@ -120,14 +117,17 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     void FixedUpdate()
     {
-        if (isMovingTo)
+        if (isModelInstantiated)
         {
-            transform.LookAt(new Vector3(moveTarget.position.x, transform.position.y, moveTarget.position.z));
-            move();
-        }
-        else
-        {
-            transform.LookAt(new Vector3(Camera.main.transform.position.x, transform.position.y, Camera.main.transform.position.z));
+            if (isMovingTo)
+            {
+                transform.LookAt(new Vector3(moveTarget.position.x, transform.position.y, moveTarget.position.z));
+                move();
+            }
+            else
+            {
+                transform.LookAt(new Vector3(ReferenceManager.Instance.camera.transform.position.x, transform.position.y, ReferenceManager.Instance.camera.transform.position.z));
+            }
         }
     }
 
@@ -139,8 +139,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         // base.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
 
-        if (changedProps["ROLE"] != null)
+        if (changedProps["ROLE"] != null && PhotonNetwork.IsMasterClient)
         {
+            Debug.Log("ROLE SET TO: " + targetPlayer.NickName);
             PV.RPC("RPC_OnSetRole", targetPlayer, changedProps["ROLE"], targetPlayer.NickName);
         }
     }
@@ -148,14 +149,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_OnSetRole(string role, string targetName)
     {
-
         Debug.Log("INSTANTIATED OBJECT TO: " + PV.Owner.NickName);
         PlayerController playerController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
         object[] data = { playerController.photonView.ViewID };
 
         GameObject model = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Base"), playerController.transform.position, Quaternion.identity, 0, data);
         GameManager.Instance.activateDisplayRole(role);
-        Debug.Log("CALLED");
     }
     public void resetPlayerState()
     {

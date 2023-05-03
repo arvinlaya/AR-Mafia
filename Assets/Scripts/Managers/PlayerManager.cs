@@ -26,6 +26,7 @@ public class PlayerManager : MonoBehaviour
             if (PhotonNetwork.IsMasterClient && PV.IsMine && !started)
             {
                 started = true;
+                Debug.Log("SPAWN PLAYERS AND HOUSES");
                 SpawnManager.Instance.SpawnPlayersAndHouses();
             }
         }
