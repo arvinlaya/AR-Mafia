@@ -440,11 +440,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         else if (eventCode == (byte)GameManager.EVENT_CODE.VILLAGER_WIN)
         {
-            Debug.Log("VILLAGER WON");
+            ReferenceManager.Instance.victoryPromptParent.SetActive(true);
+            ReferenceManager.Instance.victoryVillagerPrompt.SetActive(true);
         }
         else if (eventCode == (byte)GameManager.EVENT_CODE.MAFIA_WIN)
         {
-            Debug.Log("MAFIA WON");
+            ReferenceManager.Instance.victoryPromptParent.SetActive(true);
+            ReferenceManager.Instance.victoryMafiaPrompt.SetActive(true);
         }
         else if (eventCode == (byte)GameManager.EVENT_CODE.CAST_ACCUSE_VOTE)
         {

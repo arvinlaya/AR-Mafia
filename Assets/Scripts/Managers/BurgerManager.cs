@@ -11,8 +11,6 @@ public class BurgerManager : MonoBehaviour
     [SerializeField] private GameObject rulesPanel;
     [SerializeField] private GameObject myRolePanel;
     private Animator burgerAnimator;
-    private Animator rulesAnimator;
-    private Animator myRoleAnimator;
     private bool isActivated;
 
     void Awake()
@@ -25,8 +23,6 @@ public class BurgerManager : MonoBehaviour
         Instance = this;
         isActivated = false;
         burgerAnimator = GetComponent<Animator>();
-        rulesAnimator = rulesPanel.gameObject.GetComponent<Animator>();
-        myRoleAnimator = myRolePanel.gameObject.GetComponent<Animator>();
     }
 
     void Start()
@@ -84,22 +80,22 @@ public class BurgerManager : MonoBehaviour
             }
             isActivated = true;
         }
-        myRoleAnimator.SetBool("isOpen", true);
+        myRolePanel.SetActive(true);
     }
 
     public void closeMyRole()
     {
-        myRoleAnimator.SetBool("isOpen", false);
+        myRolePanel.SetActive(false);
     }
 
     public void openRules()
     {
-        rulesAnimator.SetBool("isOpen", true);
+        rulesPanel.SetActive(true);
     }
 
     public void closeRules()
     {
-        rulesAnimator.SetBool("isOpen", false);
+        rulesPanel.SetActive(false);
     }
     public void exit()
     {

@@ -15,10 +15,6 @@ public class HelpManager : MonoBehaviour
 
     public static HelpManager Instance;
     [SerializeField] private GameObject[] helpPanels;
-    private Animator storyPanelAnimator;
-    private Animator rolesPanelAnimator;
-    private Animator mechanicsPanelAnimator;
-    private Animator creditsPanelAnimator;
     // Start is called before the first frame update
 
     void Awake()
@@ -33,49 +29,46 @@ public class HelpManager : MonoBehaviour
 
     void Start()
     {
-        storyPanelAnimator = helpPanels[(int)PANEL_INDEX.STORY_INDEX].GetComponent<Animator>();
-        rolesPanelAnimator = helpPanels[(int)PANEL_INDEX.ROLES_INDEX].GetComponent<Animator>();
-        mechanicsPanelAnimator = helpPanels[(int)PANEL_INDEX.MECHANICS_INDEX].GetComponent<Animator>();
-        creditsPanelAnimator = helpPanels[(int)PANEL_INDEX.CREDITS_INDEX].GetComponent<Animator>();
     }
 
     public void openStoryPanel()
     {
-        storyPanelAnimator.SetBool("isOpen", true);
+        helpPanels[(int)PANEL_INDEX.STORY_INDEX].SetActive(true);
     }
 
     public void closeStoryPanel()
     {
-        storyPanelAnimator.SetBool("isOpen", false);
+        helpPanels[(int)PANEL_INDEX.STORY_INDEX].SetActive(false);
     }
 
     public void openRolesPanel()
     {
-        rolesPanelAnimator.SetBool("isOpen", true);
+        helpPanels[(int)PANEL_INDEX.ROLES_INDEX].SetActive(true);
     }
 
     public void closeRolesPanel()
     {
-        rolesPanelAnimator.SetBool("isOpen", false);
+        helpPanels[(int)PANEL_INDEX.ROLES_INDEX].SetActive(false);
+
     }
 
     public void openMechanicsPanel()
     {
-        mechanicsPanelAnimator.SetBool("isOpen", true);
+        helpPanels[(int)PANEL_INDEX.MECHANICS_INDEX].SetActive(true);
     }
 
     public void closeMechanicsPanel()
     {
-        mechanicsPanelAnimator.SetBool("isOpen", false);
+        helpPanels[(int)PANEL_INDEX.MECHANICS_INDEX].SetActive(false);
     }
 
     public void openCreditsPanel()
     {
-        creditsPanelAnimator.SetBool("isOpen", true);
+        helpPanels[(int)PANEL_INDEX.CREDITS_INDEX].SetActive(true);
     }
 
     public void closeCreditsPanel()
     {
-        creditsPanelAnimator.SetBool("isOpen", false);
+        helpPanels[(int)PANEL_INDEX.CREDITS_INDEX].SetActive(false);
     }
 }
