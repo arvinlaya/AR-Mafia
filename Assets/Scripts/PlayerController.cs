@@ -30,7 +30,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public Player isInsideOf;
     public Player previousSaved;
     public int nightSaveInterval;
-    public bool isModelInstantiated;
     void Awake()
     {
         isSet = false;
@@ -47,7 +46,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         previousSaved = PhotonNetwork.LocalPlayer;
         nightSaveInterval = 0;
         disabledControls = true;
-        isModelInstantiated = false;
     }
 
     void Update()
@@ -117,7 +115,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     void FixedUpdate()
     {
-        if (isModelInstantiated)
+        if (GameManager.Instance.gameStarted)
         {
             if (isMovingTo)
             {

@@ -20,8 +20,6 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] Transform[] PlayerSpawn8;
 
     public Transform[] spawnPoints;
-
-    public IDictionary<Player, Vector3> playerSpawn;
     void Awake()
     {
         PV = GetComponent<PhotonView>();
@@ -31,7 +29,6 @@ public class SpawnManager : MonoBehaviour
             return;
         }
         Instance = this;
-        playerSpawn = new Dictionary<Player, Vector3>();
     }
     // Start is called before the first frame update
     void Start()
@@ -98,7 +95,6 @@ public class SpawnManager : MonoBehaviour
         {
             if (player.NickName == playerNickname)
             {
-                playerSpawn.Add(player, value: spawnPoints[index].position);
                 ReferenceManager.Instance.panelParent.SetActive(true);
             }
         }
