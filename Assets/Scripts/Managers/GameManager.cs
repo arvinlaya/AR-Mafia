@@ -131,15 +131,15 @@ public class GameManager : MonoBehaviourPunCallbacks
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
-                // if (player.IsMasterClient)
-                // {
-                //     roleCustomProps.Add("ROLE", "DOCTOR");
-                // }
-                // else
-                // {
-                //     roleCustomProps.Add("ROLE", "VILLAGER");
-                // }
-                roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+                if (player.IsMasterClient)
+                {
+                    roleCustomProps.Add("ROLE", "MAFIA");
+                }
+                else
+                {
+                    roleCustomProps.Add("ROLE", "VILLAGER");
+                }
+                // roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
                 player.SetCustomProperties(roleCustomProps);

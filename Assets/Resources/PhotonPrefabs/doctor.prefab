@@ -154,7 +154,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1075990138120466478}
-  m_LocalRotation: {x: 0.6076559, y: -0.0000003468091, z: 0.000000032843705, w: 0.7942004}
+  m_LocalRotation: {x: 0.60765594, y: -0.00000034680912, z: 0.000000032843715, w: 0.7942004}
   m_LocalPosition: {x: 1.6394702e-11, y: 0.0012715927, z: 7.956799e-12}
   m_LocalScale: {x: 1, y: 1.0000147, z: 0.9999967}
   m_ConstrainProportionsScale: 0
@@ -375,7 +375,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2560366903859729483}
-  m_LocalRotation: {x: -0.000000053457914, y: 0.00000006421226, z: -0.84646875, w: 0.5324385}
+  m_LocalRotation: {x: -0.00000005345791, y: 0.00000006421221, z: -0.8464687, w: 0.5324385}
   m_LocalPosition: {x: -0, y: 0.001796037, z: 0}
   m_LocalScale: {x: 1.0000002, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -407,7 +407,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2805456430428569942}
-  m_LocalRotation: {x: 0.000000047449042, y: -7.405563e-10, z: 0.84646875, w: 0.5324385}
+  m_LocalRotation: {x: 0.00000004744903, y: -7.4056566e-10, z: 0.8464687, w: 0.5324385}
   m_LocalPosition: {x: -0, y: 0.001796037, z: 0}
   m_LocalScale: {x: 1.0000002, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -488,11 +488,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4121561138033707154}
-  - component: {fileID: 4440469132774684774}
-  - component: {fileID: 6162637878671398953}
-  - component: {fileID: 2735344386297505258}
-  - component: {fileID: 7455935039479894843}
-  - component: {fileID: -3105533259962046073}
+  - component: {fileID: -1092019583171771264}
+  - component: {fileID: 5665413864186157128}
+  - component: {fileID: 3916834978450944685}
+  - component: {fileID: -465494739185120224}
+  - component: {fileID: 6592403261612509900}
   m_Layer: 0
   m_Name: doctor
   m_TagString: Untagged
@@ -507,7 +507,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3637055444842549800}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -516,8 +516,30 @@ Transform:
   - {fileID: 2180191964389867300}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!114 &4440469132774684774
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-1092019583171771264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3637055444842549800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &5665413864186157128
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -529,7 +551,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bc3527412b883349b199dd9985a986d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!95 &6162637878671398953
+--- !u!95 &3916834978450944685
 Animator:
   serializedVersion: 4
   m_ObjectHideFlags: 0
@@ -549,30 +571,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &2735344386297505258
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3637055444842549800}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: -3105533259962046073}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
---- !u!114 &7455935039479894843
+--- !u!114 &-465494739185120224
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -590,7 +589,7 @@ MonoBehaviour:
   precomputeOutline: 1
   bakeKeys: []
   bakeValues: []
---- !u!114 &-3105533259962046073
+--- !u!114 &6592403261612509900
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -834,7 +833,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 1221480521951414392, guid: 7d4294e6dab34c347a234032b5bf4693, type: 3}
+  m_Mesh: {fileID: 1221480521951414392, guid: 0f54f9635ba8d644b973488df05e0ec6, type: 3}
   m_Bones:
   - {fileID: 7276825964223042123}
   - {fileID: 902516817418780711}
@@ -861,8 +860,8 @@ SkinnedMeshRenderer:
   m_BlendShapeWeights: []
   m_RootBone: {fileID: 7276825964223042123}
   m_AABB:
-    m_Center: {x: 4.656613e-10, y: 0.002315474, z: -0.0000000016298145}
-    m_Extent: {x: 0.006165149, y: 0.0067383675, z: 0.0020361524}
+    m_Center: {x: 4.656613e-10, y: 0.0023154742, z: -0.0000000016298145}
+    m_Extent: {x: 0.0061651487, y: 0.006738367, z: 0.0020361524}
   m_DirtyAABB: 0
 --- !u!1 &4655997487384768607
 GameObject:
@@ -1143,7 +1142,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7811671012427563833}
-  m_LocalRotation: {x: 0.6076559, y: 0.0000003333791, z: -0.000000024308429, w: 0.7942004}
+  m_LocalRotation: {x: 0.60765594, y: 0.0000003333791, z: -0.000000024308452, w: 0.7942004}
   m_LocalPosition: {x: -1.6917696e-11, y: 0.0012715927, z: 7.96998e-12}
   m_LocalScale: {x: 1, y: 1.0000147, z: 0.9999967}
   m_ConstrainProportionsScale: 0
