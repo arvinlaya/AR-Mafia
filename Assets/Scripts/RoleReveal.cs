@@ -26,7 +26,7 @@ public class RoleReveal : MonoBehaviour, IOnEventCallback
         readyCount = 0;
         requiredReady = PhotonNetwork.CurrentRoom.PlayerCount;
         time = 5;
-        canvasGroup = GetComponentInParent<CanvasGroup>();
+        canvasGroup = parent.GetComponent<CanvasGroup>();
         model = GetComponentInChildren<PreGameModel>();
         model.gameObject.SetActive(false);
 

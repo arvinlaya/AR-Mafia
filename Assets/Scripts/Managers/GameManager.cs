@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public RoleReveal localRoleReveal;
     public GAME_PHASE GAME_STATE = GAME_PHASE.NIGHT;
+    public bool gameStarted;
     PhotonView PV;
     Role[] roles;
     public event Action OnPhaseChange;
@@ -65,6 +66,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private int dayCount;
     private int aliveCount;
     private string localRole;
+
     void Awake()
     {
 
@@ -78,6 +80,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        GameManager.Instance.gameStarted = false;
         ReadyManager.Instance.setRequiredReady(PhotonNetwork.PlayerList.Count());
         CooldownManager.Instance.setDoorCooldown(false);
         CooldownManager.Instance.setSkillCooldown(false);
@@ -128,15 +131,15 @@ public class GameManager : MonoBehaviourPunCallbacks
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
-                // if (player.IsMasterClient)
-                // {
-                //     roleCustomProps.Add("ROLE", "DOCTOR");
-                // }
-                // else
-                // {
-                //     roleCustomProps.Add("ROLE", "VILLAGER");
-                // }
-                roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+                if (player.IsMasterClient)
+                {
+                    roleCustomProps.Add("ROLE", "MAFIA");
+                }
+                else
+                {
+                    roleCustomProps.Add("ROLE", "VILLAGER");
+                }
+                // roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
                 player.SetCustomProperties(roleCustomProps);
@@ -313,13 +316,14 @@ public class GameManager : MonoBehaviourPunCallbacks
         ReadyManager.Instance.setReady(true);
 
         yield return new WaitUntil(() => ReadyManager.Instance.getIsAllReady());
+
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.CustomProperties["IS_INSTANTIATED"] == null)
         {
             PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable() { { "IS_INSTANTIATED", true } });
         }
 
         yield return StartCoroutine(UIManager.Instance.setGamePhase((byte)phase));
-
+        GameManager.Instance.gameStarted = true;
         InitializeTimer((byte)phase);
 
         UIManager.Instance.setDayCount(dayCount, (byte)phase);
@@ -436,11 +440,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         else if (eventCode == (byte)GameManager.EVENT_CODE.VILLAGER_WIN)
         {
-            Debug.Log("VILLAGER WON");
+            ReferenceManager.Instance.victoryPromptParent.SetActive(true);
+            ReferenceManager.Instance.victoryVillagerPrompt.SetActive(true);
         }
         else if (eventCode == (byte)GameManager.EVENT_CODE.MAFIA_WIN)
         {
-            Debug.Log("MAFIA WON");
+            ReferenceManager.Instance.victoryPromptParent.SetActive(true);
+            ReferenceManager.Instance.victoryMafiaPrompt.SetActive(true);
         }
         else if (eventCode == (byte)GameManager.EVENT_CODE.CAST_ACCUSE_VOTE)
         {
