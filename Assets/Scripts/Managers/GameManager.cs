@@ -329,6 +329,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         InitializeTimer((byte)phase);
 
         UIManager.Instance.setDayCount(dayCount, (byte)phase);
+        PhotonVoiceManager.Instance.checkMicState(GameManager.Instance.GAME_STATE);
 
         ReadyManager.Instance.resetReady();
     }

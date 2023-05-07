@@ -15,13 +15,23 @@ public class PhotonVoiceManager : MonoBehaviourPunCallbacks
     private Recorder recorder;
     private Speaker speaker;
     private VoiceConnection vc;
-
     private bool isMuted = false;
+    private bool isAllowed;
     private AudioSource audioSource;
-
+    public static PhotonVoiceManager Instance;
+    void Awake()
+    {
+        if (Instance)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
     // Start is called before the first frame update
     void Start()
     {
+        isAllowed = false;
         recorder = GetComponent<Recorder>();
         speaker = GetComponent<Speaker>();
 
@@ -31,8 +41,20 @@ public class PhotonVoiceManager : MonoBehaviourPunCallbacks
 
     }
 
-    //void someFunc(GameManager.Instance)
-    
+    public void checkMicState(GameManager.GAME_PHASE game_phase)
+    {
+        if (game_phase == GameManager.GAME_PHASE.NIGHT)
+        {
+            isAllowed = false;
+        }
+        else
+        {
+            isAllowed = true;
+        }
+    }
+
+    //void someFunc(GameManager.Instance)   
+
     // Update is called once per frame
     void Update()
     {
