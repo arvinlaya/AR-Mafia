@@ -53,15 +53,15 @@ public class PhotonVoiceManager : MonoBehaviourPunCallbacks
     {
         if (game_phase == GameManager.GAME_PHASE.NIGHT)
         {
-                // mute the speaker
-                    audioSource.volume = 0;
-                    isMuted = true;
+            // mute the speaker
+            audioSource.volume = 0;
+            isMuted = true;
         }
         else
         {
-                // Unmute the speaker
-                audioSource.volume = 1;
-                isMuted = false;
+            // Unmute the speaker
+            audioSource.volume = 1;
+            isMuted = false;
         }
     }
 
