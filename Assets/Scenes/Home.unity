@@ -2713,7 +2713,6 @@ MonoBehaviour:
   chatPanel: {fileID: 0}
   username: 
   currentChat: 
-  privateReceiver: 
   chatField: {fileID: 0}
   chatDisplayItemPrefab2: {fileID: 0}
   firstChatMessageForMafia: {fileID: 0}
@@ -4236,7 +4235,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 176.75, y: -284.02}
+  m_AnchoredPosition: {x: 176.75, y: -284.02002}
   m_SizeDelta: {x: 352, y: 568.04}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &248214491
@@ -6112,8 +6111,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -92.87799}
-  m_SizeDelta: {x: -9.116211, y: -185.01422}
+  m_AnchoredPosition: {x: 0, y: -92.87793}
+  m_SizeDelta: {x: -54.51709, y: -94.769165}
   m_Pivot: {x: 0.49999994, y: 1}
 --- !u!114 &357273809
 MonoBehaviour:
@@ -7659,6 +7658,7 @@ GameObject:
   - component: {fileID: 453004189}
   - component: {fileID: 453004191}
   - component: {fileID: 453004190}
+  - component: {fileID: 453004192}
   m_Layer: 5
   m_Name: WaitingForPlayers
   m_TagString: Untagged
@@ -7725,6 +7725,62 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 453004188}
   m_CullTransparentMesh: 1
+--- !u!114 &453004192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 453004188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 453004190}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1311809070}
+        m_TargetAssemblyTypeName: Launcher, Assembly-CSharp
+        m_MethodName: OnClickReadyBtn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &463403042
 GameObject:
   m_ObjectHideFlags: 0
@@ -10747,6 +10803,7 @@ GameObject:
   - component: {fileID: 666340309}
   - component: {fileID: 666340311}
   - component: {fileID: 666340310}
+  - component: {fileID: 666340312}
   m_Layer: 5
   m_Name: WaitingForPlayers
   m_TagString: Untagged
@@ -10813,6 +10870,62 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 666340308}
   m_CullTransparentMesh: 1
+--- !u!114 &666340312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 666340308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 666340310}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1311809070}
+        m_TargetAssemblyTypeName: Launcher, Assembly-CSharp
+        m_MethodName: OnClickReadyBtn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &667734956
 GameObject:
   m_ObjectHideFlags: 0
@@ -11330,7 +11443,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 187.87502, y: -241.753}
+  m_AnchoredPosition: {x: 187.875, y: -241.753}
   m_SizeDelta: {x: 375.75, y: 353.52}
   m_Pivot: {x: 0.50000006, y: 1}
 --- !u!114 &690152168
@@ -11518,8 +11631,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -70.66547}
-  m_SizeDelta: {x: -7.7612, y: -140.1872}
+  m_AnchoredPosition: {x: 0, y: -70.66553}
+  m_SizeDelta: {x: -53.16208, y: -49.94214}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &707692314
 MonoBehaviour:
@@ -13068,7 +13181,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &799601370
 RectTransform:
   m_ObjectHideFlags: 0
@@ -22047,6 +22160,8 @@ MonoBehaviour:
   hostNamePrivate: {fileID: 800622267}
   startGameButtonPublic: {fileID: 799601369}
   startGameButtonPrivate: {fileID: 82731699}
+  startTextPublic: {fileID: 0}
+  startTextPrivate: {fileID: 0}
   privateGameNumberOfPlayers: {fileID: 2094277028}
   publicGameNumberOfPlayers: {fileID: 66706496}
   ignModal: {fileID: 265653522}
@@ -22303,7 +22418,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -22, y: 427.62875}
+  m_AnchoredPosition: {x: -22, y: 427.62878}
   m_SizeDelta: {x: 0, y: 1582}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &1325843698
@@ -30480,7 +30595,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -217, y: 427.62906}
+  m_AnchoredPosition: {x: -217, y: 427.62903}
   m_SizeDelta: {x: 434, y: 1750}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &1869103746
@@ -36419,7 +36534,6 @@ MonoBehaviour:
   chatPanel: {fileID: 853744042294286118}
   username: 
   currentChat: 
-  privateReceiver: 
   chatField: {fileID: 853744042177663887}
   chatDisplayItemPrefab2: {fileID: 0}
   firstChatMessageForMafia: {fileID: 0}

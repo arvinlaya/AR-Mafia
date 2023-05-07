@@ -33,9 +33,10 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     //Max player
     //Mali yung description, ito yung "# of p+ Launcher.Instance._layers before you can START the game from the Room
+    // Original = 8,5
     private const int maxPlayer = 8;
     //Ito yung kailangan na players before mag start, at least ganito karami: 
-    private const int minimumPlayer = 5;
+    private const int minimumPlayer = 3;
     //START GAME
 
     //change to "Host can start" when min is met
@@ -51,6 +52,8 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     [SerializeField] GameObject startGameButtonPublic;
     [SerializeField] GameObject startGameButtonPrivate;
+    [SerializeField] TMP_Text startTextPublic;
+    [SerializeField] TMP_Text startTextPrivate;
 
     [SerializeField] TMP_Text privateGameNumberOfPlayers;
     [SerializeField] TMP_Text publicGameNumberOfPlayers;
@@ -74,6 +77,13 @@ public class Launcher : MonoBehaviourPunCallbacks
     private bool gameStarted = false;
 
     private PhotonView PV;
+
+    // this = player in room count
+    // if readty is press, --
+    // if 1 or less, show start bnutton
+    private int countOfReadyPlayers = 0;
+
+    private bool allIsReady = false;
 
     //RECONNECTION
     //ROOM OPTIONS
@@ -130,6 +140,15 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     void Update()
     {
+            if (allIsReady && PhotonNetwork.IsMasterClient)
+            {
+                Debug.Log("ALL IS READY? " + allIsReady);
+                waitingPlayerCardPublic.SetActive(false);
+                waitingPlayerCardPrivate.SetActive(false);
+
+                startGameButtonPublic.SetActive(true);
+                startGameButtonPrivate.SetActive(true);
+            }
     }
 
     public override void OnConnectedToMaster()
@@ -250,15 +269,22 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void CreateRoom()
     {
-        Debug.LogError("Ducks");
         roomOptions.PlayerTtl = 5000; // 5 secs
         roomOptions.EmptyRoomTtl = 1; // 1ms
         roomOptions.MaxPlayers = maxPlayer;
 
+        // Set custom room properties
+        Hashtable props = new Hashtable();
+        props.Add("NumReadyPlayers", 0);
+        roomOptions.CustomRoomProperties = props;
+        roomOptions.CustomRoomPropertiesForLobby = new string[] { "NumReadyPlayers" };
+
         isPrivate = false;
         PhotonNetwork.CreateRoom("R-" + Random.Range(0, 1000).ToString("0000"), roomOptions: roomOptions);
+
         MenuManager.Instance.OpenMenu("loading");
     }
+
 
     public override void OnJoinedRoom()
     {
@@ -270,6 +296,48 @@ public class Launcher : MonoBehaviourPunCallbacks
         // }
         SpawnPlayersInList();
     }
+
+    public void OnClickReadyBtn()
+    {
+        // Get the current number of ready players from the room custom property
+
+        countOfReadyPlayers = (int)PhotonNetwork.CurrentRoom.CustomProperties["NumReadyPlayers"];
+
+        // Increment the number of ready players
+        countOfReadyPlayers++;
+
+        // Update the room custom property
+        Hashtable props = new Hashtable();
+        props["NumReadyPlayers"] = countOfReadyPlayers;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(props);
+
+        waitingPlayerCardPrivate.SetActive(false);
+        waitingPlayerCardPublic.SetActive(false);
+    }
+
+    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
+    {
+        Debug.LogWarning("READY!");
+        // Check if all players are ready
+        if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("NumReadyPlayers", out object numReadyPlayersObj))
+        {
+            int numReady = (int)numReadyPlayersObj;
+
+            Debug.LogWarning("READT NA #" + numReady);
+
+            //check only if min is met
+            if ( PhotonNetwork.CurrentRoom.PlayerCount >= minimumPlayer)
+            {
+                if (numReady == PhotonNetwork.CurrentRoom.PlayerCount - 1)
+                {
+                    Debug.LogWarning("PANALO!");
+                    allIsReady = true;
+                }
+
+            }
+        }
+    }
+
 
     private void SpawnPlayersInList()
     {
@@ -305,6 +373,11 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             waitingForPlayersTextPublic.text = "GET READY";
             waitingForPlayersTextPrivate.text = "GET READY";
+        }
+        else if (PhotonNetwork.LocalPlayer == PhotonNetwork.MasterClient && PhotonNetwork.CurrentRoom.PlayerCount == minimumPlayer)
+        {
+            waitingForPlayersTextPublic.text = "Waiting to Accept";
+            waitingForPlayersTextPrivate.text = "Waiting to Accept";
         }
         else
         {
@@ -343,18 +416,23 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         int currentNoPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
 
+        //for ready check
+        //need to --,to start
+        countOfReadyPlayers = currentNoPlayers;
+
         // x is >= 5
         if (currentNoPlayers >= minimumPlayer)
         {
             bool minimumMet = currentNoPlayers >= minimumPlayer;
 
-            if (minimumMet && PhotonNetwork.IsMasterClient)
+            if (allIsReady && PhotonNetwork.IsMasterClient)
             {
+                Debug.Log("ALL IS READY? " + allIsReady);
                 waitingPlayerCardPublic.SetActive(false);
                 waitingPlayerCardPrivate.SetActive(false);
 
-                startGameButtonPublic.SetActive(minimumMet);
-                startGameButtonPrivate.SetActive(minimumMet);
+                startGameButtonPublic.SetActive(true);
+                startGameButtonPrivate.SetActive(true);
             }
             else if (minimumMet)
             {
@@ -531,9 +609,14 @@ public class Launcher : MonoBehaviourPunCallbacks
         string roomName = "PR-" + Random.Range(0, 1000).ToString("0000");
         Debug.Log("CREATING PRIVATE ROOM:" + roomName + ":" + password);
 
+        // Create a new room with custom properties
+        Hashtable customRoomProperties = new Hashtable();
         RoomOptions roomOptions = new RoomOptions();
-        roomOptions.CustomRoomProperties = new Hashtable() { { "isPrivate", true }, { "password", password } };
-        roomOptions.CustomRoomPropertiesForLobby = new string[] { "isPrivate", "password" };
+        customRoomProperties.Add("isPrivate", true);
+        customRoomProperties.Add("password", password);
+        customRoomProperties.Add("NumReadyPlayers", 0);
+        roomOptions.CustomRoomProperties = customRoomProperties;
+        roomOptions.CustomRoomPropertiesForLobby = new string[] { "isPrivate", "password", "NumReadyPlayers" };
         roomOptions.MaxPlayers = 8;
 
         roomOptions.PlayerTtl = 5000; // 5 secs
@@ -543,6 +626,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         MenuManager.Instance.OpenMenu("loading");
         isPrivate = true;
+
     }
 
     public void JoinRoomPrivate()
