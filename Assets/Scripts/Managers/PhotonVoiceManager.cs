@@ -16,7 +16,8 @@ public class PhotonVoiceManager : MonoBehaviourPunCallbacks
     private Speaker speaker;
     private VoiceConnection vc;
 
-    private GameManager gm;
+    private bool isMuted = false;
+    private AudioSource audioSource;
 
     // Start is called before the first frame update
     void Start()
@@ -24,37 +25,46 @@ public class PhotonVoiceManager : MonoBehaviourPunCallbacks
         recorder = GetComponent<Recorder>();
         speaker = GetComponent<Speaker>();
 
-        gm = FindObjectOfType<GameManager>();
+        ///gm = FindObjectOfType<GameManager>();
+
+        audioSource = GetComponent<AudioSource>();
+
     }
 
+    //void someFunc(GameManager.Instance)
+    
     // Update is called once per frame
     void Update()
     {
 
-        Debug.LogError("Current Phase:" + gm.currentPhase);
-        if (gm != null)
-        {
-            switch (gm.currentPhase)
-            {
-                case GameManager.GAME_PHASE.NIGHT:
-                    if (PhotonNetwork.IsConnected && photonView.IsMine)
-                    {
-                        photonView.RPC("StopAllRecording", RpcTarget.All);
-                    }
-                    break;
-                case GameManager.GAME_PHASE.DAY_DISCUSSION:
-                    if (PhotonNetwork.IsConnected && photonView.IsMine)
-                    {
-                        photonView.RPC("EnableAllRecording", RpcTarget.All);
-                    }
-                    break;
-                default:
-                    break;
+        //Debug.LogError("Current Phase:" + gm.currentPhase);
 
-            }
-        }
+        //if(gm != null)
+        //{
+        //    if (gm.currentPhase == GameManager.GAME_PHASE.NIGHT)
+        //    {
+        //        if (PhotonNetwork.IsConnected && photonView.IsMine)
+        //        {
+        //            // Mute the speaker
+        //            audioSource.volume = 0;
+        //            isMuted = true;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        // Unmute the speaker
+        //        audioSource.volume = 1;
+        //        isMuted = false;
+        //    }
+
+        //}
 
     }
+
+
+
+
+
 
     [PunRPC]
     private void EnableAllRecording()
