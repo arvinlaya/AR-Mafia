@@ -41,15 +41,27 @@ public class PhotonVoiceManager : MonoBehaviourPunCallbacks
 
     }
 
+    public void OnClickMuteButtonSAM()
+    {
+        // Toggle the mute property of the AudioSource component
+        recorder.TransmitEnabled = !recorder.TransmitEnabled;
+        recorder.RecordingEnabled = !recorder.RecordingEnabled;
+
+    }
+
     public void checkMicState(GameManager.GAME_PHASE game_phase)
     {
         if (game_phase == GameManager.GAME_PHASE.NIGHT)
         {
-            isAllowed = false;
+                // mute the speaker
+                    audioSource.volume = 0;
+                    isMuted = true;
         }
         else
         {
-            isAllowed = true;
+                // Unmute the speaker
+                audioSource.volume = 1;
+                isMuted = false;
         }
     }
 

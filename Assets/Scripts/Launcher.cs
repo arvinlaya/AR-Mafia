@@ -36,7 +36,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     // Original = 8,5
     private const int maxPlayer = 8;
     //Ito yung kailangan na players before mag start, at least ganito karami: 
-    private const int minimumPlayer = 3;
+    private const int minimumPlayer = 2;
     //START GAME
 
     //change to "Host can start" when min is met
