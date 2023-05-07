@@ -67,6 +67,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     private int aliveCount;
     private string localRole;
 
+    public GAME_PHASE currentPhase;
+
     void Awake()
     {
 

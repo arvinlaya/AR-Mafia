@@ -53,6 +53,8 @@ MonoBehaviour:
   - RPC_setReady
   - RPC_StartGame
   - RPC_syncDayCount
+  - EnableAllRecording
+  - StopAllRecording
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
