@@ -21,7 +21,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
     [SerializeField] string username;
     [SerializeField] string currentChat;
 
-    [SerializeField] string privateReceiver = "";
+    //[SerializeField] string privateReceiver = "";
     [SerializeField] TMP_InputField chatField;
     //[SerializeField] TMP_Text chatDisplay;
     [SerializeField] TMP_Text chatDisplayItemPrefab2;
@@ -34,6 +34,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
     private string myChannelName;
 
     bool isMafia = false;
+    bool rolesGiven = false;
 
     public void UsernameOnValueChange(string valueIn)
     {
@@ -47,10 +48,11 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
 
     public void SubmitPublicChatOnClick()
     {
-        if (privateReceiver == "" && currentChat != "")
+        if (currentChat != "")
         {
             if (currentChat.Contains("/m"))
             {
+                Debug.Log("mafia chat");
                 chatClient.PublishMessage("MafiaCH", currentChat.Replace("/m", "(MAFIA)\n"));
             }
             else
@@ -80,6 +82,24 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         //throw new System.NotImplementedException();
     }
 
+
+    public void JoinMafiaChAfterLoaded()
+    {
+
+        if (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString().Trim() == "MAFIA")
+        {
+            isMafia = true;
+        }
+
+        if (isMafia)
+        {
+            chatClient.Subscribe(new string[] { "MafiaCH" });
+            firstChatMessageForMafia.SetActive(true);
+        }
+        else firstChatMessageForMafia.SetActive(false);
+
+    }
+
     public void OnConnected()
     {
         //foreach (Transform trans in chatDisplayContent)
@@ -95,17 +115,6 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         //TODO Gawing "PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("ROLE")" pag 'di na pang demo
         //if (PhotonNetwork.LocalPlayer.NickName.ToLower().Contains("mf")) isMafia = true;
 
-        if (PhotonNetwork.LocalPlayer.CustomProperties["ROLE"].ToString().Trim() == "MAFIA")
-        {
-            isMafia = true;
-        }
-
-        if (isMafia)
-        {
-            chatClient.Subscribe(new string[] { "MafiaCH" });
-            firstChatMessageForMafia.SetActive(true);
-        }
-        else firstChatMessageForMafia.SetActive(false);
     }
 
     public void OnDisconnected()
@@ -190,6 +199,14 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
             }
         }
 
+        if (!rolesGiven)
+        {
+            if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("ROLE"))
+            {
+                JoinMafiaChAfterLoaded();
+                rolesGiven = true;
+            }
+        }
     }
 
     public void OnClickChatButton()
@@ -201,3 +218,4 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         else chatPanel.SetActive(true);
     }
 }
+
