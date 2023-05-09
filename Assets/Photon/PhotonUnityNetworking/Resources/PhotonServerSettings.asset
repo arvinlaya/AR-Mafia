@@ -55,6 +55,7 @@ MonoBehaviour:
   - RPC_syncDayCount
   - EnableAllRecording
   - StopAllRecording
+  - RPC_setHouseAndPlayerParent
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -23,13 +23,20 @@ public class RaycastScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.touchCount > 0)
         {
-            if (arrayManager.Raycast(Input.GetTouch(0).position, hits, TrackableType.PlaneWithinPolygon))
+            if (Input.touchCount > 0 && !objectSpawned)
             {
-                var hitpose = hits[0].pose;
-                spawnManager.transform.position = hitpose.position;
-                SpawnManager.Instance.SpawnPlayersAndHouses();
+                if (arrayManager.Raycast(Input.GetTouch(0).position, hits, TrackableType.PlaneWithinPolygon))
+                {
+                    if (!objectSpawned)
+                    {
+                        objectSpawned = true;
+                        var hitpose = hits[0].pose;
+                        spawnManager.transform.position = hitpose.position;
+                        SpawnManager.Instance.SpawnPlayersAndHouses();
+                    }
+
+                }
             }
         }
     }
