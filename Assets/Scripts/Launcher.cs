@@ -297,48 +297,6 @@ public class Launcher : MonoBehaviourPunCallbacks
         SpawnPlayersInList();
     }
 
-    public void OnClickReadyBtn()
-    {
-        // Get the current number of ready players from the room custom property
-
-        countOfReadyPlayers = (int)PhotonNetwork.CurrentRoom.CustomProperties["NumReadyPlayers"];
-
-        // Increment the number of ready players
-        countOfReadyPlayers++;
-
-        // Update the room custom property
-        Hashtable props = new Hashtable();
-        props["NumReadyPlayers"] = countOfReadyPlayers;
-        PhotonNetwork.CurrentRoom.SetCustomProperties(props);
-
-        waitingPlayerCardPrivate.SetActive(false);
-        waitingPlayerCardPublic.SetActive(false);
-    }
-
-    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
-    {
-        Debug.LogWarning("READY!");
-        // Check if all players are ready
-        if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("NumReadyPlayers", out object numReadyPlayersObj))
-        {
-            int numReady = (int)numReadyPlayersObj;
-
-            Debug.LogWarning("READT NA #" + numReady);
-
-            //check only if min is met
-            if ( PhotonNetwork.CurrentRoom.PlayerCount >= minimumPlayer)
-            {
-                if (numReady == PhotonNetwork.CurrentRoom.PlayerCount - 1)
-                {
-                    Debug.LogWarning("PANALO!");
-                    allIsReady = true;
-                }
-
-            }
-        }
-    }
-
-
     private void SpawnPlayersInList()
     {
 
@@ -427,7 +385,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
             if (allIsReady && PhotonNetwork.IsMasterClient)
             {
-                Debug.Log("ALL IS READY? " + allIsReady);
                 waitingPlayerCardPublic.SetActive(false);
                 waitingPlayerCardPrivate.SetActive(false);
 
