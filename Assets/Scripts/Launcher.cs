@@ -36,7 +36,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     // Original = 8,5
     private const int maxPlayer = 8;
     //Ito yung kailangan na players before mag start, at least ganito karami: 
-    private const int minimumPlayer = 3;
+    private const int minimumPlayer = 5;
     //START GAME
 
     //change to "Host can start" when min is met
@@ -90,6 +90,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     RoomOptions roomOptions = new RoomOptions();
 
 
+    [SerializeField] GameObject readyBtnCardPublic;
+    [SerializeField] GameObject readyBtnCardPrivate;
     // can be use to improve code in the future
 
     //[PunRPC]
@@ -136,19 +138,6 @@ public class Launcher : MonoBehaviourPunCallbacks
     public int getMinPlayer()
     {
         return minimumPlayer;
-    }
-
-    void Update()
-    {
-            if (allIsReady && PhotonNetwork.IsMasterClient)
-            {
-                Debug.Log("ALL IS READY? " + allIsReady);
-                waitingPlayerCardPublic.SetActive(false);
-                waitingPlayerCardPrivate.SetActive(false);
-
-                startGameButtonPublic.SetActive(true);
-                startGameButtonPrivate.SetActive(true);
-            }
     }
 
     public override void OnConnectedToMaster()
@@ -288,65 +277,19 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        // if (PhotonNetwork.IsMasterClient)
-        // {
-        // hashRoomOwner.Add("RoomOwner", PhotonNetwork.NickName);
-        // PhotonNetwork.CurrentRoom.SetCustomProperties(hashRoomOwner);
-        // Debug.Log("setting Room Owner HASH\n" + (int)PhotonNetwork.CurrentRoom.CustomProperties["RoomOwner"]);
-        // }
         SpawnPlayersInList();
     }
 
-    public void OnClickReadyBtn()
-    {
-        // Get the current number of ready players from the room custom property
-
-        countOfReadyPlayers = (int)PhotonNetwork.CurrentRoom.CustomProperties["NumReadyPlayers"];
-
-        // Increment the number of ready players
-        countOfReadyPlayers++;
-
-        // Update the room custom property
-        Hashtable props = new Hashtable();
-        props["NumReadyPlayers"] = countOfReadyPlayers;
-        PhotonNetwork.CurrentRoom.SetCustomProperties(props);
-
-        waitingPlayerCardPrivate.SetActive(false);
-        waitingPlayerCardPublic.SetActive(false);
-    }
-
-    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
-    {
-        Debug.LogWarning("READY!");
-        // Check if all players are ready
-        if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("NumReadyPlayers", out object numReadyPlayersObj))
-        {
-            int numReady = (int)numReadyPlayersObj;
-
-            Debug.LogWarning("READT NA #" + numReady);
-
-            //check only if min is met
-            if ( PhotonNetwork.CurrentRoom.PlayerCount >= minimumPlayer)
-            {
-                if (numReady == PhotonNetwork.CurrentRoom.PlayerCount - 1)
-                {
-                    Debug.LogWarning("PANALO!");
-                    allIsReady = true;
-                }
-
-            }
-        }
-    }
-
-
     private void SpawnPlayersInList()
     {
+
+        int currentNoPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
+        bool reachedMin = currentNoPlayers >= minimumPlayer;
 
         //PUBLIC GAME
         if (!isPrivate)
         {
             MenuManager.Instance.OpenMenu("room");
-            Debug.Log(PhotonNetwork.CurrentRoom.Name + "OnJoinedRoom() (Public)");
             roomNameText.text = PhotonNetwork.CurrentRoom.Name;
             publicGameNumberOfPlayers.text = PhotonNetwork.CurrentRoom.PlayerCount + "/" + maxPlayer;
 
@@ -369,20 +312,18 @@ public class Launcher : MonoBehaviourPunCallbacks
             hostNamePrivate.text = roomMasterName;
         }
 
-        if (PhotonNetwork.LocalPlayer != PhotonNetwork.MasterClient && PhotonNetwork.CurrentRoom.PlayerCount == minimumPlayer)
+        if (!PhotonNetwork.IsMasterClient && reachedMin)
         {
-            waitingForPlayersTextPublic.text = "GET READY";
-            waitingForPlayersTextPrivate.text = "GET READY";
+                waitingPlayerCardPublic.SetActive(false);
+                waitingPlayerCardPrivate.SetActive(false);
+
+                readyBtnCardPrivate.SetActive(true);
+                readyBtnCardPublic.SetActive(true);
         }
-        else if (PhotonNetwork.LocalPlayer == PhotonNetwork.MasterClient && PhotonNetwork.CurrentRoom.PlayerCount == minimumPlayer)
+        else if (PhotonNetwork.IsMasterClient && reachedMin)
         {
             waitingForPlayersTextPublic.text = "Waiting to Accept";
             waitingForPlayersTextPrivate.text = "Waiting to Accept";
-        }
-        else
-        {
-            waitingForPlayersTextPublic.text = "Need at least " + minimumPlayer + " player";
-            waitingForPlayersTextPrivate.text = "Need at least " + minimumPlayer + " player";
         }
 
         // For Player List
@@ -414,42 +355,29 @@ public class Launcher : MonoBehaviourPunCallbacks
             }
         }
 
-        int currentNoPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
-
-        //for ready check
-        //need to --,to start
-        countOfReadyPlayers = currentNoPlayers;
 
         // x is >= 5
-        if (currentNoPlayers >= minimumPlayer)
+        if (reachedMin)
         {
-            bool minimumMet = currentNoPlayers >= minimumPlayer;
 
-            if (allIsReady && PhotonNetwork.IsMasterClient)
+            if (PhotonNetwork.IsMasterClient)
             {
-                Debug.Log("ALL IS READY? " + allIsReady);
+
+            waitingForPlayersTextPublic.text = "Waiting to Accept";
+            waitingForPlayersTextPrivate.text = "Waiting to Accept";
+
+            }
+            else if (!PhotonNetwork.IsMasterClient)
+            {
                 waitingPlayerCardPublic.SetActive(false);
                 waitingPlayerCardPrivate.SetActive(false);
 
-                startGameButtonPublic.SetActive(true);
-                startGameButtonPrivate.SetActive(true);
+                readyBtnCardPrivate.SetActive(true);
+                readyBtnCardPublic.SetActive(true);
             }
-            else if (minimumMet)
-            {
-                // + Get READY IMPLEMENT
-                waitingPlayerCardPublic.SetActive(true);
-                waitingPlayerCardPrivate.SetActive(true);
-            }
-            else
-            {
-                waitingPlayerCardPublic.SetActive(true);
-                waitingPlayerCardPrivate.SetActive(true);
-                startGameButtonPublic.SetActive(false);
-                startGameButtonPrivate.SetActive(false);
-            }
+
         }
 
-        Debug.Log("Number of players in the room: " + PhotonNetwork.CurrentRoom.PlayerCount.ToString());
     }
 
     //Show Start button only when reached max players
