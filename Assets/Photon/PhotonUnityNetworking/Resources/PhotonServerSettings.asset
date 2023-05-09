@@ -57,6 +57,10 @@ MonoBehaviour:
   - StopAllRecording
   - RPC_setHouseAndPlayerParent
   - RPC_setHouseAndPlayerParentWrapper
+  - DecrementReadyPlayers
+  - IncrementReadyPlayersRPC
+  - ReadySignalRPC
+  - ShowStartButtonToMaster
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
