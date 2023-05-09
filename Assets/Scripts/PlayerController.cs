@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private Transform moveTarget;
     private bool isOutlined;
     private HouseController playerHouse;
-    private bool disabledControls;
+    public bool disabledControls;
     private bool isMovementSync;
     private bool isSequenceRunning;
     public Animator animator;
@@ -50,52 +50,73 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (PV.IsMine && disabledControls == false)
+        // if (PV.IsMine && disabledControls == false)
+        // {
+        //     if (Input.GetMouseButtonDown(0))
+        //     {
+        //         PhotonView hitPV = OnClick();
+
+        //         if (hitPV != null)
+        //         {
+        // if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.NIGHT)
+        // {
+        //     foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+        //     {
+        //         gameObject.SetActive(false);
+        //     }
+
+        //     Debug.Log(hitPV.GetComponent<Transform>().tag);
+        //     if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "House")
+        //     {
+        //         HouseController controller = hitPV.GetComponent<HouseController>();
+        //         controller.showButtonLeft();
+        //         controller.showButtonRight();
+        //     }
+        // }
+        // if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
+        // {
+        //     Debug.Log(!hitPV.IsMine);
+        //     Debug.Log(hitPV.GetComponent<Transform>().tag);
+        //     if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
+        //     {
+        //         VoteManager.Instance.openAccuseVotePrompt(hitPV.Owner.NickName);
+        //     }
+        // }
+        // else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
+        // {
+        //     Debug.Log(!hitPV.IsMine);
+        //     Debug.Log(hitPV.GetComponent<Transform>().tag);
+
+        //     if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
+        //     {
+        //         VoteManager.Instance.openEliminationVotePrompt();
+        //     }
+        // }
+        //         }
+        //         else
+        //         {
+        //             return;
+        //         }
+        //     }
+        // }
+    }
+
+    private void OnMouseDown()
+    {
+        if (!PV.IsMine && disabledControls == false)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
             {
-                PhotonView hitPV = OnClick();
-
-                if (hitPV != null)
+                if (!PV.IsMine && PV.GetComponent<Transform>().tag == "Player")
                 {
-                    if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.NIGHT)
-                    {
-                        foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
-                        {
-                            gameObject.SetActive(false);
-                        }
-
-                        Debug.Log(hitPV.GetComponent<Transform>().tag);
-                        if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "House")
-                        {
-                            HouseController controller = hitPV.GetComponent<HouseController>();
-                            controller.showButtonLeft();
-                            controller.showButtonRight();
-                        }
-                    }
-                    else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
-                    {
-                        Debug.Log(!hitPV.IsMine);
-                        Debug.Log(hitPV.GetComponent<Transform>().tag);
-                        if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
-                        {
-                            VoteManager.Instance.openAccuseVotePrompt(hitPV.Owner.NickName);
-                        }
-                    }
-                    else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
-                    {
-                        Debug.Log(!hitPV.IsMine);
-                        Debug.Log(hitPV.GetComponent<Transform>().tag);
-
-                        if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
-                        {
-                            VoteManager.Instance.openEliminationVotePrompt();
-                        }
-                    }
+                    VoteManager.Instance.openAccuseVotePrompt(PV.Owner.NickName);
                 }
-                else
+            }
+            else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
+            {
+                if (!PV.IsMine && PV.GetComponent<Transform>().tag == "Player")
                 {
-                    return;
+                    VoteManager.Instance.openEliminationVotePrompt();
                 }
             }
         }

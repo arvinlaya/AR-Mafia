@@ -76,21 +76,27 @@ public class RightButton : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit))
-            {
-                if (hit.transform == gameObject.transform)
-                {
-                    StartCoroutine(nameof(clickFeedback));
-                    OnClick(GameManager.Instance.GAME_STATE);
-                }
-            }
-        }
+        // if (Input.GetMouseButtonDown(0))
+        // {
+        //     RaycastHit hit;
+        //     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //     if (Physics.Raycast(ray, out hit))
+        //     {
+        //         if (hit.transform == gameObject.transform)
+        //         {
+        //             StartCoroutine(nameof(clickFeedback));
+        //             OnClick(GameManager.Instance.GAME_STATE);
+        //         }
+        //     }
+        // }
 
         GameManager.Instance.rotateToCamera(gameObject.transform, ReferenceManager.Instance.camera.transform, 10f, 0, 0);
+    }
+
+    private void OnMouseDown()
+    {
+        StartCoroutine(nameof(clickFeedback));
+        OnClick(GameManager.Instance.GAME_STATE);
     }
 
     void Skill(string ROLE, Player target)

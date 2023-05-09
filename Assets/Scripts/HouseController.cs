@@ -115,6 +115,23 @@ public class HouseController : MonoBehaviour
         isHidden = false;
     }
 
+    private void OnMouseDown()
+    {
+        PlayerController ownerController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
+        if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.NIGHT && ownerController.disabledControls == false)
+        {
+            foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+            {
+                gameObject.SetActive(false);
+            }
+
+            if (!PV.IsMine && PV.GetComponent<Transform>().tag == "House")
+            {
+                showButtonLeft();
+                showButtonRight();
+            }
+        }
+    }
     private void OnMouseEnter()
     {
         if (isOutlined == false)
