@@ -35,7 +35,7 @@ public class PlayerReadyManager : MonoBehaviourPunCallbacks
     private PlayerReadyManager() { }
 
     private int readyPlayersCount = 0;
-    private int minimumPlayers = 3;
+    private int minimumPlayers = 5;
 
     public int ReadyPlayersCount
     {
@@ -55,7 +55,13 @@ public class PlayerReadyManager : MonoBehaviourPunCallbacks
     public void OnClickIncrementReadyPlayers()
     {
         photonView.RPC("IncrementReadyPlayersRPC", RpcTarget.MasterClient);
+
         //HIDE Ready bTN
+        readyBtnCardPrivate.SetActive(false);
+        readyBtnCardPublic.SetActive(false);
+
+        waitingPlayerCardPublic.SetActive(false);
+        waitingPlayerCardPrivate.SetActive(false);
     }
 
     [PunRPC]
@@ -84,7 +90,7 @@ public class PlayerReadyManager : MonoBehaviourPunCallbacks
         PlayerReadyManager.instance.OnClickIncrementReadyPlayers();
 
         // Check if all players are ready
-        if (PlayerReadyManager.instance.ReadyPlayersCount >= 3 &&
+        if (PlayerReadyManager.instance.ReadyPlayersCount >= 5 &&
             PlayerReadyManager.instance.ReadyPlayersCount <= PhotonNetwork.CurrentRoom.PlayerCount)
         {
             // All players are ready, Show StartButton to MasterClient
@@ -111,12 +117,16 @@ public class PlayerReadyManager : MonoBehaviourPunCallbacks
     //TODO: update ui when all is ready
     private IEnumerator UpdateUI()
     {
-        //if (PhotonNetwork.IsMasterClient)
-        //{
-        //}
+        if (PhotonNetwork.IsMasterClient)
+        {
+            waitingPlayerCardPrivate.SetActive(false);
+            waitingPlayerCardPublic.SetActive(false);
 
-        // LAGAY DITO YUNG ISA
-        Debug.Log("updating UI ni Master");
+            startForMasterBtnCardPublic.SetActive(true);
+            startForMasterBtnCardPrivate.SetActive(true);
+
+        }
+
         yield return new WaitForSeconds(1f);
     }
 
