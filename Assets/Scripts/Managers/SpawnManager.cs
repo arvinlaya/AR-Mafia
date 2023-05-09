@@ -31,13 +31,10 @@ public class SpawnManager : MonoBehaviour
         Instance = this;
     }
     // Start is called before the first frame update
-    void Start()
-    {
-        spawnPoints = GetSpawnPoints(playerCount);
-    }
 
     public void SpawnPlayersAndHouses()
     {
+        spawnPoints = GetSpawnPoints(playerCount);
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Directional Light"), Vector3.zero, Quaternion.identity);
@@ -46,9 +43,8 @@ public class SpawnManager : MonoBehaviour
         foreach (Player player in PhotonNetwork.PlayerList)
         {
             PV.RPC(nameof(RPC_InstantiatePlayer), player, index);
-            PV.RPC(nameof(RPC_InstantiatePlayerSpawnPoints), RpcTarget.All, player.NickName, index);
 
-            index++;
+            // index++;
         }
 
         if (PhotonNetwork.IsMasterClient)
@@ -81,22 +77,15 @@ public class SpawnManager : MonoBehaviour
     [PunRPC]
     void RPC_InstantiatePlayer(int index)
     {
-        Vector3 housePos = spawnPoints[index].position;
-        GameObject house = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerHouse"), spawnPoints[index].position, Quaternion.identity);
+        Vector3 fixedPosition = new Vector3(0, 0, 0);
+        // Vector3 housePos = spawnPoints[index].position;
+        Vector3 housePos = fixedPosition;
+        // GameObject house = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerHouse"), spawnPoints[index].position, Quaternion.identity);
+        GameObject house = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerHouse"), housePos, Quaternion.identity);
         Vector3 playerPos = house.GetComponent<HouseController>().ownerLocation.position;
 
         PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), position: playerPos, Quaternion.identity);
-    }
+        ReferenceManager.Instance.panelParent.SetActive(true);
 
-    [PunRPC]
-    void RPC_InstantiatePlayerSpawnPoints(string playerNickname, int index)
-    {
-        foreach (Player player in PhotonNetwork.PlayerList)
-        {
-            if (player.NickName == playerNickname)
-            {
-                ReferenceManager.Instance.panelParent.SetActive(true);
-            }
-        }
     }
 }
