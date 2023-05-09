@@ -118,6 +118,7 @@ MonoBehaviour:
   buttonActive: 0
   playerTransform: {fileID: 0}
   middleTransform: {fileID: 0}
+  arrayManager: {fileID: 0}
   animator: {fileID: 0}
   animationSync: {fileID: 0}
   transformSync: {fileID: 0}

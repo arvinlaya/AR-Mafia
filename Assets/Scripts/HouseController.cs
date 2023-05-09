@@ -115,6 +115,11 @@ public class HouseController : MonoBehaviour
         isHidden = false;
     }
 
+    private void OnMouseDown()
+    {
+        Debug.Log("HOUSE BY: " + PV.Owner + " CLICKED");
+    }
+
     private void OnMouseEnter()
     {
         if (isOutlined == false)

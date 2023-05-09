@@ -12,9 +12,21 @@ public class RaycastScript : MonoBehaviour
     GameObject spawnedObject;
     bool objectSpawned;
     bool isInitialized;
-    ARRaycastManager arrayManager;
+    public ARRaycastManager arrayManager;
     List<ARRaycastHit> hits = new List<ARRaycastHit>();
+    public static RaycastScript Instance;
     // Start is called before the first frame update
+
+    void Awake()
+    {
+
+        if (Instance)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
     void Start()
     {
         objectSpawned = false;
@@ -27,13 +39,13 @@ public class RaycastScript : MonoBehaviour
     {
         if (!isInitialized)
         {
-            isInitialized = true;
             if (Input.touchCount > 0)
             {
                 if (arrayManager.Raycast(Input.GetTouch(0).position, hits, TrackableType.PlaneWithinPolygon))
                 {
+                    isInitialized = true;
                     var hitpose = hits[0].pose;
-                    spawnManager.transform.position = hitpose.position;
+                    // spawnManager.transform.position = hitpose.position;
                     SpawnManager.Instance.SpawnPlayersAndHouses();
                 }
             }

@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using ExitGames.Client.Photon;
+using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 
 public class PlayerController : MonoBehaviourPunCallbacks
 {
@@ -24,6 +26,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private bool disabledControls;
     private bool isMovementSync;
     private bool isSequenceRunning;
+    [SerializeField] private ARRaycastManager arrayManager;
+    List<ARRaycastHit> hits = new List<ARRaycastHit>();
     public Animator animator;
     public PhotonAnimatorView animationSync;
     public PhotonTransformView transformSync;
@@ -52,9 +56,24 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         if (PV.IsMine && disabledControls == false)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.touchCount > 0)
+            // if (Input.GetMouseButtonDown(0))
             {
-                PhotonView hitPV = OnClick();
+                // PhotonView hitPV = OnClick();
+                PhotonView hitPV = null;
+                Touch touch = Input.GetTouch(0);
+
+                if (touch.phase == TouchPhase.Began)
+                {
+                    Ray ray = ReferenceManager.Instance.arCamera.ScreenPointToRay(touch.position);
+                    RaycastHit hitObject;
+                    if (Physics.Raycast(ray, out hitObject))
+                    {
+                        hitPV = hitObject.transform.GetComponent<PhotonView>();
+                        Debug.Log("OBJECT HIT TAG: " + hitObject.transform.tag);
+                        Debug.Log("RAYCAST HIT: " + hitPV.Owner);
+                    }
+                }
 
                 if (hitPV != null)
                 {
@@ -73,26 +92,44 @@ public class PlayerController : MonoBehaviourPunCallbacks
                             controller.showButtonRight();
                         }
                     }
-                    else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
-                    {
-                        Debug.Log(!hitPV.IsMine);
-                        Debug.Log(hitPV.GetComponent<Transform>().tag);
-                        if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
-                        {
-                            VoteManager.Instance.openAccuseVotePrompt(hitPV.Owner.NickName);
-                        }
-                    }
-                    else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
-                    {
-                        Debug.Log(!hitPV.IsMine);
-                        Debug.Log(hitPV.GetComponent<Transform>().tag);
-
-                        if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
-                        {
-                            VoteManager.Instance.openEliminationVotePrompt();
-                        }
-                    }
                 }
+                // if (hitPV != null)
+                // {
+                //     if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.NIGHT)
+                //     {
+                //         foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
+                //         {
+                //             gameObject.SetActive(false);
+                //         }
+
+                //         Debug.Log(hitPV.GetComponent<Transform>().tag);
+                //         if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "House")
+                //         {
+                //             HouseController controller = hitPV.GetComponent<HouseController>();
+                //             controller.showButtonLeft();
+                //             controller.showButtonRight();
+                //         }
+                //     }
+                //     else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
+                //     {
+                //         Debug.Log(!hitPV.IsMine);
+                //         Debug.Log(hitPV.GetComponent<Transform>().tag);
+                //         if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
+                //         {
+                //             VoteManager.Instance.openAccuseVotePrompt(hitPV.Owner.NickName);
+                //         }
+                //     }
+                //     else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
+                //     {
+                //         Debug.Log(!hitPV.IsMine);
+                //         Debug.Log(hitPV.GetComponent<Transform>().tag);
+
+                //         if (!hitPV.IsMine && hitPV.GetComponent<Transform>().tag == "Player")
+                //         {
+                //             VoteManager.Instance.openEliminationVotePrompt();
+                //         }
+                //     }
+                // }
                 else
                 {
                     return;
@@ -101,6 +138,33 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
     }
 
+    PhotonView OnTouch(Touch touch)
+    {
+        Debug.Log("TOUCHED---------0");
+
+        if (touch.phase == TouchPhase.Began)
+        {
+            Debug.Log("TOUCHED1---------");
+            Ray ray = ReferenceManager.Instance.arCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit))
+            {
+                Debug.Log("TOUCHED2--------");
+                Debug.Log("TOUCHED2------" + hit.transform.position);
+                Debug.Log("TOUCHED2: " + hit.transform.tag);
+                Debug.Log("TOUCHED2 PV: " + hit.transform.GetComponent<PhotonView>().Owner);
+
+                StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.DOOR_OPEN_CLOSE, 0f));
+                return hit.transform.GetComponent<PhotonView>();
+            }
+            else
+            {
+                Debug.Log("NOT TOUCHED---------");
+            }
+        }
+        return null;
+    }
     PhotonView OnClick()
     {
         RaycastHit hit;
@@ -351,15 +415,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         yield return null;
     }
 
-    private void OnTriggerEnter(Collider collider)
-    {
-        transform.position += new Vector3(0, .25f, 0);
-    }
-
-    private void OnTriggerExit(Collider collider)
-    {
-        transform.position += new Vector3(0, -.25f, 0);
-    }
     private void OnMouseEnter()
     {
         if (isOutlined == false)

@@ -29,6 +29,7 @@ public class ReferenceManager : MonoBehaviour
     [SerializeField] public GameObject resultPrompt;
     [SerializeField] public CanvasGroup hideableCanvas;
     [SerializeField] public CanvasGroup hideableUI;
+    [SerializeField] public Camera arCamera;
     public int time;
     public int LayerIgnoreRaycast;
     public int LayerHouse;
