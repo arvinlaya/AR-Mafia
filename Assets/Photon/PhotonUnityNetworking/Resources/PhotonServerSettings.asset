@@ -56,6 +56,7 @@ MonoBehaviour:
   - EnableAllRecording
   - StopAllRecording
   - RPC_setHouseAndPlayerParent
+  - RPC_setHouseAndPlayerParentWrapper
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

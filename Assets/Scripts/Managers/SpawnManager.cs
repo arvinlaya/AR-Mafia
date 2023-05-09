@@ -12,6 +12,7 @@ public class SpawnManager : MonoBehaviour
 {
     int playerCount = 5;
     public static SpawnManager Instance;
+    private bool isInitialized = false;
     int index;
     PhotonView PV;
     [SerializeField] Transform[] PlayerSpawn5;
@@ -31,36 +32,39 @@ public class SpawnManager : MonoBehaviour
         Instance = this;
     }
     // Start is called before the first frame update
-    void Start()
-    {
-    }
 
     public void SpawnPlayersAndHouses()
     {
-        if (PhotonNetwork.IsMasterClient)
+        if (isInitialized == false)
         {
-            PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Directional Light"), Vector3.zero, Quaternion.identity);
-        }
-        index = 0;
-        foreach (Player player in PhotonNetwork.PlayerList)
-        {
-            PV.RPC(nameof(RPC_InstantiatePlayer), player, index);
+            Debug.Log("SPAWWWWWWWWWWWWWNING");
+            isInitialized = true;
+            if (PhotonNetwork.IsMasterClient)
+            {
+                PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Directional Light"), Vector3.zero, Quaternion.identity);
+            }
+            index = 0;
+            foreach (Player player in PhotonNetwork.PlayerList)
+            {
+                PV.RPC(nameof(RPC_InstantiatePlayer), player, index);
 
-            index++;
+                index++;
+            }
+
+            index = 0;
+            foreach (Player player in PhotonNetwork.PlayerList)
+            {
+                PV.RPC(nameof(RPC_setHouseAndPlayerParentWrapper), player, index, player.NickName);
+
+                index++;
+            }
+
+            if (PhotonNetwork.IsMasterClient)
+            {
+                GameManager.Instance.startGenerateRoles();
+            }
         }
 
-        index = 0;
-        foreach (Player player in PhotonNetwork.PlayerList)
-        {
-            PV.RPC(nameof(RPC_setHouseAndPlayerParentWrapper), player, index, player.NickName);
-
-            index++;
-        }
-
-        if (PhotonNetwork.IsMasterClient)
-        {
-            GameManager.Instance.startGenerateRoles();
-        }
     }
 
     Transform[] GetSpawnPoints(int playerCount)
