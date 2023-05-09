@@ -12,6 +12,7 @@ public class SpawnManager : MonoBehaviour
 {
     int playerCount = 5;
     public static SpawnManager Instance;
+    private bool isInitialized = false;
     int index;
     PhotonView PV;
     [SerializeField] Transform[] PlayerSpawn5;
@@ -34,23 +35,36 @@ public class SpawnManager : MonoBehaviour
 
     public void SpawnPlayersAndHouses()
     {
-        spawnPoints = GetSpawnPoints(playerCount);
-        if (PhotonNetwork.IsMasterClient)
+        if (isInitialized == false)
         {
-            PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Directional Light"), Vector3.zero, Quaternion.identity);
-        }
-        index = 0;
-        foreach (Player player in PhotonNetwork.PlayerList)
-        {
-            PV.RPC(nameof(RPC_InstantiatePlayer), player, index);
+            Debug.Log("SPAWWWWWWWWWWWWWNING");
+            isInitialized = true;
+            if (PhotonNetwork.IsMasterClient)
+            {
+                PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Directional Light"), Vector3.zero, Quaternion.identity);
+            }
+            index = 0;
+            foreach (Player player in PhotonNetwork.PlayerList)
+            {
+                PV.RPC(nameof(RPC_InstantiatePlayer), player, index);
 
-            // index++;
+                index++;
+            }
+
+            index = 0;
+            foreach (Player player in PhotonNetwork.PlayerList)
+            {
+                PV.RPC(nameof(RPC_setHouseAndPlayerParentWrapper), player, index, player.NickName);
+
+                index++;
+            }
+
+            if (PhotonNetwork.IsMasterClient)
+            {
+                GameManager.Instance.startGenerateRoles();
+            }
         }
 
-        if (PhotonNetwork.IsMasterClient)
-        {
-            GameManager.Instance.startGenerateRoles();
-        }
     }
 
     Transform[] GetSpawnPoints(int playerCount)
@@ -77,15 +91,32 @@ public class SpawnManager : MonoBehaviour
     [PunRPC]
     void RPC_InstantiatePlayer(int index)
     {
-        Vector3 fixedPosition = new Vector3(0, 0, 0);
-        // Vector3 housePos = spawnPoints[index].position;
-        Vector3 housePos = fixedPosition;
-        // GameObject house = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerHouse"), spawnPoints[index].position, Quaternion.identity);
-        GameObject house = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerHouse"), housePos, Quaternion.identity);
-        Vector3 playerPos = house.GetComponent<HouseController>().ownerLocation.position;
+        spawnPoints = GetSpawnPoints(playerCount);
 
-        PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), position: playerPos, Quaternion.identity);
+        Vector3 housePos = spawnPoints[index].position;
+        GameObject house = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerHouse"), new Vector3(0, 0, 0), Quaternion.identity);
+        GameObject player = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), new Vector3(0, 0, 0), Quaternion.identity);
         ReferenceManager.Instance.panelParent.SetActive(true);
 
     }
+
+    [PunRPC]
+    void RPC_setHouseAndPlayerParentWrapper(int index, string playerName)
+    {
+        PV.RPC(nameof(RPC_setHouseAndPlayerParent), RpcTarget.All, index, playerName);
+    }
+
+    [PunRPC]
+    void RPC_setHouseAndPlayerParent(int index, string playerName)
+    {
+        Debug.Log("SET PLAYER OF: " + playerName);
+        Player player = PlayerManager.getPlayerByName(playerName);
+
+        HouseController houseController = PlayerManager.getPlayerHouseController(player);
+        PlayerController playerController = PlayerManager.getPlayerController(player);
+
+        houseController.transform.SetParent(spawnPoints[index], false);
+        playerController.transform.SetParent(spawnPoints[index], false);
+    }
+
 }
