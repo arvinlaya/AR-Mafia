@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872698, a: 1}
+  m_IndirectSpecularColor: {r: 0.37089851, g: 0.3783701, b: 0.3572253, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -6246,7 +6246,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -92.87796}
+  m_AnchoredPosition: {x: 0, y: -92.87793}
   m_SizeDelta: {x: -54.571625, y: -94.6723}
   m_Pivot: {x: 0.49999994, y: 1}
 --- !u!114 &357273809
@@ -11877,7 +11877,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -70.66556}
+  m_AnchoredPosition: {x: 0, y: -70.66553}
   m_SizeDelta: {x: -53.216614, y: -49.845276}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &707692314
@@ -13427,7 +13427,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &799601370
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19161,7 +19161,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 109.20001, y: -201.00003}
+  m_AnchoredPosition: {x: 109.20001, y: -201}
   m_SizeDelta: {x: 35, y: 28}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1097329643
@@ -31009,7 +31009,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -56.200043}
+  m_AnchoredPosition: {x: 0, y: -56.200073}
   m_SizeDelta: {x: 0, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1843775844
@@ -37479,7 +37479,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 38, y: -103.00003}
+  m_AnchoredPosition: {x: 38, y: -103}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8560409875994407885

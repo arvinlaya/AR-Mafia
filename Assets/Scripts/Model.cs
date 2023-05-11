@@ -59,7 +59,7 @@ public class Model : MonoBehaviour, IPunInstantiateMagicCallback
         {
             parentController.animator = gameObject.GetComponent<Animator>();
             parentController.animationSync = GetComponentInChildren<PhotonAnimatorView>();
-            gameObject.transform.Rotate(0, 180, 0);
+            // gameObject.transform.Rotate(0, 180, 0);
         }
 
     }

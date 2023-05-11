@@ -20,7 +20,7 @@ public class ReferenceManager : MonoBehaviour
     [SerializeField] public GameObject myRoleMafia;
     [SerializeField] public GameObject myRoleDetective;
     [SerializeField] public GameObject prompt;
-    [SerializeField] public GameObject camera;
+    [SerializeField] public Camera camera;
     [SerializeField] public Material[] ButtonMaterials;
     [SerializeField] public GameObject[] Models;
     [SerializeField] public GameObject victoryPromptParent;

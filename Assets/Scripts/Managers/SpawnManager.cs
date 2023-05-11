@@ -115,7 +115,8 @@ public class SpawnManager : MonoBehaviour
         HouseController houseController = PlayerManager.getPlayerHouseController(player);
         PlayerController playerController = PlayerManager.getPlayerController(player);
 
-        houseController.transform.SetParent(spawnPoints[index], false);
+        houseController.transform.position = spawnPoints[index].transform.position;
+        houseController.transform.SetParent(spawnPoints[index], true);
         playerController.transform.SetParent(spawnPoints[index], false);
     }
 
