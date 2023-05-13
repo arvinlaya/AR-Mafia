@@ -8,7 +8,7 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class RightButton : MonoBehaviour
 {
-    Vector3 offset = new Vector3(1f, 5, 0);
+    public Vector3 offset = new Vector3(.1f, .5f, 0);
     PlayerController ownerController;
 
     public HouseController house { get; set; }

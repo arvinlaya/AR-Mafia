@@ -46,6 +46,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         previousSaved = PhotonNetwork.LocalPlayer;
         nightSaveInterval = 0;
         disabledControls = true;
+        animator = GetComponentInChildren<Animator>();
     }
 
     void Update()
@@ -213,6 +214,15 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
 
         PV.RPC(nameof(RPC_enterHouseSequence), RpcTarget.All, houseControllerID, ownerControllerID);
+    }
+
+    public void setIdle()
+    {
+        animator.SetBool("isWalking", false);
+        animator.SetBool("isDead", false);
+        animator.SetBool("isTalking1", false);
+        animator.SetBool("isTalking2", false);
+        animator.SetBool("isIdle", true);
     }
 
     [PunRPC]

@@ -118,8 +118,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
             // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
             // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
-            // int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
-            int playerCount = 5;
+            int playerCount = aliveCount;
+            // int playerCount = 5;
             generateRoles(playerCount, out roles);
             int index = 0;
             foreach (Player player in PhotonNetwork.PlayerList)
@@ -132,15 +132,15 @@ public class GameManager : MonoBehaviourPunCallbacks
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
-                if (player.IsMasterClient)
-                {
-                    roleCustomProps.Add("ROLE", "MAFIA");
-                }
-                else
-                {
-                    roleCustomProps.Add("ROLE", "VILLAGER");
-                }
-                // roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+                // if (player.IsMasterClient)
+                // {
+                //     roleCustomProps.Add("ROLE", "MAFIA");
+                // }
+                // else
+                // {
+                //     roleCustomProps.Add("ROLE", "VILLAGER");
+                // }
+                roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
                 player.SetCustomProperties(roleCustomProps);
@@ -152,7 +152,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     void generateRoles(int playerCount, out Role[] rolesArray)
     {
         Debug.Log("Player count: " + playerCount);
-        if (playerCount == 5)
+        if (playerCount <= 5)
         {
             rolesArray = new Role[] { new Villager(),
                                 new Villager(),
@@ -234,8 +234,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             event_code = GameManager.EVENT_CODE.NIGHT_START;
 
-            // game_winner = checkWinCondition();
-            game_winner = GameManager.GAME_WINNER.ONGOING;
+            game_winner = checkWinCondition();
+            // game_winner = GameManager.GAME_WINNER.ONGOING;
 
             if (game_winner == GameManager.GAME_WINNER.VILLAGER)
             {

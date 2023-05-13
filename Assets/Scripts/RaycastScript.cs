@@ -112,7 +112,6 @@ public class RaycastScript : MonoBehaviour
     public void setGamePlace()
     {
         placementPrompt.SetActive(false);
-        placementIndicator.SetActive(false);
         isInitialized = true;
 
         GameObject anchorObject = new GameObject("Anchor");

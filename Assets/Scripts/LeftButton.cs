@@ -9,7 +9,7 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class LeftButton : MonoBehaviour
 {
-    Vector3 offset = new Vector3(-1f, 5, 0);
+    public Vector3 offset = new Vector3(-.2f, .5f, 0);
     PlayerController ownerController;
     public HouseController house { get; set; }
     public Player owner { get; set; }
@@ -54,7 +54,7 @@ public class LeftButton : MonoBehaviour
         switch (GAME_STATE)
         {
             case GameManager.GAME_PHASE.NIGHT:
-                StartCoroutine(nameof(OpenDoor));
+                StartCoroutine(methodName: nameof(OpenDoor));
                 break;
 
                 // case GameManager.GAME_PHASE.DAY_DISCUSSION:
@@ -102,9 +102,15 @@ public class LeftButton : MonoBehaviour
     {
         if (CooldownManager.Instance.getIsDoorCooldown() == false)
         {
+            HouseController[] controllers = GameObject.FindObjectsOfType<HouseController>();
+            foreach (HouseController controller in controllers)
+            {
+                controller.startUnfadeHouse();
+                controller.closeDoor();
+            }
+            house.startInsideHouse();
             StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.DOOR_OPEN_CLOSE, 0f));
 
-            HouseController[] controllers = GameObject.FindObjectsOfType<HouseController>();
             foreach (HouseController controller in controllers)
             {
                 house.DoorEvent(house.PV);

@@ -24,16 +24,16 @@ public class HouseController : MonoBehaviour
     [SerializeField] public Transform[] outsiderLocation;
     [SerializeField] public Material houseMaterial;
     [SerializeField] public Material houseMaterialFade;
+    [SerializeField] public Material houseMaterialInside;
     public MeshRenderer houseRenderer;
     public SkinnedMeshRenderer doorRenderer;
     private bool isOutlined;
     private bool isHidden;
-
+    private PlayerController ownerPlayerController;
     public int outsiderCount;
     void Awake()
     {
         gameObject.tag = "House";
-        PV = GetComponent<PhotonView>();
         gameObject.GetComponent<Outline>().enabled = false;
         animator = GetComponent<Animator>();
         houseRenderer = GetComponentInChildren<MeshRenderer>();
@@ -41,6 +41,8 @@ public class HouseController : MonoBehaviour
         isOutlined = false;
         isHidden = false;
         outsiderCount = 0;
+        PV = GetComponent<PhotonView>();
+        ownerPlayerController = PlayerManager.getPlayerController(PV.Owner);
     }
     // Start is called before the first frame update
     void Start()
@@ -48,7 +50,6 @@ public class HouseController : MonoBehaviour
 
         leftButton = Instantiate(LeftButtonPrefab, transform.position, Quaternion.identity);
         rightButton = Instantiate(RightButtonPrefab, transform.position, Quaternion.identity);
-
         leftButton.house = this;
         leftButton.owner = PV.Owner;
 
@@ -57,21 +58,15 @@ public class HouseController : MonoBehaviour
 
         GameManager.Instance.OnPhaseChange += changePhase;
 
-        // transform.Rotate(0, 90, 0);
     }
 
     public void DoorEvent(PhotonView pv)
     {
+        closeDoor();
+
         if (pv == this.PV)
         {
             openDoor();
-        }
-        else
-        {
-            if (animator.GetBool("isOpen") == true)
-            {
-                closeDoor();
-            }
         }
     }
 
@@ -82,16 +77,26 @@ public class HouseController : MonoBehaviour
 
     public void closeDoor()
     {
+        if (!ownerPlayerController)
+        {
+            ownerPlayerController = PlayerManager.getPlayerController(PV.Owner);
+        }
         animator.SetBool("isOpen", false);
+
+        ownerPlayerController.setIdle();
     }
 
     public void showButtonLeft()
     {
+        leftButton.transform.position = transform.position;
+        leftButton.transform.Translate(leftButton.offset, transform);
         leftButton.gameObject.SetActive(true);
     }
 
     public void showButtonRight()
     {
+        rightButton.transform.position = transform.position;
+        rightButton.transform.Translate(rightButton.offset, transform);
         rightButton.gameObject.SetActive(true);
     }
 
@@ -99,6 +104,12 @@ public class HouseController : MonoBehaviour
     {
         leftButton.gameObject.SetActive(false);
         leftButton.gameObject.SetActive(false);
+    }
+
+    public void startInsideHouse()
+    {
+        doorRenderer.sharedMaterial = houseMaterialFade;
+        houseRenderer.sharedMaterial = houseMaterialFade;
     }
 
     public void startFadeHouse()

@@ -13,7 +13,7 @@ public class CameraController : MonoBehaviour
     [Header("Camera Settings")]
     public float cameraSpeed;
     public static CameraController Instance;
-
+    [SerializeField] private GameObject crosshair;
     void Awake()
     {
         if (Instance)
@@ -27,6 +27,11 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         camera = GetComponent<Camera>();
+
+        if (Application.platform == RuntimePlatform.Android)
+        {
+            crosshair.SetActive(false);
+        }
     }
 
     // Update is called once per frame
@@ -44,8 +49,6 @@ public class CameraController : MonoBehaviour
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             }
-
-            Debug.Log("THIS IS PC");
         }
 
         if (!Input.GetKey(KeyCode.LeftShift))
