@@ -56,6 +56,8 @@ public class HouseController : MonoBehaviour
         rightButton.owner = PV.Owner;
 
         GameManager.Instance.OnPhaseChange += changePhase;
+
+        // transform.Rotate(0, 90, 0);
     }
 
     public void DoorEvent(PhotonView pv)

@@ -21,15 +21,15 @@ public class PlayerManager : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (PhotonNetwork.IsMasterClient && PV.IsMine && !started)
-            {
-                started = true;
-                Debug.Log("SPAWN PLAYERS AND HOUSES");
-                SpawnManager.Instance.SpawnPlayersAndHouses();
-            }
-        }
+        // if (Input.GetKeyDown(KeyCode.Space))
+        // {
+        //     if (PhotonNetwork.IsMasterClient && PV.IsMine && !started)
+        //     {
+        //         started = true;
+        //         Debug.Log("SPAWN PLAYERS AND HOUSES");
+        //         SpawnManager.Instance.SpawnPlayersAndHouses();
+        //     }
+        // }
     }
 
     public static PlayerController getPlayerController(Player player)

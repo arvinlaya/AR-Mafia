@@ -64,20 +64,26 @@ public class GameManager : MonoBehaviourPunCallbacks
     private List<Player> aliveList;
     private bool firstNight;
     private int dayCount;
-    private int aliveCount;
+    public int aliveCount;
     private string localRole;
 
     public GAME_PHASE currentPhase;
 
     void Awake()
     {
-
         if (Instance)
         {
             Destroy(gameObject);
             return;
         }
         Instance = this;
+
+        aliveList = new List<Player>();
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            aliveList.Add(player);
+        }
+        aliveCount = aliveList.Count;
     }
 
     void Start()
@@ -87,15 +93,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         CooldownManager.Instance.setDoorCooldown(false);
         CooldownManager.Instance.setSkillCooldown(false);
         Instance.PV = Instance.gameObject.GetComponent<PhotonView>();
-        aliveList = new List<Player>();
         firstNight = true;
         dayCount = 0;
-        foreach (Player player in PhotonNetwork.PlayerList)
-        {
-            aliveList.Add(player);
-        }
-        aliveCount = aliveList.Count;
-
         // Invoke("startGame", GAME_START);
     }
 
@@ -273,6 +272,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private IEnumerator SetPhase_R(object phase)
     {
+        if (RaycastScript.Instance.waiting.activeSelf == true)
+        {
+            RaycastScript.Instance.waiting.SetActive(false);
+        }
 
         GameManager.Instance.GAME_STATE = (GameManager.GAME_PHASE)phase;
         OnPhaseChange?.Invoke();

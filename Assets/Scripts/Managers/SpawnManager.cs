@@ -19,7 +19,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] Transform[] PlayerSpawn6;
     [SerializeField] Transform[] PlayerSpawn7;
     [SerializeField] Transform[] PlayerSpawn8;
-
+    [SerializeField] public Transform middle;
     public Transform[] spawnPoints;
     void Awake()
     {
@@ -117,7 +117,11 @@ public class SpawnManager : MonoBehaviour
 
         houseController.transform.position = spawnPoints[index].transform.position;
         houseController.transform.SetParent(spawnPoints[index], true);
-        playerController.transform.SetParent(spawnPoints[index], false);
+        houseController.transform.LookAt(SpawnManager.Instance.middle);
+        houseController.transform.Rotate(0, 180, 0);
+
+        playerController.transform.SetParent(spawnPoints[index], true);
+        playerController.transform.position = spawnPoints[index].transform.position;
     }
 
 }

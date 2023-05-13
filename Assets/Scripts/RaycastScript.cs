@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
-
+using Photon.Pun;
+using TMPro;
 
 public class RaycastScript : MonoBehaviour
 {
     public GameObject spawnPrefab;
     public GameObject placementIndicator;
+    public static RaycastScript Instance;
     [SerializeField] private ARSessionOrigin arOrigin;
     private Pose placementPose;
     [SerializeField] GameObject spawnManager;
@@ -21,15 +23,29 @@ public class RaycastScript : MonoBehaviour
     ARRaycastManager arrayManager;
     Pose spawnPosition;
     List<ARRaycastHit> hits = new List<ARRaycastHit>();
+    [SerializeField] public GameObject waiting;
     [SerializeField] GameObject placementPrompt;
     // Start is called before the first frame update
     Pose lastHitPose;
+    int readyCount = 0;
+    PhotonView PV;
+    void Awake()
+    {
+        if (Instance)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
     void Start()
     {
         objectSpawned = false;
         arrayManager = GetComponent<ARRaycastManager>();
         isInitialized = false;
+        PV = GetComponent<PhotonView>();
 
+        StartCoroutine(nameof(startGame));
     }
 
     // Update is called once per frame
@@ -44,6 +60,12 @@ public class RaycastScript : MonoBehaviour
     }
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            PV.RPC(nameof(RPC_setReady), RpcTarget.All);
+            isInitialized = true;
+        }
+
         if (isInitialized == false && placementPrompt.activeSelf == false)
         {
             UpdatePlacementPose();
@@ -92,12 +114,33 @@ public class RaycastScript : MonoBehaviour
         placementPrompt.SetActive(false);
         placementIndicator.SetActive(false);
         isInitialized = true;
-        spawnManager.transform.position = lastHitPose.position;
 
         GameObject anchorObject = new GameObject("Anchor");
         anchorObject.transform.position = lastHitPose.position;
         anchorObject.transform.rotation = lastHitPose.rotation;
+
+        spawnManager.transform.position = lastHitPose.position;
         spawnManager.transform.SetParent(anchorObject.transform);
-        SpawnManager.Instance.SpawnPlayersAndHouses();
+
+        waiting.SetActive(true);
+        PV.RPC(nameof(RPC_setReady), RpcTarget.All);
+    }
+
+    [PunRPC]
+    private void RPC_setReady()
+    {
+        readyCount += 1;
+    }
+
+    private IEnumerator startGame()
+    {
+        yield return new WaitUntil(() => readyCount >= GameManager.Instance.aliveCount);
+
+        placementIndicator.SetActive(false);
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            SpawnManager.Instance.SpawnPlayersAndHouses();
+        }
     }
 }
