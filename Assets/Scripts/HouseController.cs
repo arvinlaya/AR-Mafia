@@ -108,8 +108,9 @@ public class HouseController : MonoBehaviour
 
     public void startInsideHouse()
     {
-        doorRenderer.sharedMaterial = houseMaterialFade;
-        houseRenderer.sharedMaterial = houseMaterialFade;
+        doorRenderer.sharedMaterial = houseMaterialInside;
+        houseRenderer.sharedMaterial = houseMaterialInside;
+        gameObject.layer = ReferenceManager.Instance.LayerInsideHouse;
     }
 
     public void startFadeHouse()

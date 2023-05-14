@@ -29,6 +29,7 @@ public class HelpManager : MonoBehaviour
 
     void Start()
     {
+
     }
 
     public void openStoryPanel()
@@ -71,4 +72,5 @@ public class HelpManager : MonoBehaviour
     {
         helpPanels[(int)PANEL_INDEX.CREDITS_INDEX].SetActive(false);
     }
+
 }

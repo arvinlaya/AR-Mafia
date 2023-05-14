@@ -31,9 +31,11 @@ public class RoleReveal : MonoBehaviour, IOnEventCallback
         model.gameObject.SetActive(false);
 
         GameManager.Instance.localRoleReveal = this;
+        SoundManager.Instance.playGameClip(SoundManager.DETECTIVE_SKILL, 0);
     }
     void Start()
     {
+        ReferenceManager.Instance.mainCanvas.renderMode = RenderMode.ScreenSpaceCamera;
         setReady();
         StartCoroutine(nameof(startTimer));
 

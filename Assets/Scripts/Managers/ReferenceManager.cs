@@ -29,8 +29,11 @@ public class ReferenceManager : MonoBehaviour
     [SerializeField] public GameObject resultPrompt;
     [SerializeField] public CanvasGroup hideableCanvas;
     [SerializeField] public CanvasGroup hideableUI;
+    [SerializeField] public Canvas mainCanvas;
+    [SerializeField] public Canvas tooltipCanvas;
     public int time;
     public int LayerIgnoreRaycast;
+    public int LayerInsideHouse;
     public int LayerHouse;
     public static ReferenceManager Instance;
 
@@ -48,5 +51,6 @@ public class ReferenceManager : MonoBehaviour
     {
         LayerIgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
         LayerHouse = LayerMask.NameToLayer("House");
+        LayerInsideHouse = LayerMask.NameToLayer("InsideHouse");
     }
 }

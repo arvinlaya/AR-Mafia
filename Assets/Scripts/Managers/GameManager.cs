@@ -234,8 +234,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             event_code = GameManager.EVENT_CODE.NIGHT_START;
 
-            game_winner = checkWinCondition();
-            // game_winner = GameManager.GAME_WINNER.ONGOING;
+            // game_winner = checkWinCondition();
+            game_winner = GameManager.GAME_WINNER.ONGOING;
 
             if (game_winner == GameManager.GAME_WINNER.VILLAGER)
             {
@@ -430,9 +430,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         UIManager.Instance.setTime(currentTime.ToString("00"));
 
-        if (currentTime == 5)
+        if (currentTime == 3)
         {
-            SoundManager.Instance.playGameClip(SoundManager.TIME_ENDING, 0);
+            StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.TIME_ENDING, 0f));
+
         }
     }
     public void OnEvent(EventData photonEvent)
@@ -549,7 +550,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void startGame()
     {
         ReferenceManager.Instance.hideableUI.alpha = 1;
-
+        ReferenceManager.Instance.mainCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
         if (PhotonNetwork.IsMasterClient)
         {
             SetPhase_S(GameManager.GAME_PHASE.NIGHT);
@@ -737,8 +738,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     private GameManager.GAME_WINNER checkWinCondition()
     {
         int mafiaCount = getMafiaCount();
-        int villagerCount = 0;
+        int villagerCount = (aliveCount - mafiaCount);
         string role;
+
 
         if (mafiaCount <= 0)
         {
