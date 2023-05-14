@@ -38,7 +38,7 @@ public class TooltipManager : MonoBehaviour
             tooltipBody.SetText(bodyMessage);
 
             Vector2 position = Input.mousePosition;
-            position.y += 25f;
+            position.y += 200f;
             position.x += 40f;
 
             tooltip.transform.position = position;

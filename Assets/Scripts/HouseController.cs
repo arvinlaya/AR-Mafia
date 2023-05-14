@@ -25,18 +25,23 @@ public class HouseController : MonoBehaviour
     [SerializeField] public Material houseMaterial;
     [SerializeField] public Material houseMaterialFade;
     [SerializeField] public Material houseMaterialInside;
+    [SerializeField] private BoxCollider houseWholeCollider;
+    [SerializeField] private BoxCollider houseFrontCollider;
     public MeshRenderer houseRenderer;
+    public GameObject houseRoof;
     public SkinnedMeshRenderer doorRenderer;
     private bool isOutlined;
     private bool isHidden;
     private PlayerController ownerPlayerController;
     public int outsiderCount;
+
     void Awake()
     {
         gameObject.tag = "House";
         gameObject.GetComponent<Outline>().enabled = false;
         animator = GetComponent<Animator>();
-        houseRenderer = GetComponentInChildren<MeshRenderer>();
+        houseRenderer = GameObject.Find("House").GetComponent<MeshRenderer>();
+        houseRoof = transform.Find("Roof").gameObject;
         doorRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
         isOutlined = false;
         isHidden = false;
@@ -110,6 +115,9 @@ public class HouseController : MonoBehaviour
     {
         doorRenderer.sharedMaterial = houseMaterialInside;
         houseRenderer.sharedMaterial = houseMaterialInside;
+        houseRoof.SetActive(false);
+        houseWholeCollider.enabled = false;
+        houseFrontCollider.enabled = true;
         gameObject.layer = ReferenceManager.Instance.LayerInsideHouse;
     }
 
@@ -125,6 +133,9 @@ public class HouseController : MonoBehaviour
     {
         doorRenderer.sharedMaterial = houseMaterial;
         houseRenderer.sharedMaterial = houseMaterial;
+        houseRoof.SetActive(true);
+        houseWholeCollider.enabled = true;
+        houseFrontCollider.enabled = false;
         gameObject.layer = ReferenceManager.Instance.LayerHouse;
         isHidden = false;
     }

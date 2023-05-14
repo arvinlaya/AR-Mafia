@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 62655e1e3cf34864695ce28cc13ce209
+guid: 8216cc98c6597df429822429b327c664
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable:
@@ -7,8 +7,14 @@ ModelImporter:
       74: 6882450976079092884
     second: Armature|Open door
   - first:
+      74: -4467320884881467464
+    second: Armature|Open door.001
+  - first:
       74: -5475103017462042771
     second: House|Open door
+  - first:
+      74: -5817256388849797293
+    second: Roof|Open door.001
   externalObjects:
   - first:
       type: UnityEngine:Material
