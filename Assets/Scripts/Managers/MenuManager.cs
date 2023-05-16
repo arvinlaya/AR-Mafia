@@ -46,7 +46,6 @@ public class MenuManager : MonoBehaviour
         }
         menu.Open();
     }
-
     public void CloseMenu(Menu menu)
     {
         menu.Close();

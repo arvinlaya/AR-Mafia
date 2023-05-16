@@ -102,27 +102,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         // }
     }
 
-    private void OnMouseDown()
-    {
-        if (!PV.IsMine && disabledControls == false)
-        {
-            if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
-            {
-                if (!PV.IsMine && PV.GetComponent<Transform>().tag == "Player")
-                {
-                    VoteManager.Instance.openAccuseVotePrompt(PV.Owner.NickName);
-                }
-            }
-            else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
-            {
-                if (!PV.IsMine && PV.GetComponent<Transform>().tag == "Player")
-                {
-                    VoteManager.Instance.openEliminationVotePrompt();
-                }
-            }
-        }
-    }
-
     PhotonView OnClick()
     {
         RaycastHit hit;
@@ -309,17 +288,20 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     public void setMovementSync(bool state)
     {
-        if (state == true)
+        if (GameManager.Instance.getAliveList().Contains(PV.Owner))
         {
-            animationSync.enabled = true;
-            transformSync.enabled = true;
-            isMovementSync = true;
-        }
-        else
-        {
-            animationSync.enabled = false;
-            transformSync.enabled = false;
-            isMovementSync = false;
+            if (state == true)
+            {
+                animationSync.enabled = true;
+                transformSync.enabled = true;
+                isMovementSync = true;
+            }
+            else
+            {
+                animationSync.enabled = false;
+                transformSync.enabled = false;
+                isMovementSync = false;
+            }
         }
     }
 
@@ -335,7 +317,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     private IEnumerator dieAnimation()
     {
-        GameManager.Instance.removeFromAliveList(PV.Owner);
+        GameManager.Instance.RPC_removeFromAliveList(PV.Owner.NickName);
 
         isSequenceRunning = true;
         animator.SetBool("isIdle", false);
@@ -350,6 +332,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         yield return new WaitForSeconds(2f);
         disableControls(true);
+        gameObject.GetComponent<PhotonTransformView>().enabled = false;
     }
 
     private IEnumerator greetAnimation(PlayerController partnerController)
@@ -391,6 +374,28 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         transform.position += new Vector3(0, -.25f, 0);
     }
+
+    private void OnMouseDown()
+    {
+        if (!PV.IsMine && PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer).disabledControls == false)
+        {
+            if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_ACCUSE)
+            {
+                if (!PV.IsMine && PV.GetComponent<Transform>().tag == "Player")
+                {
+                    VoteManager.Instance.openAccuseVotePrompt(PV.Owner.NickName);
+                }
+            }
+            else if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.DAY_VOTE)
+            {
+                if (!PV.IsMine && PV.GetComponent<Transform>().tag == "Player")
+                {
+                    VoteManager.Instance.openEliminationVotePrompt();
+                }
+            }
+        }
+    }
+
     private void OnMouseEnter()
     {
         if (isOutlined == false)

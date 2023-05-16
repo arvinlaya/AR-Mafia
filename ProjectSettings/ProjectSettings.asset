@@ -135,9 +135,7 @@ PlayerSettings:
     16:9: 1
     Others: 1
   bundleVersion: 1
-  preloadedAssets:
-  - {fileID: 2652108749060223620, guid: 5c58b2a6b4a2907469bd4bde0d1f47dc, type: 2}
-  - {fileID: 4800000, guid: c9f956787b1d945e7b36e0516201fc76, type: 3}
+  preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -252,7 +250,7 @@ PlayerSettings:
   AndroidTargetDevices: 0
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: '{dedicated}: Desktop/user.keystore'
+  AndroidKeystoreName: '{inproject}: user.keystore'
   AndroidKeyaliasName: armafia code
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 0

@@ -43,11 +43,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public static GameManager Instance;
-    public const int NIGHT_LENGHT = 40; //40 //murder, open door
-    public const int DAY_DISCUSSION_LENGHT = 30; //30 // none
-    public const int DAY_ACCUSE_LENGHT = 20; //20 // accuse icon
-    public const int DAY_ACCUSE_DEFENSE_LENGHT = 20; //20 // none
-    public const int DAY_VOTE_LENGHT = 20; //20 // guilty, not guilty
+    public const int NIGHT_LENGHT = 15; //40 //murder, open door
+    public const int DAY_DISCUSSION_LENGHT = 3; //30 // none
+    public const int DAY_ACCUSE_LENGHT = 3; //20 // accuse icon
+    public const int DAY_ACCUSE_DEFENSE_LENGHT = 3; //20 // none
+    public const int DAY_VOTE_LENGHT = 3; //20 // guilty, not guilty
 
     public RoleReveal localRoleReveal;
     public GAME_PHASE GAME_STATE = GAME_PHASE.NIGHT;
@@ -132,15 +132,15 @@ public class GameManager : MonoBehaviourPunCallbacks
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
                 // REMOVE MASTERCLIENT = MAFIA ROLE AFTER DEBUGGING
-                // if (player.IsMasterClient)
-                // {
-                //     roleCustomProps.Add("ROLE", "MAFIA");
-                // }
-                // else
-                // {
-                //     roleCustomProps.Add("ROLE", "VILLAGER");
-                // }
-                roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
+                if (player.IsMasterClient)
+                {
+                    roleCustomProps.Add("ROLE", "MAFIA");
+                }
+                else
+                {
+                    roleCustomProps.Add("ROLE", "VILLAGER");
+                }
+                // roleCustomProps.Add("ROLE", roles[index].ROLE_TYPE);
                 roleCustomProps.Add("IS_DEAD", false);
                 roleCustomProps.Add("IS_SAVED", false);
                 player.SetCustomProperties(roleCustomProps);
@@ -272,6 +272,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private IEnumerator SetPhase_R(object phase)
     {
+        Debug.Log("RECEIVED SET PHASE");
         if (RaycastScript.Instance.waiting.activeSelf == true)
         {
             RaycastScript.Instance.waiting.SetActive(false);
@@ -554,6 +555,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             SetPhase_S(GameManager.GAME_PHASE.NIGHT);
+            // SetPhase_S(GameManager.GAME_PHASE.DAY_ACCUSE);
         }
 
 
@@ -630,7 +632,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(2f);
 
         List<Player> targetedPlayers = new List<Player>();
-        foreach (Player player in PhotonNetwork.PlayerList)
+        foreach (Player player in aliveList)
         {
             bool isDead = (bool)player.CustomProperties["IS_DEAD"];
             bool isSaved = (bool)player.CustomProperties["IS_SAVED"];
@@ -767,11 +769,18 @@ public class GameManager : MonoBehaviourPunCallbacks
         toRotate.rotation *= Quaternion.Euler(offsetX, offsetY, offsetZ);
     }
 
-    public void removeFromAliveList(Player player)
+    public void removeFromAliveList(string player)
     {
-        aliveList.Remove(player);
-        PlayerManager.getPlayerController(player).ignoreRaycast();
-        PlayerManager.getPlayerHouseController(player).ignoreRaycast();
+        PV.RPC(nameof(GameManager.Instance.RPC_removeFromAliveList), RpcTarget.All, PV.Owner.NickName);
+    }
+
+    [PunRPC]
+    public void RPC_removeFromAliveList(string player)
+    {
+        Player deadPlayer = PlayerManager.getPlayerByName(player);
+        aliveList.Remove(deadPlayer);
+        PlayerManager.getPlayerController(deadPlayer).ignoreRaycast();
+        PlayerManager.getPlayerHouseController(deadPlayer).ignoreRaycast();
     }
 
     private void setAnimationSyncState(Player player, GameManager.GAME_PHASE phase)

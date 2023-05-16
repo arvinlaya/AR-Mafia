@@ -14,7 +14,7 @@ public class GameplayUIController : MonoBehaviour
             if (chatBox.active == false)
             {
                 chatBox.SetActive(true);
-            }
+        }
             else
             {
                 chatBox.SetActive(false);

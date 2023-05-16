@@ -29,7 +29,7 @@ public class HelpManager : MonoBehaviour
 
     void Start()
     {
-
+        
     }
 
     public void openStoryPanel()

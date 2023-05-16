@@ -29,6 +29,7 @@ public class HouseController : MonoBehaviour
     [SerializeField] private BoxCollider houseFrontCollider;
     public MeshRenderer houseRenderer;
     public GameObject houseRoof;
+    public MeshRenderer houseRoofRenderer;
     public SkinnedMeshRenderer doorRenderer;
     private bool isOutlined;
     private bool isHidden;
@@ -40,9 +41,11 @@ public class HouseController : MonoBehaviour
         gameObject.tag = "House";
         gameObject.GetComponent<Outline>().enabled = false;
         animator = GetComponent<Animator>();
-        houseRenderer = GameObject.Find("House").GetComponent<MeshRenderer>();
-        houseRoof = transform.Find("Roof").gameObject;
-        doorRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+        doorRenderer = transform.GetChild(1).GetComponent<SkinnedMeshRenderer>();
+        houseRenderer = transform.GetChild(2).GetComponent<MeshRenderer>();
+        houseRoof = transform.GetChild(3).gameObject;
+        houseRoofRenderer = houseRoof.GetComponent<MeshRenderer>();
+
         isOutlined = false;
         isHidden = false;
         outsiderCount = 0;
@@ -115,9 +118,12 @@ public class HouseController : MonoBehaviour
     {
         doorRenderer.sharedMaterial = houseMaterialInside;
         houseRenderer.sharedMaterial = houseMaterialInside;
+
         houseRoof.SetActive(false);
+
         houseWholeCollider.enabled = false;
         houseFrontCollider.enabled = true;
+
         gameObject.layer = ReferenceManager.Instance.LayerInsideHouse;
     }
 
@@ -125,6 +131,10 @@ public class HouseController : MonoBehaviour
     {
         doorRenderer.sharedMaterial = houseMaterialFade;
         houseRenderer.sharedMaterial = houseMaterialFade;
+
+        houseRoof.SetActive(true);
+        houseRoofRenderer.sharedMaterial = houseMaterialFade;
+
         gameObject.layer = ReferenceManager.Instance.LayerIgnoreRaycast;
         isHidden = true;
     }
@@ -133,17 +143,22 @@ public class HouseController : MonoBehaviour
     {
         doorRenderer.sharedMaterial = houseMaterial;
         houseRenderer.sharedMaterial = houseMaterial;
+
         houseRoof.SetActive(true);
+        houseRoofRenderer.sharedMaterial = houseMaterial;
+
         houseWholeCollider.enabled = true;
         houseFrontCollider.enabled = false;
+
         gameObject.layer = ReferenceManager.Instance.LayerHouse;
         isHidden = false;
     }
 
     private void OnMouseDown()
     {
-        PlayerController ownerController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
-        if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.NIGHT && ownerController.disabledControls == false)
+        PlayerController localController = PlayerManager.getPlayerController(PhotonNetwork.LocalPlayer);
+
+        if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.NIGHT && !PV.IsMine && GameManager.Instance.getAliveList().Contains(PV.Owner))
         {
             foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("HouseButton"))
             {
@@ -181,20 +196,31 @@ public class HouseController : MonoBehaviour
     {
         hideButtonBoth();
 
-        if (GameManager.Instance.GAME_STATE != GameManager.GAME_PHASE.NIGHT)
+        if (GameManager.Instance.getAliveList().Contains(PV.Owner))
+        {
+            if (GameManager.Instance.GAME_STATE != GameManager.GAME_PHASE.NIGHT)
+            {
+                if (isHidden == false)
+                {
+                    startFadeHouse();
+                }
+            }
+            else
+            {
+                if (isHidden == true)
+                {
+                    startUnfadeHouse();
+                }
+            }
+        }
+        else
         {
             if (isHidden == false)
             {
                 startFadeHouse();
             }
         }
-        else
-        {
-            if (isHidden == true)
-            {
-                startUnfadeHouse();
-            }
-        }
+
     }
 
     public void ignoreRaycast()

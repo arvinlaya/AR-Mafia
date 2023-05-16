@@ -100,7 +100,7 @@ public class BurgerManager : MonoBehaviour
     public void exit()
     {
         PhotonNetwork.NetworkingClient.EventReceived -= GameManager.Instance.OnEvent; // important
-
+        
         if (PhotonNetwork.IsMasterClient) // important
         {
             Debug.Log("REMOVED");

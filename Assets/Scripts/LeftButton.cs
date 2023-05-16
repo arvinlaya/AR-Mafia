@@ -108,6 +108,7 @@ public class LeftButton : MonoBehaviour
                 controller.startUnfadeHouse();
                 controller.closeDoor();
             }
+
             house.startInsideHouse();
             StartCoroutine(SoundManager.Instance.playGameClip(SoundManager.DOOR_OPEN_CLOSE, 0f));
 

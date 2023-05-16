@@ -355,6 +355,7 @@ MonoBehaviour:
   houseFrontCollider: {fileID: 2025443717208860832}
   houseRenderer: {fileID: 0}
   houseRoof: {fileID: 0}
+  houseRoofRenderer: {fileID: 0}
   doorRenderer: {fileID: 0}
   outsiderCount: 0
 --- !u!95 &8758108766738819320

@@ -44,7 +44,7 @@ public class ReadyManager : MonoBehaviour
         {
             currentReady += state ? 1 : -1;
 
-            if (currentReady == requiredReady)
+            if (currentReady >= requiredReady)
             {
                 PV.RPC(nameof(RPC_setIsAllReady), RpcTarget.All, true);
             }
