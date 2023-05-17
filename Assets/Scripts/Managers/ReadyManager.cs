@@ -6,7 +6,6 @@ using Photon.Pun;
 public class ReadyManager : MonoBehaviour
 {
     public static ReadyManager Instance;
-    private int requiredReady;
     private int currentReady;
     private bool isAllReady;
     public PhotonView PV;
@@ -27,11 +26,6 @@ public class ReadyManager : MonoBehaviour
         isAllReady = false;
     }
 
-    public void setRequiredReady(int requiredReady)
-    {
-        this.requiredReady = requiredReady;
-    }
-
     public void setReady(bool state)
     {
         PV.RPC(nameof(RPC_setReady), RpcTarget.MasterClient, state);
@@ -44,7 +38,9 @@ public class ReadyManager : MonoBehaviour
         {
             currentReady += state ? 1 : -1;
 
-            if (currentReady >= requiredReady)
+            Debug.Log("currentReady: " + currentReady + " requiredReady: " + GameManager.Instance.getAliveList().Count);
+
+            if (currentReady >= GameManager.Instance.getAliveList().Count)
             {
                 PV.RPC(nameof(RPC_setIsAllReady), RpcTarget.All, true);
             }
@@ -53,13 +49,22 @@ public class ReadyManager : MonoBehaviour
 
     public void resetReady()
     {
+        Debug.Log("resetReady");
         currentReady = 0;
         isAllReady = false;
     }
 
     public bool getIsAllReady()
     {
-        return isAllReady;
+        if (isAllReady)
+        {
+            return true;
+            resetReady();
+        }
+        else
+        {
+            return false;
+        }
     }
 
     [PunRPC]

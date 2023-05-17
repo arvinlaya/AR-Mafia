@@ -141,17 +141,20 @@ public class HouseController : MonoBehaviour
 
     public void startUnfadeHouse()
     {
-        doorRenderer.sharedMaterial = houseMaterial;
-        houseRenderer.sharedMaterial = houseMaterial;
+        if (GameManager.Instance.getAliveList().Contains(PV.Owner))
+        {
+            doorRenderer.sharedMaterial = houseMaterial;
+            houseRenderer.sharedMaterial = houseMaterial;
 
-        houseRoof.SetActive(true);
-        houseRoofRenderer.sharedMaterial = houseMaterial;
+            houseRoof.SetActive(true);
+            houseRoofRenderer.sharedMaterial = houseMaterial;
 
-        houseWholeCollider.enabled = true;
-        houseFrontCollider.enabled = false;
+            houseWholeCollider.enabled = true;
+            houseFrontCollider.enabled = false;
 
-        gameObject.layer = ReferenceManager.Instance.LayerHouse;
-        isHidden = false;
+            gameObject.layer = ReferenceManager.Instance.LayerHouse;
+            isHidden = false;
+        }
     }
 
     private void OnMouseDown()
@@ -215,10 +218,7 @@ public class HouseController : MonoBehaviour
         }
         else
         {
-            if (isHidden == false)
-            {
-                startFadeHouse();
-            }
+            startFadeHouse();
         }
 
     }

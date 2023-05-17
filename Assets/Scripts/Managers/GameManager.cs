@@ -45,8 +45,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     public static GameManager Instance;
     public const int NIGHT_LENGHT = 15; //40 //murder, open door
     public const int DAY_DISCUSSION_LENGHT = 3; //30 // none
-    public const int DAY_ACCUSE_LENGHT = 3; //20 // accuse icon
-    public const int DAY_ACCUSE_DEFENSE_LENGHT = 3; //20 // none
+    public const int DAY_ACCUSE_LENGHT = 10; //20 // accuse icon
+    public const int DAY_ACCUSE_DEFENSE_LENGHT = 10; //20 // none
     public const int DAY_VOTE_LENGHT = 3; //20 // guilty, not guilty
 
     public RoleReveal localRoleReveal;
@@ -64,7 +64,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     private List<Player> aliveList;
     private bool firstNight;
     private int dayCount;
-    public int aliveCount;
     private string localRole;
 
     public GAME_PHASE currentPhase;
@@ -83,13 +82,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             aliveList.Add(player);
         }
-        aliveCount = aliveList.Count;
     }
 
     void Start()
     {
         GameManager.Instance.gameStarted = false;
-        ReadyManager.Instance.setRequiredReady(PhotonNetwork.PlayerList.Count());
         CooldownManager.Instance.setDoorCooldown(false);
         CooldownManager.Instance.setSkillCooldown(false);
         Instance.PV = Instance.gameObject.GetComponent<PhotonView>();
@@ -118,7 +115,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
             // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
             // REMOVE DEFAULT PLAYER COUNT AFTER DEBUGGING
-            int playerCount = aliveCount;
+            int playerCount = aliveList.Count;
             // int playerCount = 5;
             generateRoles(playerCount, out roles);
             int index = 0;
@@ -229,7 +226,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             if (dayCount == 1)
             {
-                PV.RPC(nameof(RPC_setAliveCount), RpcTarget.All, aliveCount);
+                PV.RPC(nameof(RPC_setAliveCount), RpcTarget.All, aliveList.Count);
             }
 
             event_code = GameManager.EVENT_CODE.NIGHT_START;
@@ -272,6 +269,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private IEnumerator SetPhase_R(object phase)
     {
+        if (aliveList.Contains(PhotonNetwork.LocalPlayer))
+        {
+            ReadyManager.Instance.setReady(true);
+        }
+
+        yield return new WaitUntil(() => ReadyManager.Instance.getIsAllReady());
+        ReadyManager.Instance.resetReady();
+
         Debug.Log("RECEIVED SET PHASE");
         if (RaycastScript.Instance.waiting.activeSelf == true)
         {
@@ -280,7 +285,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         GameManager.Instance.GAME_STATE = (GameManager.GAME_PHASE)phase;
         OnPhaseChange?.Invoke();
-        foreach (Player player in PhotonNetwork.PlayerList)
+        foreach (Player player in aliveList)
         {
             setAnimationSyncState(player, (GameManager.GAME_PHASE)phase);
         }
@@ -319,23 +324,18 @@ public class GameManager : MonoBehaviourPunCallbacks
             DayCycleManager.Instance.setDayState(DayCycleManager.DAY_STATE.DAY);
         }
 
-        ReadyManager.Instance.setReady(true);
-
-        yield return new WaitUntil(() => ReadyManager.Instance.getIsAllReady());
-
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.CustomProperties["IS_INSTANTIATED"] == null)
         {
             PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable() { { "IS_INSTANTIATED", true } });
         }
 
-        yield return StartCoroutine(UIManager.Instance.setGamePhase((byte)phase));
+        StartCoroutine(UIManager.Instance.setGamePhase((byte)phase));
         GameManager.Instance.gameStarted = true;
         InitializeTimer((byte)phase);
 
         UIManager.Instance.setDayCount(dayCount, (byte)phase);
         PhotonVoiceManager.Instance.checkMicState(GameManager.Instance.GAME_STATE);
 
-        ReadyManager.Instance.resetReady();
     }
 
     private void InitializeTimer(byte phase)
@@ -389,6 +389,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             //RaiseEvent PHASE_END
             if (PhotonNetwork.IsMasterClient)
             {
+                Debug.Log("PHASE END");
                 if (GameManager.Instance.GAME_STATE == GameManager.GAME_PHASE.NIGHT)
                 {
                     SetPhase_S(GameManager.GAME_PHASE.DAY_DISCUSSION);
@@ -521,7 +522,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void activateDisplayRole(string role)
     {
-        int players = aliveCount <= 5 ? 5 : aliveCount;
+        int players = aliveList.Count <= 5 ? 5 : aliveList.Count;
         int indexOffset = 4;
 
         switch (role)
@@ -740,7 +741,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private GameManager.GAME_WINNER checkWinCondition()
     {
         int mafiaCount = getMafiaCount();
-        int villagerCount = (aliveCount - mafiaCount);
+        int villagerCount = (aliveList.Count - mafiaCount);
         string role;
 
 

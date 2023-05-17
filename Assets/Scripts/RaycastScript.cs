@@ -133,7 +133,7 @@ public class RaycastScript : MonoBehaviour
 
     private IEnumerator startGame()
     {
-        yield return new WaitUntil(() => readyCount >= GameManager.Instance.aliveCount);
+        yield return new WaitUntil(() => readyCount >= GameManager.Instance.getAliveList().Count);
 
         placementIndicator.SetActive(false);
 
