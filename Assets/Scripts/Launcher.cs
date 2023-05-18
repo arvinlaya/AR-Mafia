@@ -481,6 +481,15 @@ public class Launcher : MonoBehaviourPunCallbacks
             startGameButtonPublic.SetActive(PhotonNetwork.IsMasterClient);
     }
 
+    public void StartVoiceScene()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel(2);//1 = voice test scene
+        }
+        PhotonNetwork.CurrentRoom.IsVisible = false;
+    }
+
     public void StartGame()
     {
         if (PhotonNetwork.IsMasterClient)
